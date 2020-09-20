@@ -2,6 +2,7 @@
 
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using UnityEngine;
 
 // ensure class initializer is called whenever scripts recompile
 [InitializeOnLoad]

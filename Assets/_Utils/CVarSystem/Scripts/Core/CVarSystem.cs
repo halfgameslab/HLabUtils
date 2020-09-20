@@ -76,7 +76,11 @@ public static class CVarSystem
     {
         // load groups file
         // on groups file loaded load global group
-        M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
+        if (Groups != null)
+            if (Groups.Count == 0)
+                M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
+            else
+                LoadGroup("global");
     }
 
     /*/// <summary>
@@ -122,7 +126,6 @@ public static class CVarSystem
             {
                 Groups.Add(group.Name, group);
             }
-
             LoadGroup("global");
             SetPersistent<int>("CurrentAddress", true);
         }

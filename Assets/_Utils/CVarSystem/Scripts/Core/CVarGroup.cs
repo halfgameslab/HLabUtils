@@ -115,9 +115,9 @@ public class CVarGroup
             FlushPersistent();
 #endif
         }
-
+        
         for (int i = Vars.Count-1; i >= 0; i--)
-        {
+        {   
             CVarSystem.RemoveVarByFullName(Vars[i].FullName);
         }
 

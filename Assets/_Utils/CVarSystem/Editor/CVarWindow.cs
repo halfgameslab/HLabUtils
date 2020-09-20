@@ -395,10 +395,10 @@ public class CVarWindow : EditorWindow
         menu.ShowAsContext();
     }
 
-    private void OnAddNewGroupHandler()
+    /*private void OnAddNewGroupHandler()
     {
         CVarSystem.CreateGroup("");
-    }
+    }*/
 
     private void OnAddNewClickedHandler<T>(object value)
     {
@@ -474,7 +474,7 @@ public class CVarWindow : EditorWindow
     string _editableType;
 
     private void DrawVars<T>()
-    {   
+    {
         string[] names = CVarSystem.GetVarNamesByType<T>(_currentGroup);
 
         // if was creating a new variable
