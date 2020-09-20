@@ -1,0 +1,103 @@
+<strings>
+  <string id="@generic_label_empty"><![CDATA[Empty]]></string>
+  <string id="@generic_label_start"><![CDATA[Start]]></string>
+  <string id="@generic_label_options"><![CDATA[Options]]></string>
+  <string id="@generic_label_credits"><![CDATA[Credits]]></string>
+  <string id="@generic_label_erase"><![CDATA[Erase]]></string>
+  <string id="@generic_label_close"><![CDATA[Close]]></string>
+  <string id="@generic_label_gotit"><![CDATA[Got it]]></string>
+  <string id="@generic_label_health"><![CDATA[Health]]></string>
+
+  <string id="@generic_label_music"><![CDATA[Music]]></string>
+  <string id="@generic_label_sound"><![CDATA[Sounds]]></string>
+  <string id="@generic_label_language"><![CDATA[Language]]></string>
+  <string id="@generic_label_language_ptbr"><![CDATA[Portuguese]]></string>
+  <string id="@generic_label_language_en"><![CDATA[English]]></string>
+  <string id="@generic_label_quality"><![CDATA[Quality]]></string>
+  <string id="@generic_label_low_level"><![CDATA[Simple]]></string>
+  <string id="@generic_label_mid_level"><![CDATA[Middle]]></string>
+  <string id="@generic_label_high_level"><![CDATA[High]]></string>
+  <string id="@generic_label_quit_game"><![CDATA[Quit Game]]></string>
+  <string id="@generic_label_social"><![CDATA[Social]]></string>
+
+  <string id="@generic_label_tap_here"><![CDATA[Click aqui!]]></string>
+
+  <string id="@generic_energy_empty_message"><![CDATA[You don't have energy.]]></string>
+  <string id="@generic_soon_message"><![CDATA[Coming soon]]></string>
+  <string id="@generic_label_tap_to_start"><![CDATA[Tap to Play]]></string>
+  <string id="@generic_warning_label"><![CDATA[Notice]]></string>
+  <string id="@generic_warning_quit_message"><![CDATA[Click comfirm to quit.]]></string>
+  <string id="@generic_label_time_left"><![CDATA[Time left for reward:]]></string>
+  <string id="@generic_label_get_reward"><![CDATA[OPEN]]></string>
+
+  <string id="@generic_label_buy"><![CDATA[BUY]]></string>
+  <string id="@generic_label_equip"><![CDATA[EQUIP]]></string>
+  <string id="@generic_label_deequip"><![CDATA[DEEQUIP]]></string>
+  <string id="@generic_label_upgrade"><![CDATA[UPDATE]]></string>
+  <string id="@generic_label_release"><![CDATA[CREATE]]></string>
+
+  <string id="@generic_label_restart"><![CDATA[Restart]]></string>
+  <string id="@generic_label_resume"><![CDATA[Back]]></string>
+  <string id="@generic_label_quit"><![CDATA[Quit]]></string>
+  <string id="@generic_label_paused"><![CDATA[Paused]]></string>
+  <string id="@generic_label_back_city"><![CDATA[My Village]]></string>
+  <string id="@generic_label_end_game"><![CDATA[Game Over]]></string>
+
+  <string id="@generic_label_team"><![CDATA[Team]]></string>
+  <string id="@generic_label_programmer"><![CDATA[Programmer]]></string>
+  <string id="@generic_label_artist"><![CDATA[Artist]]></string>
+  <string id="@generic_label_gamedesigner"><![CDATA[Game Designer]]></string>
+  <string id="@generic_label_sounddesigner"><![CDATA[Sound Designer]]></string>
+  
+  <string id="@select_character_message_label"><![CDATA[Select your player {0}?<br/><br/><size=17>*You can not change character after selecting.</size>]]></string>
+
+  <string id="@reward_simple_title_label"><![CDATA[Winner!]]></string>
+  <string id="@reward_simple_desc_label"><![CDATA[{0} Coins]]></string>
+
+  <string id="@wave_incoming_title"><![CDATA[Wave <br/> {0} <br/> Incoming]]></string>
+  <string id="@wave_next"><![CDATA[Next Wave]]></string>
+
+  <string id="@quest_label_daily"><![CDATA[Daily]]></string>
+  <string id="@quest_label_level"><![CDATA[Level]]></string>
+  <string id="@quest_label_all"><![CDATA[All]]></string>
+  <string id="@quest_label_achievement"><![CDATA[Trophy]]></string>
+  <string id="@quest_label_complete"><![CDATA[Complete]]></string>
+
+  <string id="@quest_name_d_01"><![CDATA[Run, Cheese run!]]></string>
+  <string id="@quest_desc_d_01"><![CDATA[Jogue uma partida e percorra {0} metros.]]></string>
+  <string id="@quest_name_d_02"><![CDATA[Pula-pula ]]></string>
+  <string id="@quest_desc_d_02"><![CDATA[Pule {0} obstáculos em uma mesma partida.]]></string>
+  <string id="@quest_name_d_03"><![CDATA[Vamos coletar!]]></string>
+  <string id="@quest_desc_d_03"><![CDATA[Pegue {0} espólios em uma mesma partida.]]></string>
+  <string id="@quest_name_d_04"><![CDATA[Magnetico!]]></string>
+  <string id="@quest_desc_d_04"><![CDATA[Pegue e utilize o item Imã.]]></string>
+  <string id="@quest_name_d_05"><![CDATA[Tudo em dobro]]></string>
+  <string id="@quest_desc_d_05"><![CDATA[Pegue e utilize o item Espólio em Dobro.]]></string>
+  <string id="@quest_name_d_06"><![CDATA[Teleporter]]></string>
+  <string id="@quest_desc_d_06"><![CDATA[Pegue e utilize o item de teletransporte.]]></string>
+  <string id="@quest_name_d_07"><![CDATA[Laser]]></string>
+  <string id="@quest_desc_d_07"><![CDATA[Pegue e utilize o item de tiro laser.]]></string>
+  <string id="@quest_name_d_08"><![CDATA[Mini Cheese]]></string>
+  <string id="@quest_desc_d_08"><![CDATA[Pegue e utilize o item de raio minimizador.]]></string>
+  <string id="@quest_name_d_09"><![CDATA[Tente a sorte]]></string>
+  <string id="@quest_desc_d_09"><![CDATA[Pegue e utilize o item de Ticket.]]></string>
+
+  <string id="@quest_name_a_01"><![CDATA[Maratonista!]]></string>
+  <string id="@quest_desc_a_01"><![CDATA[Percorra {0} metros.]]></string>
+  <string id="@quest_name_a_02"><![CDATA[Mozzarella!]]></string>
+  <string id="@quest_desc_a_02"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_03"><![CDATA[Provolone!]]></string>
+  <string id="@quest_desc_a_03"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_04"><![CDATA[Roquefort!]]></string>
+  <string id="@quest_desc_a_04"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_05"><![CDATA[Cottage!]]></string>
+  <string id="@quest_desc_a_05"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_06"><![CDATA[Mascarpone!]]></string>
+  <string id="@quest_desc_a_06"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_07"><![CDATA[Ricota!]]></string>
+  <string id="@quest_desc_a_07"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_08"><![CDATA[Prato!]]></string>
+  <string id="@quest_desc_a_08"><![CDATA[Pegue {0} espólios.]]></string>
+  <string id="@quest_name_a_09"><![CDATA[Parmesão!]]></string>
+  <string id="@quest_desc_a_09"><![CDATA[Pegue {0} espólios.]]></string>
+</strings>

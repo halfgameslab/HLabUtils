@@ -1,0 +1,465 @@
+﻿<strings>
+  <string id="@m01_s06_b01"><![CDATA[Olá, seja bem-vindo ao treinamento da norma NR35 da Usiminas, meu nome é Vitória!]]></string>
+  <string id="@m01_s06_b02"><![CDATA[Para começarmos, mostrarei como funciona o óculos de realidade virtual e como você utilizará seu controle para interagir com o ambiente do treinamento.]]></string>
+  <string id="@m01_s06_b03"><![CDATA[Em seguida, falaremos sobre como o treinamento funcionará.]]></string>
+  <string id="@m01_s06_b04"><![CDATA[Depois você conhecerá a Ana que será sua instrutora virtual neste treinamento. Vamos lá?​]]></string>
+  
+  <string id="@m01_s07_b01"><![CDATA[----?Recepcionista explica o funcionamento do óculos e fala sobre as regras do treinamento.----]]></string>
+  
+  <string id="@m01_s09_b01"><![CDATA[Agora que vimos os procedimentos básicos de utilização e como funcionará o treinamento podemos começar. Clique no botão em destaque para avançar.]]></string>
+<!-- Fim da introdução e inicio das normas e regulamentos-->
+  
+  <string id="@m01_s11_b01"><![CDATA[Olá, seja bem-vindo, eu sou a Ana e serei sua instrutora virtual.]]></string>
+  <string id="@m01_s11_b02"><![CDATA[Antes de começarmos, preciso que você escolha onde gostaria de se sentar. Clique para selecionar o lugar de sua preferência.]]></string>
+  
+  <string id="@m01_s12_b01"><![CDATA[Este treinamento tem como objetivo:]]></string> 
+  <string id="@m01_s12_b02"><![CDATA[Estabelecer os requisitos mínimos e as medidas de proteção para o trabalho em altura]]></string>
+  <string id="@m01_s12_b03"><![CDATA[Desenvolver o planejamento, a organização e a execução]]></string>
+  <string id="@m01_s12_b04"><![CDATA[Garantir a segurança e a saúde dos trabalhadores que interagem direta ou indiretamente com esta atividade.​]]></string>
+  
+  <string id="@m01_s13_b01"><![CDATA[O treinamento de NR35, norma reguladora para trabalho em altura, foi dividido em seis módulos. Os módulos foram estruturados para você entender a norma de uma forma simples e prática.​]]></string>
+  <string id="@m01_s13_b02"><![CDATA[No primeiro módulo falaremos sobre as normas e regulamentos que orientam o trabalho em altura.]]></string>
+  <string id="@m01_s13_b03"><![CDATA[No segundo módulo veremos o que é análise de riscos e quais as condições impeditivas para o trabalho em altura.]]></string>
+  <string id="@m01_s13_b04"><![CDATA[No terceiro módulo você aprenderá a identificar riscos potenciais em seu ambiente de  trabalho, além de aprender sobre medidas de proteção e controle.​]]></string>
+  
+  <string id="@m01_s14_b01"><![CDATA[Equipamentos de proteção individual (EPI), acessórios e sistemas de ancoragem fazem parte do quarto módulo. Nele você conhecerá mais sobre os principais equipamentos de segurança existentes no mercado atualmente.​]]></string>
+  <string id="@m01_s14_b02"><![CDATA[E para que você aprenda o que fazer em situações de emergência, no quinto módulo falaremos sobre algumas condutas em situações de emergência.​]]></string>
+  <string id="@m01_s14_b03"><![CDATA[Por último, temos o módulo de avaliação, no qual você poderá verificar o seu aprendizado.]]></string>
+  <string id="@m01_s14_b04"><![CDATA[Agora que já sabe o que vai aprender neste treinamento, podemos começar. Vamos lá?​]]></string>
+  
+  <string id="@m01_s15_b01"><![CDATA[Você sabe o que é trabalho em altura?​]]></string>
+  <string id="@m01_s15_b02"><![CDATA[O trabalho em altura também é chamado de trabalho vertical e pode ser definido como toda atividade executada acima de 2,00 m (metros) do nível inferior, onde haja risco de queda.​]]></string>
+  <string id="@m01_s15_b03"><![CDATA[Clique no projetor para ver alguns exemplos de trabalho em altura.​]]></string>
+
+  <string id="@m01_s17_b01"><![CDATA[No projetor veremos alguns ramos de atividades nos quais o trabalho em altura é utilizado.​]]></string>
+
+  <string id="@m01_s19_b01"><![CDATA[Motivos de acidentes no trabalho em altura:  quedas humanas, objetos que caem atingindo outras pessoas e outros fatores.]]></string>
+
+  <string id="@m01_s20_b01"><![CDATA[As quedas em altura têm sido uma das principais causas de acidentes de trabalho graves e fatais no Brasil. Por isso, proteja-se sempre!]]></string>
+  <string id="@m01_s20_b02"><![CDATA[Apenas em 1998 as técnicas de segurança do trabalho em altura foram aprimoradas no Brasil. Pois é, antes disso as medidas de proteção do trabalho em altura não eram prioridades para as empresas.]]></string>
+
+  <string id="@m01_s21_b01"><![CDATA[Clique no projetor para assistir o vídeo.]]></string>
+  <string id="@m01_s21_b02"><![CDATA[Neste vídeo veremos...]]></string>
+
+  <string id="@m01_s22_b01"><![CDATA[Falaremos brevemente de duas normas de trabalho que estão relacionadas ao trabalho em altura: a NR8 (norma regulamentadora de edificações) e a NR18 (condições e meio ambiente de trabalho na indústria da construção). ]]></string>
+  <string id="@m01_s22_b02"><![CDATA[A NR8 diz que as aberturas nos pisos e nas paredes devem ser protegidas de forma que impeçam a queda de pessoas ou objetos. Os andares acima do solo devem dispor de proteção adequada contra quedas, de acordo com as normas técnicas e legislações municipais, atendida as condições de segurança e conforto.]]></string>
+  <string id="@m01_s22_b03"><![CDATA[A NR18 diz da obrigação a instalação de proteção coletiva onde houver risco de queda de trabalhadores ou de projeção de materiais; aberturas devem ter fechamento provisório resistente; e as aberturas, em caso de serem utilizadas para o transporte vertical de materiais e de equipamentos, devem ser protegidas  por guarda-corpo fixo, no ponto de entrada e de saída de material, e por sistema de fechamento do tipo cancela ou similar.]]></string>
+
+  <string id="@m01_s23_b01"><![CDATA[A NR8 estabelece requisitos mínimos que devem ser observados nas edificações, para garantir segurança e conforto aos que nelas trabalhem.]]></string>
+  <string id="@m01_s23_b02"><![CDATA[Para a NR18 são consideradas atividades da Indústria da Construção os serviços de demolição , reparo, pintura, limpeza e manutenção de edifícios em geral.]]></string>
+
+  <string id="@m01_s24_b01"><![CDATA[Histórico da NR35: o trabalho em altura é observado já em populações antigas, como é o caso do Egito com a construção das pirâmides. E os perigos deste trabalho também são antigos: a taxa de acidentes e mortes decorrentes do trabalho em altura era altíssimo.]]></string>
+  <string id="@m01_s24_b02"><![CDATA[Com o tempo e a criação de objetos que serviriam como equipamentos de proteção, esses números foram reduzindo e hoje é possível que um trabalhador execute suas atividades com segurança.]]></string>
+  <string id="@m01_s24_b03"><![CDATA[A NR35 foi publicada em 2012, lançada pelo Ministério do Trabalho, com o intuito de formalizar as normas e regulamentos para o trabalho em altura, garantindo proteção à todos os envolvidos.]]></string>
+  <string id="@m01_s24_b04"><![CDATA[A NR35 foi criada para estabelecer os requisitos mínimos e as medidas de proteção para o trabalho em altura.]]></string>
+
+  <string id="@m01_s25_b01"><![CDATA[Você sabe quais são as responsabilidades que a norma define para o empregador?]]></string>
+  <string id="@m01_s25_b02"><![CDATA[E as suas responsabilidades no ambiente de trabalho de acordo com a NR35?]]></string>
+  <string id="@m01_s25_b03"><![CDATA[Se a sua resposta foi não ou se você teve dúvidas não se preocupe, este é o nosso próximo assunto!]]></string>
+
+  <string id="@m01_s26_b01"><![CDATA[O empregador precisa garantir que as medidas de proteção das quais falaremos sejam observadas e seguidas como orienta a NR35.]]></string>
+  <string id="@m01_s26_b02"><![CDATA[Ele precisa garantir que a análise de risco (AR) seja realizada e que a permissão de trabalho (PT) seja emitida.]]></string>
+  <string id="@m01_s26_b03"><![CDATA[Desenvolver procedimentos operacionais para os trabalhos em altura.​]]></string>
+  <string id="@m01_s26_b04"><![CDATA[Assegurar a realização de avaliação prévia das condições no local do trabalho em altura, pelo estudo, planejamento e implementação das ações e das medidas complementares de segurança aplicáveis.]]></string>
+  <string id="@m01_s26_b05"><![CDATA[O empregador deve adotar as providências necessárias para acompanhar o cumprimento das medidas de proteção estabelecidas nesta norma pelas empresas contratadas.]]></string>
+
+  <string id="@m01_s27_b01"><![CDATA[Ele precisa garantir aos trabalhadores informações atualizadas sobre os riscos e as medidas de controle. Garantindo que você só inicie seu trabalho em altura depois que todas as medidas de proteção tenham sido adotadas.​]]></string>
+  <string id="@m01_s27_b02"><![CDATA[Ele deve assegurar que os trabalhos em altura sejam suspensos quando forem identificados riscos, cuja eliminação ou neutralização imediata não sejam possíveis.]]></string>
+  <string id="@m01_s27_b03"><![CDATA[Ainda, o empregador deve estabelecer uma sistemática de autorização dos trabalhadores para trabalho em altura.]]></string>
+  <string id="@m01_s27_b04"><![CDATA[E assegurar que o trabalhador tenha supervisão para executar seu trabalho em altura.]]></string>
+  <string id="@m01_s27_b05"><![CDATA[Por fim, ele precisa assegurar a organização e arquivamentos dos documentos previstos pela norma NR35.]]></string>
+
+  <string id="@m01_s28_b01"><![CDATA[Assim como o empregador o trabalhador também possuí responsabilidades.]]></string>
+  <string id="@m01_s28_b02"><![CDATA[Em primeiro lugar ele deve respeitar as normas e regulamentos sobre o trabalho em altura, bem como os procedimentos orientados por seu supervisor.]]></string>
+  <string id="@m01_s28_b03"><![CDATA[Deve colaborar com o seu empregador para que as normas sejam cumpridas.]]></string>
+  <string id="@m01_s28_b04"><![CDATA[Cuidar da sua saúde e segurança de outras pessoas que possam ser prejudicadas por suas ações no ambiente de trabalho.]]></string>
+  <string id="@m01_s28_b05"><![CDATA[Usar o direito de recusa sempre que perceber riscos à sua saúde e segurança ou a de outras pessoas, comunicando à sua liderança, com urgência.]]></string>
+
+  <string id="@m01_s29_b01"><![CDATA[Eu acho muito importante saber sobre estes direitos.]]></string>
+  <string id="@m01_s29_b02"><![CDATA[Uma vez, ao chegar em meu trabalho, percebi que um andaime estava com placa de sinalização verde liberando meu acesso, mas que faltava parte do guarda-corpo, precisei então relatar à minha liderança. Neste dia não pude executar minha tarefa.]]></string>
+  <string id="@m01_s29_b03"><![CDATA[Mas, minha liderança tomou as medidas necessárias e o guarda-corpo foi ajustado. O bom é que ninguém se machucou!]]></string>
+  <string id="@m01_s29_b04"><![CDATA[Excelente exemplo! Neste dia, você usou do seu direto de recusa, que é quando ao perceber algum risco à nossa segurança ou à segurança de outra pessoa, informamos ao supervisor da atividade que não podemos realizar a tarefa. E o supervisor toma as providências necessárias para evitar que acidentes aconteçam.]]></string>
+  <string id="@m01_s29_b05"><![CDATA[Então, já sabemos: é importante zelar pela segurança pessoal e também pela segurança de outras pessoas no ambiente de trabalho.]]></string>
+
+  <string id="@m01_s30_b01"><![CDATA[Vigilância compartilhada: eu cuido da minha segurança e da segurança das outras pessoas!​]]></string>
+  <string id="@m01_s30_b02"><![CDATA[Se não for seguro, não faça! ]]></string>
+
+  <string id="@m01_s31_b01"><![CDATA[Bom, além das responsabilidades do empregador que já foram comentadas, ele tem mais uma responsabilidade com o trabalhador.]]></string>
+  <string id="@m01_s31_b02"><![CDATA[A empresa precisa oferecer capacitação para que vocês realizem o trabalho em altura da forma correta e em segurança.]]></string>
+  <string id="@m01_s31_b03"><![CDATA[Para isso, o empregador promove capacitação e treinamentos, como este que vocês estão fazendo!]]></string>
+  <string id="@m01_s31_b04"><![CDATA[E o trabalhador só é considerado apto para o trabalho em altura depois que passa por treinamento teórico e prático, com carga horária mínima de oito horas.]]></string>
+
+  <string id="@m01_s32_b01"><![CDATA[Clique no projetor para exibir os itens que devem ser incluídos e discutidos no treinamento.]]></string>
+
+  <string id="@m01_s34_b01"><![CDATA[É importante que você saiba também que o empregador deve oferecer treinamento periódico bienal ou seja a cada 2 anos, e sempre que ocorrer quaisquer das seguintes situações. Clique no projetor!​]]></string>
+
+  <string id="@m01_s36_b01"><![CDATA[Agora, algumas orientações para que o treinamento aconteça:​]]></string>
+  <string id="@m01_s36_b02"><![CDATA[Como comentado anteriormente, o treinamento periódico deve ter carga horária mínima de oito horas, conforme conteúdo programático definido pelo empregador.​​]]></string>
+  <string id="@m01_s36_b03"><![CDATA[Os treinamentos inicial, periódico e eventual para trabalhos em altura podem ser ministrados em conjunto com outros treinamentos da empresa.​]]></string>
+
+  <string id="@m01_s37_b01"><![CDATA[A capacitação deve ser realizada, preferencialmente, no horário normal de trabalho.​]]></string>
+  <string id="@m01_s37_b02"><![CDATA[O tempo despendido na capacitação deve ser computado como tempo de trabalho efetivo.]]></string>
+  <string id="@m01_s37_b03"><![CDATA[O treinamento deve ser ministrado por instrutores com comprovada proficiência no assunto, sob a responsabilidade de profissional qualificado em segurança do trabalho.]]></string>
+  <string id="@m01_s37_b04"><![CDATA[Ao término do treinamento emite-se um certificado contendo o nome do trabalhador, conteúdo programático, carga horária, data, local de realização do treinamento, nome e qualificação dos instrutores e assinatura do responsável. O trabalhador recebe seu certificado e uma cópia fica na empresa.​]]></string>
+
+  <string id="@m01_s38_b01"><![CDATA[Agora vamos à atividade do módulo 1! Quem te acompanhará nestas atividades será o instrutor Paulo! Boa sorte!​]]></string>
+
+  <string id="@m01_s39_b01"><![CDATA[Olá, muito prazer, eu sou o Paulo e te acompanharei nas atividades deste primeiro módulo.]]></string>
+  <!-- Fim do modulo 1 e inicio do modulo 2-->
+
+  <string id="@m02_s04_b01"><![CDATA[Olá! Bem-vindo!]]></string>
+  <string id="@m02_s04_b02"><![CDATA[No módulo anterior aprendemos um pouco sobre o histórico da NR35, conhecemos melhor os riscos do trabalho em altura e as profissões nas quais as pessoas que estão mais expostas.]]></string>
+  <string id="@m02_s04_b03"><![CDATA[Neste módulo veremos um pouco mais sobre os procedimentos para o trabalho em altura e aprenderemos sobre o preenchimento da permissão para o trabalho e da análise de risco em altura.]]></string>
+  <string id="@m02_s04_b04"><![CDATA[É importante que você saiba que sempre nos baseamos nas normas presentes na NR35.​]]></string>
+
+  <string id="@m02_s05_b01"><![CDATA[A permissão de trabalho, que pode ser representada pela sigla P.T. ou P.P.T, é um documento presente na NR35 que autoriza atividades em altura não rotineiras.​]]></string>
+  <string id="@m02_s05_b02"><![CDATA[Ela deve conter os requisitos mínimos a serem atendidos para a execução dos trabalhos, as disposições e medidas estabelecidas na análise de risco (AR) e a relação de todos os envolvidos e suas autorizações.]]></string>
+  <string id="@m02_s05_b03"><![CDATA[Sua validade deve ser limitada à duração da atividade, restrita ao turno de trabalho, podendo ser revalidada pelo responsável pela aprovação nas situações em que não ocorram mudanças nas condições estabelecidas ou na equipe de trabalho.]]></string>
+
+    
+  <string id="@m02_s07_b01"><![CDATA[Todo trabalho em altura deve ser planejado, organizado e executado por trabalhador capacitado e autorizado.]]></string>
+  <string id="@m02_s07_b02"><![CDATA[Considera-se trabalhador autorizado para trabalho em altura aquele capacitado, cujo estado de saúde foi avaliado, tendo sido considerado apto para executar essa atividade e que possua anuência formal da empresa.]]></string>
+
+  <string id="@m02_s08_b01"><![CDATA[Cabe ao empregador avaliar o estado de saúde dos trabalhadores que exercem atividades em altura, garantindo que:]]></string>
+  <string id="@m02_s08_b02"><![CDATA[os exames e a sistemática de avaliação sejam partes integrantes do Programa de Controle Médico de Saúde Ocupacional - PCMSO, devendo estar nele consignados;]]></string>
+  <string id="@m02_s08_b03"><![CDATA[a avaliação seja efetuada periodicamente, considerando os riscos envolvidos em cada situação;]]></string>
+  <string id="@m02_s08_b04"><![CDATA[seja realizado exame médico voltado às patologias que poderão originar mal súbito e queda de altura, considerando também os fatores psicossociais.]]></string>
+  <string id="@m02_s08_b05"><![CDATA[A aptidão para trabalho em altura deve ser consignada no atestado de saúde ocupacional do trabalhador.]]></string>
+
+
+  <string id="@m02_s09_b01"><![CDATA[No planejamento do trabalho devem ser adotadas, de acordo com a seguinte hierarquia:]]></string>
+  <string id="@m02_s09_b02"><![CDATA[medidas para evitar o trabalho em altura, sempre que existir meio alternativo de execução;]]></string>
+  <string id="@m02_s09_b03"><![CDATA[medidas que eliminem o risco de queda dos trabalhadores, na impossibilidade de execução do trabalho de outra forma;]]></string>
+  <string id="@m02_s09_b04"><![CDATA[medidas que minimizem as consequências da queda, quando o risco de queda não puder ser eliminado.]]></string>
+
+  <string id="@m02_s10_b01"><![CDATA[Todo trabalho em altura deve ser realizado sob supervisão, cuja forma será definida pela análise de risco de acordo com as peculiaridades da atividade.​]]></string>
+  <string id="@m02_s10_b02"><![CDATA[A execução do serviço deve considerar as influências externas que possam alterar as condições do local de trabalho já previstas na análise de risco.​]]></string>
+
+  <string id="@m02_s11_b01"><![CDATA[Você sabe o que é risco?]]></string>
+  <string id="@m02_s11_b02"><![CDATA[É a combinação da probabilidade e das consequências da ocorrência de um determinado evento perigoso.]]></string>
+  <string id="@m02_s11_b03"><![CDATA[Agora que sabe o que é risco, falaremos da análise de risco.]]></string>
+  <string id="@m02_s11_b04"><![CDATA[Ela é uma ferramenta utilizada para identificar perigos e avaliar riscos e impactos.​]]></string>
+  <string id="@m02_s11_b05"><![CDATA[Tem o propósito de controlar ou eliminar os riscos do ambiente de trabalho.]]></string>
+  <string id="@m02_s11_b06"><![CDATA[Todo trabalho em altura somente pode ocorrer depois que toda a documentação requerida for finalizada.]]></string>
+
+  <string id="@m02_s12_b01"><![CDATA[Quando a análise de risco é feita alguns itens devem ser observados, como:]]></string>
+  <string id="@m02_s12_b02"><![CDATA[O local em que o trabalho é feito.]]></string>
+  <string id="@m02_s12_b03"><![CDATA[O isolamento e  sinalização no entorno da área de trabalho.]]></string>
+  <string id="@m02_s12_b04"><![CDATA[O estabelecimento dos sistemas e pontos de ancoragem.]]></string>
+  <string id="@m02_s12_b05"><![CDATA[As condições meteorológicas adversas.]]></string>
+  <string id="@m02_s12_b06"><![CDATA[A seleção, inspeção, forma de utilização e limitação de uso dos sistemas de proteção coletiva e individual (EPC e EPI).]]></string>
+  <string id="@m02_s12_b07"><![CDATA[O risco de queda de materiais e ferramentas.​]]></string>
+
+  <string id="@m02_s13_b01"><![CDATA[Os trabalhos simultâneos que apresentem riscos específicos.​]]></string>
+  <string id="@m02_s13_b02"><![CDATA[O atendimento aos requisitos de segurança e saúde contidos nas demais normas regulamentadoras.​]]></string>
+  <string id="@m02_s13_b03"><![CDATA[Os riscos adicionais.​]]></string>
+  <string id="@m02_s13_b04"><![CDATA[As condições impeditivas.​]]></string>
+  <string id="@m02_s13_b05"><![CDATA[As situações de emergência e o planejamento do resgate e primeiros socorros, de forma a reduzir o tempo da suspensão inerte do trabalhador.]]></string>
+  <string id="@m02_s13_b06"><![CDATA[A necessidade de sistema de comunicação.​​]]></string>
+  <string id="@m02_s13_b07"><![CDATA[A forma de supervisão.]]></string>
+
+  <string id="@m02_s14_b01"><![CDATA[O que contém a análise de risco? A AR deve conter no mínimo:]]></string>
+  <string id="@m02_s14_b02"><![CDATA[As diretrizes e requisitos da tarefa;]]></string>
+  <string id="@m02_s14_b03"><![CDATA[As orientações administrativas;]]></string>
+  <string id="@m02_s14_b03a"><![CDATA[O detalhamento da tarefa;]]></string>
+  <string id="@m02_s14_b04"><![CDATA[As medidas de controle dos riscos características à rotina;]]></string>
+  <string id="@m02_s14_b05"><![CDATA[As condições impeditivas;]]></string>
+  <string id="@m02_s14_b06"><![CDATA[Os sistemas de proteção coletiva e individual necessários;]]></string>
+  <string id="@m02_s14_b07"><![CDATA[Por fim, as competências e as responsabilidades.]]></string>
+
+  <string id="@m02_s15_b01"><![CDATA[Veremos as condições para aprovação da ART e da PPT:​]]></string>
+  <string id="@m02_s15_b02"><![CDATA[Avaliação inicial do ambiente de trabalho.​]]></string>
+  <string id="@m02_s15_b03"><![CDATA[Riscos existentes.]]></string>
+  <string id="@m02_s15_b04"><![CDATA[Preenchimento da lista de verificação.]]></string>
+  <string id="@m02_s15_b05"><![CDATA[Isolamento e sinalização de toda a área.​]]></string>
+
+  <string id="@m02_s16_b01"><![CDATA[Agora falaremos das condições impeditivas para aprovação da ART e da PPT:​]]></string>
+  <string id="@m02_s16_b02"><![CDATA[Ocorrência de descargas atmosféricas (raios), ventos fortes, chuva intensa e iluminação inadequada.​]]></string>
+  <string id="@m02_s16_b03"><![CDATA[Proximidade e contato com a rede elétrica energizada.​]]></string>
+  <string id="@m02_s16_b04"><![CDATA[Condições inadequadas dos executantes e dos equipamentos.​]]></string>
+  <string id="@m02_s16_b05"><![CDATA[Piso irregular ou de baixa resistência.​]]></string>
+
+  <string id="@m02_s17_b01"><![CDATA[Olá! Agora iremos para as atividades deste módulo! Vamos começar?​]]></string>
+  <string id="@m02_s17_b02"><![CDATA[Veremos inicialmente alguns casos de risco/acidente em altura.​​]]></string>
+  <!-- Fim do modulo 2 e inicio do modulo 3-->
+
+  <string id="@m03_s04_b01"><![CDATA[Olá, seja bem-vindo ao módulo três!]]></string>
+  <string id="@m03_s04_b02"><![CDATA[Estamos juntos mais uma vez!]]></string>
+  <string id="@m03_s04_b03"><![CDATA[Desta vez para aprendermos sobre os riscos potenciais e as medidas de proteção e controle contra os perigos no trabalho em altura.]]></string>
+  <string id="@m03_s04_b04"><![CDATA[E o mais importante: abordaremos as situações reais inerentes à sua prática no ambiente de trabalho.]]></string>
+  <string id="@m03_s04_b05"><![CDATA[Animado? Vamos lá!]]></string>
+
+  <string id="@m03_s05_b01"><![CDATA[Começaremos falando sobre os riscos inerentes ao trabalho em altura.]]></string>
+  <string id="@m03_s05_b02"><![CDATA[Você sabe quais são eles?]]></string>
+  <string id="@m03_s05_b03"><![CDATA[Perda de equilíbrio do trabalhador a beira da abertura no piso, sem proteção e sinalização. (Escorregão, deslize, passo em falso e outros)​]]></string>
+
+  <string id="@m03_s06_b01"><![CDATA[Falta de proteção.]]></string>
+
+  <string id="@m03_s07_b01"><![CDATA[Queda em nível diferente.]]></string>
+
+  <string id="@m03_s08_b01"><![CDATA[Método impróprio de trabalho.]]></string>
+
+  <string id="@m03_s09_b01"><![CDATA[Contato acidental com condutor ou massa sob tensão elétrica.​]]></string>
+
+  <string id="@m03_s10_b01"><![CDATA[Trabalhador não apto ao trabalho em altura. (Exames médicos)​]]></string>
+  <string id="@m03_s10_b02"><![CDATA[Lembre-se: utilize proteção contra queda para trabalhar acima de 2 metros de altura.​]]></string>
+
+  <string id="@m03_s11_b01"><![CDATA[Agora veremos os principais perigos presentes no acesso ao local de trabalho.​]]></string>
+  <string id="@m03_s11_b02"><![CDATA[Deslocamento de pessoas de um ponto a outro.​]]></string>
+
+  <string id="@m03_s12_b01"><![CDATA[Transporte de materiais e de ferramentas.​]]></string>
+
+  <string id="@m03_s13_b01"><![CDATA[Caminhos obstruídos.]]></string>
+
+  <string id="@m03_s14_b01"><![CDATA[Excesso de pessoas em atividade.]]></string>
+
+  <string id="@m03_s15_b01"><![CDATA[Condições climáticas.]]></string>
+
+  <string id="@m03_s16_b01"><![CDATA[Ofuscamento da visão pela claridade.]]></string>
+
+  <string id="@m03_s17_b01"><![CDATA[Influência por substâncias químicas diversas.]]></string>
+
+  <string id="@m03_s18_b01"><![CDATA[Olá! Depois de aprender com a Ana sobre os riscos inerentes ao trabalho em altura e também os perigos existentes no acesso ao local de  trabalho, falaremos sobre os recursos que podem ser utilizados para evitar riscos e acidentes.]]></string>
+  <string id="@m03_s18_b02"><![CDATA[Mas, lembre-se: todos os recursos que apresentaremos a seguir devem ser utilizados de acordo com a tarefa a ser executada e apenas depois que a análise de risco (AR) tenha sido cuidadosamente realizada.]]></string>
+
+  <string id="@m03_s19_b01"><![CDATA[A cadeira suspensa é um equipamento elevatório utilizado, principalmente, em fachadas. Tem como característica o percurso livre por toda a sua extensão.]]></string>
+  <string id="@m03_s19_b02"><![CDATA[Ao usarmos a cadeira suspensa temos dois acessórios de uso obrigatório: o cabo de aço e o sistema independente de fixação.]]></string>
+  <string id="@m03_s19_b03"><![CDATA[A sustentação da cadeira suspensa deve ser feita por meio de cabo de aço ou cabo de fibra sintética. (Alterado pela Portaria SIT n.º 13, de 9 de julho de 2002) Com sistema independente de fixação para ambos.]]></string>
+  <string id="@m03_s19_b04"><![CDATA[O sistema de fixação da cadeira suspensa deve ser independente do cabo-guia do trava-quedas e deve resistir a, no mínimo 1500kg*.]]></string>
+
+  <string id="@m03_s20_b01"><![CDATA[O cabo de aço é utilizado para a sustentação, fixado no meio de dispositivos que impeçam o deslizamento e o desgaste da cadeira suspensa.]]></string>
+  <string id="@m03_s20_b02"><![CDATA[Antes de sua utilização, você e o seu supervisor deverão desenrolar o cabo de aço e verificar o seu comprimento.]]></string>
+  <string id="@m03_s20_b03"><![CDATA[Assim, vocês deverão certificar-se que o cabo de aço: não apresenta emenda, não apresenta fios rompidos ou frouxos, apresenta diâmetro uniforme e não esteja lubrificado.]]></string>
+  <string id="@m03_s20_b04"><![CDATA[Uma vez que o equipamento tenha sido instalado na obra, só poderá ser utilizado com autorização formal do profissional legalmente habilitado.]]></string>
+
+  <string id="@m03_s21_b01"><![CDATA[O sistema independente de fixação é utilizado para o cinto de segurança tipo paraquedista, ligado ao trava-quedas em um cabo-guia.]]></string>
+  <string id="@m03_s21_b02"><![CDATA[E não se esqueça: a correta ancoragem e instalação da cadeira suspensa é fundamental para a conservação do equipamento e para a sua segurança, devendo ser realizada por um profissional legalmente habilitado.]]></string>
+
+  <string id="@m03_s22_b01"><![CDATA[O guarda-corpo são peças horizontais paralelas, ligadas aos postes, que circundam a plataforma, destinadas à proteção contra queda das pessoas que utilizam o andaime.]]></string>
+  <string id="@m03_s22_b02"><![CDATA[O guarda-corpo deve ser utilizado como proteção contra queda de altura.]]></string>
+  <string id="@m03_s22_b03"><![CDATA[Há diferenças quanto aos requisitos dependendo do tipo de instalação.]]></string>
+  <string id="@m03_s22_b04"><![CDATA[Se utilizado em instalações provisórias deve ter 0,20m de roda pé, 0,70m de guarda-corpo intermediário e 1,20m de guarda-corpo superior.]]></string>
+  <string id="@m03_s22_b05"><![CDATA[Se utilizado em instalações permanentes deve ter 0,20m de roda pé e 1,20m de guarda-corpo superior e guarda-corpo fora do padrão (com travessas intermediárias).​]]></string>
+
+  <string id="@m03_s23_b01"><![CDATA[Os andaimes são plataformas necessárias à execução de trabalhos em lugares elevados, onde não possam ser executados em condições de segurança a partir do piso.]]></string>
+  <string id="@m03_s23_b02"><![CDATA[Andaimes frequentemente são utilizados em serviços de limpeza e manutenção, construção, reformas, demolição e pintura.]]></string>
+  <string id="@m03_s23_b03"><![CDATA[Quando se está trabalhando sobre andaimes, não são permitidos a movimentação do andaime com pessoas ou objetos sobre ele; a recolocação do andaime sem que seja efetuada sua total desmontagem.]]></string>
+  <string id="@m03_s23_b04"><![CDATA[Para acessar à plataforma do andaime você deve utilizar a escada fixada no próprio andaime. Acessos verticais ao andaime devem ser feitos através de escadas incorporadas ao andaime ou por meio de torres de acesso.]]></string>
+  <string id="@m03_s23_b05"><![CDATA[18.15.25 Os andaimes fachadeiros devem ser externamente cobertos por tela de material que apresente resistência mecânica condizente com os trabalhos e que impeça a queda de objetos. (Alterado pela Portaria SIT n.º 201, de 21]]></string>
+  <string id="@m03_s23_b06"><![CDATA[18.13.9.1 A tela deve constituir-se de uma barreira protetora contra projeção de materiais e ferramentas.]]></string>
+
+  <string id="@m03_s24_b01"><![CDATA[A linha de vida é o ponto de conexão para talabartes, capazes de suportar uma força de impacto. Podem ser de dois tipos: a linha de vida horizontal e a linha de vida vertical.]]></string>
+  <string id="@m03_s24_b02"><![CDATA[A linha de vida ou cabo guia (horizontal ou vertical) é um cabo de aço que tem suas extremidades ancoradas à estrutura da edificação por meio de material de aço inoxidável ou outro material de resistência equivalente.]]></string>
+  <string id="@m03_s24_b03"><![CDATA[Ela é utilizada para atividades nas quais o trabalhador precise deslocar-se horizontalmente com segurança sobre pisos elevados.]]></string>
+  <string id="@m03_s24_b04"><![CDATA[Deve ser instalada de modo a não permitir deflexões e deve ser posicionado na altura da cintura do trabalhador ou acima.]]></string>
+
+  <string id="@m03_s25_b01"><![CDATA[A linha de vida vertical é um cabo de aço ou fibra sintética que tem suas extremidades conectadas a um ponto de ancoragem ou trava-quedas retrátil e a outra extremidade conectada ao talabarte, argola “D” do cinto de segurança ou trava-quedas deslizante.]]></string>
+  <string id="@m03_s25_b02"><![CDATA[Ela é utilizada para atividades nas quais o trabalhador precise deslocar-se verticalmente com segurança até uma superfície de trabalho.]]></string>
+  <string id="@m03_s25_b03"><![CDATA[Ela pode ser utilizada para subidas, como em serviços de limpeza de vidros ou para descidas, por exemplo, no interior de tanques.]]></string>
+
+  <string id="@m03_s26_b01"><![CDATA[As linhas de vida verticais e horizontais precisam atender a alguns requisitos:]]></string>
+  <string id="@m03_s26_b02"><![CDATA[O projeto precisa ser elaborado por profissional habilitado; é necessário que tenha proteção contra atrito – material resistente a altas temperaturas; a identificação da capacidade de carga deve constar na análise de riscos da tarefa.]]></string>
+  <string id="@m03_s26_b03"><![CDATA[Quanto aos pontos de ancoragem da linha de vida, há itens que precisam ser avaliados:]]></string>
+  <string id="@m03_s26_b04"><![CDATA[Os pontos de ancoragem deverão ter uma resistência superior a 15 KN (quilo newton).]]></string>
+  <string id="@m03_s26_b05"><![CDATA[Ele deve ser selecionado por um profissional habilitado.]]></string>
+  <string id="@m03_s26_b06"><![CDATA[O ponto de ancoragem precisa ter resistência para suportar a carga máxima  aplicável.]]></string>
+  <string id="@m03_s26_b07"><![CDATA[E deve ser inspecionado quanto à integridade antes da sua utilização.]]></string>
+
+  <string id="@m03_s27_b01"><![CDATA[Existem vários tipos de plataforma elevatória, dentre as mais usadas estão: tesoura standard, tesoura todo-terreno (TD), telescópica, mastro vertical, articulada, unipessoal e rebocável.]]></string>
+  <string id="@m03_s27_b02"><![CDATA[Para o uso da plataforma elevatória é preciso que alguns requisitos sejam atendidos:]]></string>
+  <string id="@m03_s27_b03"><![CDATA[A indicação da capacidade de carga e alcance máximo precisa estar visível à distância.]]></string>
+  <string id="@m03_s27_b04"><![CDATA[É necessário isolar a área de abrangência da plataforma com corrente zebrada.]]></string>
+  <string id="@m03_s27_b05"><![CDATA[É necessário usar cones refletivos para sinalização horizontal da localização da máquina.​]]></string>
+  <string id="@m03_s27_b06"><![CDATA[Também é preciso que tenha um sistema de controle de descida de emergência, bem como aviso sonoro e visual de translação.]]></string>
+  <string id="@m03_s27_b07"><![CDATA[Por fim, deve ser usado um dispositivo antibasculante e limitador de carga. ]]></string>
+
+  <string id="@m03_s28_b01"><![CDATA[São utilizadas para o trabalho sobre telhados. Há requisitos que devem ser atendidos para o uso dessas passarelas. Veremos quais são:]]></string>
+  <string id="@m03_s28_b02"><![CDATA[As passarelas precisam ser fabricadas em duralumínio antiderrapante, com comprimento e largura que permitam a movimentação com segurança.]]></string>
+  <string id="@m03_s28_b03"><![CDATA[Devem possuir degraus quando utilizadas em superfícies inclinadas e não possuir degraus quando utilizadas em superfícies sem inclinação. O uso da passarela com degraus é usada para inclinação de até 25°.]]></string>
+  <string id="@m03_s28_b04"><![CDATA[Possuir pontos de ancoragem e linha de vida acompanhando a extensão da passarela para uso de cinto de segurança durante a permanência sobre a mesma.]]></string>
+  <string id="@m03_s28_b05"><![CDATA[Possuir dispositivo de travamento entre os elementos dos pranchões.]]></string>
+
+  <string id="@m03_s29_b01"><![CDATA[Mas, atenção: é proibido trabalhar sobre telhados em dias com potencial para chuvas e ventos fortes.]]></string>
+  <string id="@m03_s29_b02"><![CDATA[Respeite as normas e evite acidentes!]]></string>
+
+  <string id="@m03_s30_b01"><![CDATA[A rede de proteção é uma rede de material resistente e elástico.]]></string>
+  <string id="@m03_s30_b02"><![CDATA[É utilizada para amortecer o choque da queda do trabalhador.]]></string>
+
+  <string id="@m03_s31_b01"><![CDATA[Temos quatro diferentes tipos de escada e para cada uma temos as regras de segurança.]]></string>
+  <string id="@m03_s31_b02"><![CDATA[Veremos os tipos de escadas e as regras para o uso em segurança.]]></string>
+  <string id="@m03_s31_b03"><![CDATA[Escada Simples/Extensível: precisam ter no máximo 7m de altura; os degraus podem ser de material condutor; devem manter as condições originais de fábrica; devem possuir sinalização de carga máxima e possuir sapatas antiderrapantes.]]></string>
+  <string id="@m03_s31_b04"><![CDATA[Não é permitido a união de duas ou mais escadas, bem como não é permitido que prolongue seus montantes.]]></string>
+  <string id="@m03_s31_b05"><![CDATA[Quando transportada por uma pessoa, deve ser transportada na horizontal, mantendo a parte da frente acima da altura da cabeça de uma pessoa;]]></string>
+  <string id="@m03_s31_b06"><![CDATA[No caso de escadas compridas, deve ser transportada por duas ou mais pessoas e carregada também na horizontal.]]></string>
+
+  <string id="@m03_s32_b01"><![CDATA[Escadas Duplas (cavalete ou tesoura): precisam ter no máximo 6m de altura; os degraus podem ser de material condutor; devem manter as condições originais de fábrica; devem possuir sinalização de carga máxima e possuir sapatas antiderrapantes.]]></string>
+  <string id="@m03_s32_b02"><![CDATA[São usadas para pequenos serviços e devem ser rígidas, estáveis e seguras.]]></string>
+  <string id="@m03_s32_b03"><![CDATA[Devem ter dobradiças com afastadores e limitadores de abertura que precisão ficar totalmente estendidos quando a escada estiver em uso.]]></string>
+  <string id="@m03_s32_b04"><![CDATA[Atenção: improvisações são expressamente proibidas. Não use arames, cordas, correntes, fios ou outros materiais para substituir os limitadores de abertura. Zele por sua segurança e pela segurança dos que estão à sua volta.]]></string>
+
+  <string id="@m03_s33_b01"><![CDATA[Escada Marinheiro:]]></string>
+  <string id="@m03_s33_b02"><![CDATA[Para cada lance de, no máximo 9 m, deve existir um patamar intermediário de descanso, protegido por guarda-corpo e rodapé.]]></string>
+  <string id="@m03_s33_b03"><![CDATA[Deve ter uma distância entre os degraus e a estrutura de fixação de, no mínimo, 12 cm.​]]></string>
+  <string id="@m03_s33_b04"><![CDATA[A escada fixa, tipo marinheiro, com 6,00 (seis metros) ou mais de altura, deve ser provida de gaiola protetora a partir de 2,00m (dois metros) acima da base até 1,00m (um metro) acima da última superfície de trabalho.]]></string>
+
+  <string id="@m03_s34_b01"><![CDATA[Escada Plataforma:]]></string>
+  <string id="@m03_s34_b02"><![CDATA[Degraus e plataformas devem ser construídos com material antiderrapante.]]></string>
+  <string id="@m03_s34_b03"><![CDATA[A capacidade de carga deve ficar visível à distância.]]></string>
+  <string id="@m03_s34_b04"><![CDATA[Deve ter pés e sapatas antiderrapantes.]]></string>
+  <string id="@m03_s34_b05"><![CDATA[Precisa ser construída ou revestida em material não condutor ou possuir placa indicativa de “uso proibido para atividades com eletricidade”.]]></string>
+  <string id="@m03_s34_b06"><![CDATA[É necessário que tenha sistema de estabilização/fixação quando construída com sistema de deslocamento.]]></string>
+  <string id="@m03_s34_b07"><![CDATA[Por fim, é preciso que tenha guarda-corpo e rodapé em ambos os lados e ao redor de toda a plataforma de trabalho.]]></string>
+
+  <string id="@m03_s35_b01"><![CDATA[Os acessórios e sistemas de ancoragem devem ser especificados e selecionados considerando-se: a eficiência; o conforto; a carga aplicada aos mesmos; e o respectivo fator de segurança, em caso de eventual queda.]]></string>
+  <string id="@m03_s35_b02"><![CDATA[Atenção! Todos os dias, antes de iniciar o seu trabalho, é necessário que todos os EPI, acessórios e sistemas de ancoragem sejam inspecionados.]]></string>
+  <string id="@m03_s35_b03"><![CDATA[Só assim você garante a sua segurança e a segurança das pessoas que te rodeiam!]]></string>
+  <!-- Fim do modulo 3 e inicio do modulo 4-->
+
+  <string id="@m04_s04_b01"><![CDATA[Seja bem-vindo ao quarto módulo! Desta vez aprenderemos um pouco mais sobre os equipamentos de proteção individual, os EPI. Vamos lá?]]></string>
+  <string id="@m04_s04_b03"><![CDATA[Cinturão de segurança do tipo paraquedista: Equipamento de Proteção Individual utilizado para trabalhos em altura onde haja risco de queda, constituído de sustentação na parte inferior do peitoral, acima dos ombros e envolto nas coxas.]]></string>
+
+  <string id="@m04_s07_b01"><![CDATA[Talabarte: Dispositivo de conexão de um sistema de segurança, regulável ou não, para sustentar, posicionar e/ou limitar a movimentação do trabalhador.]]></string>
+  <string id="@m04_s07_b02"><![CDATA[É uma linha flexível feita de fita ou corda de fibras sintéticas, de cabo de aço ou corrente metálica com comprimento máximo de dois metros.]]></string>
+  <string id="@m04_s07_b03"><![CDATA[Absorvedor de energia: Elemento com função de limitar a força de impacto transmitida ao trabalhador pela dissipação da energia cinética.]]></string>
+  
+  <string id="@m04_s09_b01"><![CDATA[Assegure-se de que o ponto de ancoragem está a uma altura que limita a distância de queda livre em 1,60 metros ou menos.]]></string>
+  <string id="@m04_s09_b02"><![CDATA[Fator de queda: razão entre a distância que o trabalhador percorreria na queda e o comprimento do equipamento que irá detê-lo.​]]></string>
+  <string id="@m04_s09_b03"><![CDATA[O talabarte e o dispositivo trava-quedas devem ser posicionados:]]></string>
+  <string id="@m04_s09_b04"><![CDATA[Quando aplicável, acima da altura do elemento de engate para retenção de quedas do equipamento de proteção individual]]></string>
+  <string id="@m04_s09_b05"><![CDATA[Essa condição se destina a obter, sempre que possível, um fator de queda menor ou igual a 1. No caso de talabarte ou trava-quedas retrátil, o ponto de ancoragem do elemento de ligação deve ficar na mesma altura ou mais alto do que o ponto de engate no EPI.]]></string>
+
+  <string id="@m04_s10_b01"><![CDATA[Trava-quedas: À compatibilidade do trava-quedas deslizante guiado com a linha de vida vertical;]]></string>
+  <string id="@m04_s10_b02"><![CDATA[Os trava-quedas deslizantes devem ser utilizados com linhas de ancoragem (cabo de aço ou de fibra sintética) do diâmetro, modelo e tipo estabelecidos pelo fabricante. O uso de linhas diferentes, ainda que de mesmo diâmetro, pode acarretar o não travamento do trava-quedas.]]></string>
+  <string id="@m04_s10_b03"><![CDATA[Obs.: A conexão de talabartes, com ou sem absorvedor de energia, que não tenham sido testados junto com o trava-quedas deslizante pode acarretar danos ao equipamento ou mau funcionamento.]]></string>
+
+  <string id="@m04_s12_b01"><![CDATA[---Os EPI são ajustados no corpo do trabalhador.---]]></string>
+
+  <string id="@m04_s14_b01"><![CDATA[---Mostrar em 3D o trabalhador utilizando o EPI numa zona livre de queda e com as metragens disponíveis no equipamento---]]></string>
+
+  <string id="@m04_s16_b01"><![CDATA[Deve ser verificado, antes do uso dos EPI, se há danos, fissuras e/ou deformações.]]></string>
+
+  <string id="@m04_s18_b01"><![CDATA[Outros EPI:]]></string>
+  <string id="@m04_s18_b02"><![CDATA[Trava-quedas ancorado em ponto fixo; Cabo de Aço, Mosquetões, Argola “D”, cinturão de segurança, capacete, óculos de segurança, Protetor auricular, Luvas e botina de segurança.]]></string>
+
+  <string id="@m04_s20_b01"><![CDATA[Todos os equipamentos de proteção contra quedas devem ser inspecionados antes do uso incluindo registro no checklist:]]></string>
+  <string id="@m04_s20_b02"><![CDATA[Verificação visual das costuras, desgastes, cortes, queimadura da fita.]]></string>
+  <string id="@m04_s20_b03"><![CDATA[Checar todas as conexões para assegurar fechamento apropriado, ausência  ou deformações.]]></string>
+  <string id="@m04_s20_b04"><![CDATA[Atenção: Devem ser obedecidas as instruções de montagem do seu cinto, de acordo com o manual do seu fabricante.]]></string>
+
+  <string id="@m04_s22_b01"><![CDATA[Os EPI devem ser destruídos e descartados quando:]]></string>
+  <string id="@m04_s22_b02"><![CDATA[Apresentarem defeito.]]></string>
+  <string id="@m04_s22_b03"><![CDATA[Apresentarem sinais de desgaste.]]></string>
+  <string id="@m04_s22_b04"><![CDATA[Usados para parar uma queda.]]></string>
+
+  <string id="@m04_s23_b01"><![CDATA[Agora vamos à atividade do módulo 4!]]></string>
+  <!-- Fim do modulo 4 e inicio do modulo 5-->
+  
+  <string id="@m05_s04_b01"><![CDATA[Olá! Seja bem-vindo ao quinto e penúltimo módulo deste treinamento! Neste módulo conversaremos sobre as condutas em situações de emergência!]]></string>
+  <string id="@m05_s04_b02"><![CDATA[Podemos considerar uma emergência a combinação de fatos, decorrentes de:]]></string>
+  <string id="@m05_s04_b03"><![CDATA[Defeitos em equipamento]]></string>
+  <string id="@m05_s04_b04"><![CDATA[Falhas no controle do processo]]></string>
+  <string id="@m05_s04_b05"><![CDATA[Fenômenos naturais (tempestades, raios, enchentes)]]></string>
+  <string id="@m05_s04_b06"><![CDATA[Falhas humanas, que podem resultar em incêndio, explosão, derramamento ou vazamento de produtos químicos]]></string>
+  <string id="@m05_s04_b07"><![CDATA[Emissão atmosférica acidental, descarga acidental na água e ou no solo, QUEDA DE ALTURA.​]]></string>
+  <string id="@m05_s04_b08"><![CDATA[Ou de qualquer acidente com lesão, morte e dano à propriedade, ao meio ambiente e até mesmo à comunidade.]]></string>
+
+  <string id="@m05_s06_b01"><![CDATA[As ações de resposta a esses tipos de emergências que envolvam o trabalho em altura devem constar no plano de emergência da empresa.]]></string>
+  
+  <string id="@m05_s07_b01"><![CDATA[O atendimento deve seguir uma série de etapas e somente pode ser feito utilizando técnicas para as quais recebeu treinamento.]]></string>
+
+  <string id="@m05_s08_b01"><![CDATA[Para fazer o atendimento em uma situação de emergência, primeiro se deve reconhecer a emergência.]]></string>
+  <string id="@m05_s08_b02"><![CDATA[Avaliar o cenário da emergência, depois ligar para o ramal da Unidade de Resgate (Ambulância) e informar o ponto de urgência mais próximo da sua localidade ou área (empresa).]]></string>
+  <string id="@m05_s08_b03"><![CDATA[Avaliar a vítima, atender a vítima com procedimentos para os quais você está capacitado e em seguida encaminhe a vítima para um médico se os procedimentos de emergências não forem necessários.]]></string>
+
+  <string id="@m05_s09_b01"><![CDATA[A empresa deve disponibilizar equipe para respostas em caso de emergências para trabalho em altura. Em caso de emergência acione a equipe de resgate da unidade, não remova a vitima do local, a não ser que esteja em situação eminente de risco (incêndio, vazamento de gás, etc.).]]></string>
+  <string id="@m05_s09_b02"><![CDATA[Caso esteja em situação eminente de risco, remova a vítima cuidadosamente de forma a não agravar os ferimentos na cabeça, no pescoço ou nas costas.]]></string>
+  <string id="@m05_s09_b03"><![CDATA[Lembre-se da necessidade de proteger a vítima e a equipe de resgate, contra uma outra queda.]]></string>
+  <string id="@m05_s09_b04"><![CDATA[OBS: A avaliação inicial da vítima e do cenário determina a melhor metodologia de atendimento à emergência. O local deve ser isolado!]]></string>
+
+  <string id="@m05_s10_b01"><![CDATA[Suporte básico de vida são técnicas usadas para ressuscitar uma vítima que não esteja respirando adequadamente ou que não apresente batimentos cardíacos, ou para manter a vítima viva ate que o serviço médico avançado possa ser obtido.]]></string>
+
+  <string id="@m05_s11_b01"><![CDATA[Quando houver lesões, doenças e agravos que comprometem as vias aéreas, a respiração ou a circulação do sangue.]]></string>
+  <string id="@m05_s11_b02"><![CDATA[Em caso de risco de contaminação e de sangue na cavidade oral, não faça as insuflações.]]></string>
+
+  <string id="@m05_s12_b01"><![CDATA[A remoção da vítima deve ocorrer quando: há possibilidade de incêndio ou de explosão; há presença de gases tóxicos; quando houver estrutura com risco de desmoronamento; se for necessário posicionar a vítima para aplicar a respiração cardiorrespiratória (RCP) ou outras técnicas para salvar vidas; e se a vítima estiver no caminho de outra vítima em estado grave.]]></string>
+
+  <string id="@m05_s13_b01"><![CDATA[Técnicas para remoção da vítima:]]></string>
+  <string id="@m05_s13_b02"><![CDATA[Mover uma vítima pode agravar a lesão existente ou causar outras.]]></string>
+  <string id="@m05_s13_b03"><![CDATA[Mova a vítima somente se a situação exigir]]></string>
+  <string id="@m05_s13_b04"><![CDATA[Solicite auxílio se você não puder suportar sozinho o peso da vítima]]></string>
+  <string id="@m05_s13_b05"><![CDATA[Proteja a cabeça e o pescoço da vítima da melhor forma possível.]]></string>
+  <string id="@m05_s13_b06"><![CDATA[OBS: Nunca arrisque sua segurança para tentar resgatar uma vítima de uma situação de perigo. Aguarde a chegada do SERVIÇO DE EMERGÊNCIA com profissionais equipamentos e técnicas especializadas.]]></string>
+
+  <string id="@m05_s14_b01"><![CDATA[Fluxo de atendimento de emergência na empresa​]]></string>
+
+  <string id="@m05_s16_b01"><![CDATA[Agora vamos à atividade do módulo 5!​]]></string>
+  <!-- Fim do modulo 5 e inicio do modulo 6-->
+
+
+  <string id="@m06_s04_b01"><![CDATA[Olá, seja bem-vindo(a)! Hoje nos encontramos pela última vez! Neste módulo você poderá exercitar o que aprendeu!​]]></string>
+
+  <string id="@m06_s05_b01"><![CDATA[Recordaremos agora o que foi visto em cada um dos módulos deste treinamento.]]></string>
+  <string id="@m06_s05_b02"><![CDATA[No primeiro módulo conversamos sobre as normas e os regulamentos que orientam o trabalho em altura.​]]></string>
+  <string id="@m06_s05_b03"><![CDATA[No módulo 02 aprendemos o que é permissão para o trabalho, o que é a análise de risco e quais são as condições impeditivas para o trabalho em altura.]]></string>
+  <string id="@m06_s05_b04"><![CDATA[No terceiro módulo identificamos riscos potenciais em seu ambiente de  trabalho, além de aprender sobre medidas de proteção e controle no trabalho em altura.]]></string>
+  <string id="@m06_s05_b05"><![CDATA[No módulo 04 conhecemos os principais equipamentos de proteção individual (EPI), acessórios e sistemas de ancoragem e algumas de suas características.]]></string>
+  <string id="@m06_s05_b06"><![CDATA[Por fim, no módulo 05 orientamos algumas das condutas a serem executadas em situações de emergência.]]></string>
+
+  <string id="@m06_s06_b01"><![CDATA[Agora você fará a avaliação final deste treinamento. A prova é composta por dez questões e não há tempo limite para que você responda cada questão.]]></string>
+  <string id="@m06_s06_b02"><![CDATA[Não é permitido que você interrompa a realização da avaliação. Após iniciar é necessário que você responda todas as questões. Quando estiver preparado, aperte o botão INICIAR!]]></string>
+  <string id="@m06_s06_b03"><![CDATA[Boa sorte!]]></string>
+
+
+  
+  
+  <!-- Questoes do modulo 1-->
+  <string id="@q01_desc"><![CDATA[O que é o direito de recusa e quando deve ser usado?]]></string>
+  <string id="@q01_op01"><![CDATA[É o direito que o trabalhador possui de recusar uma atividade quando houver conflitos com o seu supervisor.]]></string>
+  <string id="@q01_op01_feedback"><![CDATA[Errado.É quando o trabalhador se depara com alguma situação que coloque sua integridade física ou de outros em risco; como por exemplo no exercício do trabalho em altura faltando algum tipo de informação ou condição para a realização da mesma. Se não for seguro, não faça.]]></string>
+  <string id="@q01_op02"><![CDATA[É quando o trabalhador recusa as ordens do supervisor.]]></string>
+  <string id="@q01_op02_feedback"><![CDATA[Errado.É quando o trabalhador se depara com alguma situação que coloque sua integridade física ou de outros em risco; como por exemplo no exercício do trabalho em altura faltando algum tipo de informação ou condição para a realização da mesma. Se não for seguro, não faça.]]></string>
+  <string id="@q01_op03"><![CDATA[É quando o trabalhador se depara com alguma situação que coloque sua integridade física ou de outros em risco; como por exemplo no exercício do trabalho em altura faltando algum tipo de informação ou condição para a realização da mesma. Se não for seguro, não faça.]]></string>
+  <string id="@q01_op03_feedback"><![CDATA[Correto.]]></string>
+  <string id="@q01_op04"><![CDATA[Todas as alternativas estão incorretas.]]></string>
+  <string id="@q01_op04_feedback"><![CDATA[Errado.É somente quando quando o trabalhador se depara com alguma situação que coloque sua integridade física ou de outros em risco; como por exemplo no exercício do trabalho em altura faltando algum tipo de informação ou condição para a realização da mesma. Se não for seguro, não faça.]]></string>
+
+  <string id="@q02_desc"><![CDATA[Marque a alternativa correta acerca das responsabilidades do empregador quanto às normas e regulamentos do trabalho em altura.]]></string>
+  <string id="@q02_op01"><![CDATA[Assegurar que os trabalhadores tenham supervisão para todo trabalho em altura.​]]></string>
+  <string id="@q02_op01_feedback"><![CDATA[Essa não é a única alternativa correta.]]></string>
+  <string id="@q02_op02"><![CDATA[Promover treinamentos possibilitando que o trabalhador se capacite de acordo com as normas e regulamentos da NR35 para o trabalho em altura.]]></string>
+  <string id="@q02_op02_feedback"><![CDATA[Essa não é a única alternativa correta.]]></string>
+  <string id="@q02_op03"><![CDATA[Garantir a realização da análise de risco (AR) e da permissão de trabalho (PT), quando necessário.]]></string>
+  <string id="@q02_op03_feedback"><![CDATA[Essa não é a única alternativa correta.]]></string>
+  <string id="@q02_op04"><![CDATA[Todas as afirmativas estão corretas.]]></string>
+  <string id="@q02_op04_feedback"><![CDATA[Correto.]]></string>
+
+
+  <string id="@q03_desc"><![CDATA[Marque a alternativa correta acerca das responsabilidades do empregador quanto às normas e regulamentos do trabalho em altura.]]></string>
+  <string id="@q03_op01"><![CDATA[Praticar vigilância compartilhada (cuido da minha segurança e da segurança dos outros.​]]></string>
+  <string id="@q03_op01_feedback"><![CDATA[Verdadeiro.]]></string>
+  <string id="@q03_op02"><![CDATA[Respeitar as normas e regulamentos para o trabalho em altura, estabelecidas pela NR35.]]></string>
+  <string id="@q03_op02_feedback"><![CDATA[Verdadeiro.]]></string>
+  <string id="@q03_op03"><![CDATA[Usar equipamentos e acessórios de proteção para o trabalho em altura.]]></string>
+  <string id="@q03_op03_feedback"><![CDATA[Verdadeiro.]]></string>
+
+
+  <string id="@q04_desc"><![CDATA[Marque a alternativa correta acerca da capacitação e treinamento para o trabalho em altura.]]></string>
+  <string id="@q04_op01"><![CDATA[O trabalhador está capacitado para o trabalho em altura assim que é contratado pela empresa. ​]]></string>
+  <string id="@q04_op01_feedback"><![CDATA[Errado.Os treinamentos inicial, periódico e eventual para trabalhos em altura podem ser ministrados em conjunto com outros treinamentos da empresa.]]></string>
+  <string id="@q04_op02"><![CDATA[O trabalhador deverá passar por treinamento apenas quando contratado, não sendo necessário que ele participe de outros treinamentos e/ou capacitações promovidos pela empresa.]]></string>
+  <string id="@q04_op02_feedback"><![CDATA[Errado.Os treinamentos inicial, periódico e eventual para trabalhos em altura podem ser ministrados em conjunto com outros treinamentos da empresa.]]></string>
+  <string id="@q04_op03"><![CDATA[Não é necessário que certificados sejam emitidos e entregues ao trabalhador após o término dos treinamentos.]]></string>
+  <string id="@q04_op03_feedback"><![CDATA[Errado.Os treinamentos inicial, periódico e eventual para trabalhos em altura podem ser ministrados em conjunto com outros treinamentos da empresa.]]></string>
+  <string id="@q04_op04"><![CDATA[Os treinamentos inicial, periódico e eventual para trabalhos em altura podem ser ministrados em conjunto com outros treinamentos da empresa.]]></string>
+  <string id="@q04_op04_feedback"><![CDATA[Correto.]]></string>
+
+
+  <string id="@q05_desc"><![CDATA[Quais são os riscos/acidentes aos quais o trabalhador está exposto quando não respeita as normas do trabalho em altura?]]></string>
+  <string id="@q05_op01"><![CDATA[Quedas de andaimes, escadas, telhados ou guarda-corpo.]]></string>
+  <string id="@q05_op01_feedback"><![CDATA[Verdadeiro.]]></string>
+  <string id="@q05_op02"><![CDATA[Choques e/ou queimaduras por contato acidental com condutor ou massa sob tensão elétrica.]]></string>
+  <string id="@q05_op02_feedback"><![CDATA[Verdadeiro.]]></string>
+  <string id="@q05_op03"><![CDATA[Não há riscos no trabalho em altura.]]></string>
+  <string id="@q05_op03_feedback"><![CDATA[Falso.]]></string>
+  
+</strings>

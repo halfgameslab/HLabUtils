@@ -1,0 +1,21 @@
+<quest_data>
+  <quests>
+    <quest id="quest_01" time_limit="">
+      <start>
+        <var name="" value="" type="" optional="false"/>
+        <event target="Tutorial" event_name="ON_COMPLETE" optional="false"/>
+      </start>
+      <complete>
+        <var name="coins" value="10" type="int" optional="false"/>
+        <event target="Tutorial" event_name="ON_COMPLETE" count_executions="1" optional="false"/>
+      </complete>
+      <name><![CDATA[@quest_name_d_01]]></name>
+      <desc><![CDATA[@quest_desc_d_01]]></desc>
+      <rewards>
+        <reward id="reward_identifier"/>
+        <reward id="reward_identifier"/>
+      </rewards>
+    </quest>
+    
+  </quests>
+</quest_data>

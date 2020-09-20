@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ArrayOfCVarGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <CVarGroup>
+    <Name>global</Name>
+    <LoadType>LOAD_ON_DEMAND</LoadType>
+  </CVarGroup>
+  <CVarGroup>
+    <Name>group_01</Name>
+    <LoadType>LOAD_ON_DEMAND</LoadType>
+  </CVarGroup>
+  <CVarGroup>
+    <Name>group_04</Name>
+    <LoadType>LOAD_ON_DEMAND</LoadType>
+  </CVarGroup>
+  <CVarGroup>
+    <Name>group_06</Name>
+    <LoadType>LOAD_ON_DEMAND</LoadType>
+  </CVarGroup>
+</ArrayOfCVarGroup>

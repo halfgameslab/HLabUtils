@@ -1,0 +1,53 @@
+<quest_group>
+  <groups>
+    <!--0 significa que todas as quests precisam ser resolvidas para que o grupo seja completo-->
+    <!--N significa que apenas N quest precisam ser resolvidas para o grupo seja completo-->
+    <!--Será respeitado o numero de quests requeridas e o numero de quests não opcionais ou seja se for requerido apenas 1 quest para passar o grupo e houver duas quests não opcionais-->
+    <!--o grupo só será completo quando as não opcionais forem completas-->
+    <group id="group_01" require_complete_quests="1" time_limit="">
+      <start>
+        <var name="" value="" type=""/>
+        <event target="" event_name=""/>
+      </start>
+      <quests>
+        <!--id identificador da quest-->
+        <!--optional se esta quest precisa ser resolvida para que o grupo seja completo-->
+        <!--link coloca uma dependencia para o inicio da quest | vazio iniciará junto com o inicio do grupo | manual define que o usuario irá iniciar a quest manualmente-->
+        <!--se no quest_id for colocado o identificador de um outro grupo este grupo será iniciado e só após todas as quests deste grupo serem concluídas que será liberado será dado como concluído-->
+        <!--neste caso o campo override_goal será ignorado-->
+        <!--se o identificador do mesmo grupo for adicionado ao campo quest_id esta tag será ignorada-->
+        <quest id="01" quest_id="group_02" optional="false" override_goal="" override_time_limit="" link=""/>
+        <quest id="02" quest_id="quest_01" optional="false" override_goal="" override_time_limit="" link="group01.01"/>
+        <quest id="03" quest_id="quest_02" optional="false" override_goal="" override_time_limit="" link="group01.02"/>
+        <quest id="04" quest_id="quest_03" optional="false" override_goal="" override_time_limit="" link="manual"/>
+      </quests>
+      <name><![CDATA[@group_name_d_02]]></name>
+      <desc><![CDATA[@group_desc_d_02]]></desc>
+      <rewards>
+        <reward id="reward_identifier"/>
+        <reward id="reward_identifier"/>
+      </rewards>
+    </group>
+  </groups>
+
+  <group id="group_02" require_complete_quests="1" time_limit="">
+    <start>
+      <link require=""/>
+    </start>
+    <quests>
+      <!--id identificador da quest-->
+      <!--optional se esta quest precisa ser resolvida para que o grupo seja completo-->
+      <!--link coloca uma dependencia para o inicio da quest | vazio inicial junto com o inicio do grupo | manual define que o usuario irá iniciar a quest manualmente-->
+      <quest id="01" quest_id="quest_01" optional="false" override_goal="10" link=""/>
+      <quest id="02" quest_id="quest_01" optional="false" override_goal="100" link="group02.01"/>
+      <quest id="03" quest_id="quest_01" optional="false" override_goal="200" link="group02.02"/>
+      <quest id="04" quest_id="quest_01" optional="false" override_goal="250" link="group02.03"/>
+    </quests>
+    <name><![CDATA[@group_name_d_02]]></name>
+    <desc><![CDATA[@group_desc_d_02]]></desc>
+    <rewards>
+      <reward id="reward_identifier"/>
+      <reward id="reward_identifier"/>
+    </rewards>
+  </group>
+</quest_group>

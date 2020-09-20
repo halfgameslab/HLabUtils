@@ -1,0 +1,11 @@
+/******************************************/
+ * Author: Eder Moreira
+ * Company: Mup Studios
+ * Version: 0.7
+ * ----------------------------------------
+ * - Multilanguage system
+ * - XML manually
+ * - Support multiple languages
+ * - Basic edit window
+ * - Load XML with rich text
+/******************************************/

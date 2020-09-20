@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8838135e92de33241970fb0aeee37db0, type: 3}
+  m_Name: ItemDatabase
+  m_EditorClassIdentifier: 
+  _itemData:
+  - _id: 0
+    _itemName: Default
+    _itemDescription: The Default Item.
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 1
+    _itemName: CabeloFeminino01
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 2
+    _itemName: CabeloFeminino02
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 3
+    _itemName: CabeloFeminino03
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 4
+    _itemName: CabeloFeminino04
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 5
+    _itemName: CabeloMasculino01
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 6
+    _itemName: CabeloMasculino02
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 7
+    _itemName: CabeloMasculino03
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 8
+    _itemName: CabeloMasculino04
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 9
+    _itemName: CapaceteGlobo
+    _itemDescription: I'm a ninja !!!
+    _payInfo: []
+    _buyEvent: buy_Ninja
+  - _id: 10
+    _itemName: CapaceteCowboy
+    _itemDescription: Grrrrrr!
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 11
+    _itemName: CapaceteMascaraGaz1
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 12
+    _itemName: CapaceteMascaraGaz2
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 13
+    _itemName: CapaceteMergulho
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 14
+    _itemName: CapaceteMineiro
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 15
+    _itemName: ChapeuMarinheiro
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 16
+    _itemName: CapaceteRobo
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 17
+    _itemName: CapaceteObra
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 18
+    _itemName: CapaceteFutebolAmericano
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 19
+    _itemName: CapaceteSamurai
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 20
+    _itemName: CapaceteSoldador
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 21
+    _itemName: CapaceteAurela
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 22
+    _itemName: CapaceteBone
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 23
+    _itemName: CapaceteET
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  - _id: 24
+    _itemName: OculosBrilha
+    _itemDescription: aaaaaaa
+    _payInfo: []
+    _buyEvent: buy_Hulk
+  PaymentMethods: []
