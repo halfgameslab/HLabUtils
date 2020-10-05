@@ -57,10 +57,12 @@ public static class CVarSystem
     static void RunOnStart()
     {
         //Load();
+        UnloadGroups();
+        IsEditModeActived = false;
         Init();
         Application.quitting += OnApplicationQuitHandler;
         Debug.Log("RunOnStart");
-        SceneManager.sceneLoaded += (s, m) => Debug.Log("sceneLoaded");
+        //SceneManager.sceneLoaded += (s, m) => Debug.Log("sceneLoaded");
     }
 
     private static void OnApplicationQuitHandler()
@@ -70,6 +72,7 @@ public static class CVarSystem
 #if UNITY_EDITOR
         Application.quitting -= OnApplicationQuitHandler;
 #endif
+        IsEditModeActived = true;
     }
 
     public static void Init()

@@ -14,6 +14,12 @@ public enum CvarGroupLoadType
     LOAD_MANUAL
 }
 
+public enum CVarGroupPersistentType
+{ 
+    SHARED,// the data will be share for every scene
+    PER_SCENE,// the data will be save for every scene
+    PER_SCENE_GROUP// the data will be save by groups
+}
 
 public class CVarGroup
 {
@@ -23,6 +29,10 @@ public class CVarGroup
     public string SceneName { get; set; }
 
     public CvarGroupLoadType LoadType { get; set; }
+
+    private CVarGroupPersistentType PersistentType{ get; set; } = CVarGroupPersistentType.SHARED;
+
+    private string[] ScenesOrSceneGroup;
 
     [XmlIgnore]
     public bool IsLoaded { get; set; }
@@ -78,11 +88,8 @@ public class CVarGroup
             CVarSystem.AddData(obj, this);
         }
 
-#if UNITY_EDITOR
-        if (Application.isPlaying)
-#endif
-            //if(!CVarSystem.IsEditModeActived)
-                LoadPersistent();
+        if(!CVarSystem.IsEditModeActived)
+            LoadPersistent();
     }
 
     /// <summary>
@@ -107,7 +114,7 @@ public class CVarGroup
         if (HasChanged)
         {
 #if UNITY_EDITOR
-            if(!Application.isPlaying)
+            if(CVarSystem.IsEditModeActived)
                 Flush();
             else
                 FlushPersistent();
@@ -129,24 +136,24 @@ public class CVarGroup
     {
         if (!HasChanged)
         {
-#if UNITY_EDITOR
-            if (CVarSystem.EditorAutoSave)
+//#if UNITY_EDITOR
+            if (CVarSystem.EditorAutoSave && CVarSystem.IsEditModeActived)
             {
                 HasChanged = true;
                 DelayToSaveOnEditor();
             }
-            else if (CVarSystem.InGameAutoSave && Application.isPlaying)
+            else if (CVarSystem.InGameAutoSave && !CVarSystem.IsEditModeActived)
             {
                 HasChanged = true;
                 DelayToSaveRuntime();
             }
-#else
+/*#else
             if(CVarSystem.InGameAutoSave)
             {
                 HasChanged = true;
                 DelayToSaveRuntime();
             }
-#endif
+#endif*/
 
             //CVarSystem.UpdateDerivedGroupsFrom(this);// send changes for all childs
         }
@@ -312,6 +319,15 @@ public class CVarGroup
     /// <returns></returns>
     private string GetPersistentFilePath(string name)
     {
+        // if the data share the same file when saved
+        if(PersistentType == CVarGroupPersistentType.SHARED)
+            return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
+
+        // if the data are save for every scene
+        else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
+            return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
+
+        // group save data
         return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
     }
 
