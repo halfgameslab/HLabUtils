@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <objects>
+    <object type="String" address="417" persistent="true" group="group_07" loocked="false">
+      <name>String|group_07|new_string</name>
+      <data>1</data>
+    </object>
+    <object type="String" address="418" persistent="false" group="group_07" loocked="false">
+      <name>String|group_07|222222</name>
+      <data>new_string</data>
+    </object>
+  </objects>
+</cvar_data>

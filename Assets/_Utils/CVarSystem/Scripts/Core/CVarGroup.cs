@@ -1,38 +1,26 @@
-﻿using Mup.EventSystem.Events;
-using Mup.EventSystem.Events.Internal;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using UnityEngine;
-
-public enum CvarGroupLoadType
-{ 
-    LOAD_ON_DEMAND,
-    PRELOAD,
-    LOAD_MANUAL
-}
+using UnityEngine.SceneManagement;
 
 public enum CVarGroupPersistentType
 { 
     SHARED,// the data will be share for every scene
     PER_SCENE,// the data will be save for every scene
-    PER_SCENE_GROUP// the data will be save by groups
+    CUSTOM// the data will be save by a custom identifier
 }
 
 public class CVarGroup
 {
     public string Name { get; set; }
-    //public string Base { get; set; }
 
     public string SceneName { get; set; }
 
-    public CvarGroupLoadType LoadType { get; set; }
+    public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
-    private CVarGroupPersistentType PersistentType{ get; set; } = CVarGroupPersistentType.SHARED;
-
-    private string[] ScenesOrSceneGroup;
+    [XmlIgnore]
+    public string PersistentPrefix { get; set; } = string.Empty;
 
     [XmlIgnore]
     public bool IsLoaded { get; set; }
@@ -44,6 +32,15 @@ public class CVarGroup
     public List<CVarObject> Vars { get; set; } = new List<CVarObject>();
     
     private List<CVarObject> _persistentsVars = new List<CVarObject>();
+
+    public void SetPersistentTypeAndSave(CVarGroupPersistentType persistentType)
+    {
+        if (PersistentType != persistentType)
+        {
+            PersistentType = persistentType;
+            CVarSystem.SaveGroupListToFile();
+        }
+    }
 
     public void Add(CVarObject var)
     {
@@ -63,8 +60,14 @@ public class CVarGroup
     {
         if (!IsLoaded)
         {
-            // load all default and after load all persistent
-            //CVarSystem.LoadGroup(Base);
+            if (PersistentType == CVarGroupPersistentType.SHARED)
+            {
+                PersistentPrefix = string.Empty;
+            }
+            else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
+            {
+                PersistentPrefix = SceneManager.GetActiveScene().name;
+            }
 
             LoadDefault();
             IsLoaded = true;
@@ -111,32 +114,30 @@ public class CVarGroup
     /// </summary>
     public void Unload()
     {
-        if (HasChanged)
+        if (IsLoaded)
         {
-#if UNITY_EDITOR
-            if(CVarSystem.IsEditModeActived)
-                Flush();
-            else
-                FlushPersistent();
-#else
-            FlushPersistent();
-#endif
-        }
-        
-        for (int i = Vars.Count-1; i >= 0; i--)
-        {   
-            CVarSystem.RemoveVarByFullName(Vars[i].FullName);
-        }
+            if (HasChanged)
+            {
+                if (CVarSystem.IsEditModeActived)
+                    Flush();
+                else
+                    FlushPersistent();
+            }
 
-        IsLoaded = false;
-        HasChanged = false;
+            for (int i = Vars.Count - 1; i >= 0; i--)
+            {
+                CVarSystem.RemoveVarByFullName(Vars[i].FullName);
+            }
+
+            IsLoaded = false;
+            HasChanged = false;
+        }
     }
 
     public void Save()
     {
         if (!HasChanged)
         {
-//#if UNITY_EDITOR
             if (CVarSystem.EditorAutoSave && CVarSystem.IsEditModeActived)
             {
                 HasChanged = true;
@@ -147,15 +148,7 @@ public class CVarGroup
                 HasChanged = true;
                 DelayToSaveRuntime();
             }
-/*#else
-            if(CVarSystem.InGameAutoSave)
-            {
-                HasChanged = true;
-                DelayToSaveRuntime();
-            }
-#endif*/
 
-            //CVarSystem.UpdateDerivedGroupsFrom(this);// send changes for all childs
         }
     }
 
@@ -319,16 +312,7 @@ public class CVarGroup
     /// <returns></returns>
     private string GetPersistentFilePath(string name)
     {
-        // if the data share the same file when saved
-        if(PersistentType == CVarGroupPersistentType.SHARED)
-            return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
-
-        // if the data are save for every scene
-        else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
-            return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
-
-        // group save data
-        return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Concat(name, ".xml"));
+        return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Format("{0}{1}.xml", PersistentPrefix, name));
     }
 
 }// end CVarGroup

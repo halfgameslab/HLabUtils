@@ -55,7 +55,7 @@ public class CVarObject
     {
         if (value && !Flag.HasFlag(flag))
             Flag |= flag;
-        else if (Flag.HasFlag(flag))
+        else if (!value && Flag.HasFlag(flag))
             Flag &= ~flag;
     }
 

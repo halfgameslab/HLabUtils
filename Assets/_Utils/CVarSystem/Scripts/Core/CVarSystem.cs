@@ -3,6 +3,7 @@ using Mup.EventSystem.Events.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,12 +33,6 @@ public static class CVarSystem
     private static Dictionary<string, CVarGroup> Groups { get; set; } = new Dictionary<string, CVarGroup>();
 
     public static int VOID { get => 0; }
-
-    /// <summary>
-    /// Tell if the current xml data file was loaded correctly
-    /// </summary>
-    //public static bool DataWasLoaded { get; private set; } = false;
-    //public static bool HasChanged { get; set; } = false;
 
     /// <summary>
     /// if true will update all persistent variables automatically on editor
@@ -83,42 +78,29 @@ public static class CVarSystem
             if (Groups.Count == 0)
                 M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
             else
-                LoadGroup("global");
+                LoadGroups();
+                //GetGroup("global")?.Load();
     }
 
-    /*/// <summary>
-    /// Set The changes for every one
+    /// <summary>
+    /// Change the group save prefix given the group a new persistent file
+    /// the PersistentType was automatically changed for CUSTOM
     /// </summary>
-    /// <param name="group"></param>
-    public static void UpdateDerivedGroupsFrom(CVarGroup group)
+    /// <param name="groupName"></param>
+    /// <param name="prefix"></param>
+    public static void SetGroupPersistentPrefix(string groupName, string prefix)
     {
-        // for each group
-        foreach( CVarGroup g in Groups.Values )
+        if (Groups.TryGetValue(groupName, out CVarGroup group))
         {
-            // check if the current group was base to someone
-            if (g.Base == group.Name)
-            {
-                // g.Update();
-                g.Save();// if yes update the group and save
-            }
+            group.PersistentPrefix = prefix;
+            group.PersistentType = CVarGroupPersistentType.CUSTOM;
         }
-    }*/
+    }
 
     public static void UnloadGroups()
     {
         foreach (CVarGroup group in Groups.Values)
-            if(group.IsLoaded) group.Unload();
-    }
-
-    public static void OnLoadSceneHandler(Scene scene)
-    {
-        foreach (CVarGroup group in Groups.Values)
-        {
-            if (!group.IsLoaded && group.LoadType == CvarGroupLoadType.PRELOAD && group.SceneName.Split(',').Contains(scene.name))
-            {
-                group.Load();
-            }
-        }
+            group.Unload();
     }
 
     private static void OnLoadGroupDataHandler(CVarGroup[] data)
@@ -129,7 +111,10 @@ public static class CVarSystem
             {
                 Groups.Add(group.Name, group);
             }
-            LoadGroup("global");
+
+            LoadGroups();
+
+            //GetGroup("global")?.Load();
             SetPersistent<int>("CurrentAddress", true);
         }
         else
@@ -138,6 +123,14 @@ public static class CVarSystem
             CreateGroup("global");
             CurrentAddress = 0;
             SetPersistent<int>("CurrentAddress", true);
+        }
+    }
+
+    public static void LoadGroups()
+    {
+        foreach(CVarGroup group in Groups.Values)
+        {
+            group.Load();
         }
     }
 
@@ -168,33 +161,6 @@ public static class CVarSystem
                 Groups[name] = group;
             }
 
-            /*if(name != baseGroup && Groups.TryGetValue(baseGroup, out CVarGroup bGroup))
-            {
-                // duplicar o arquivo da base
-                // renomear todas as váriaveis da base
-                bool isBGroupLoaded = bGroup.IsLoaded;
-                
-                // if base group not loaded
-                if(!isBGroupLoaded)
-                    // load to copy
-                    bGroup.Load();
-
-                // for each var on group
-                foreach(CVarObject var in bGroup.Vars)
-                {
-                    // clone
-                    CloneVarToGroup(var, group);
-                }
-
-                // if base group wasnt loaded
-                if (!isBGroupLoaded)
-                    bGroup.Unload(); // unload
-            }
-            else // if there isnt a base group with this name
-            {
-                group.Base = string.Empty;// clear base group
-            }*/
-
             // update group file
             SaveGroupListToFile();
 
@@ -207,82 +173,6 @@ public static class CVarSystem
         // se existir 
         //  ignore
     }
-
-    /*/// <summary>
-    /// Add base group to desired group
-    /// </summary>
-    /// <param name="name">group name</param>
-    /// <param name="baseGroup">base group desired</param>
-    public static void SetGroupBase(string name, string baseGroup, bool deleteOldBaseVars = true)
-    {
-        // if base isnt the current group
-        if (name != baseGroup)
-        {
-            // check if group exists
-            if (Groups.TryGetValue(name, out CVarGroup group))//  se o grupo não existir
-            {
-                CVarGroup bGroup;
-                // if base group is diferent from current group base means base group change
-                if (baseGroup != group.Base)
-                {
-                    // if users whant delete base group vars and there is a base group
-                    if (deleteOldBaseVars && group.Base != string.Empty)
-                    {
-                        if (Groups.TryGetValue(group.Base, out bGroup))
-                        {
-                            bool isLoaded = bGroup.IsLoaded;
-                            bGroup.Load();
-                            // remove vars derived from base
-                            // for each var in base group vars list
-                            foreach (CVarObject var in bGroup.Vars)
-                            {
-                                // get the name of var in the current group
-                                string newFullName = ChangeVarGroupName(var.FullName, group.Name);
-
-                                // remove var
-                                RemoveVarByFullName(newFullName);
-                            }
-
-                            if (!isLoaded)
-                                bGroup.Unload();
-                        }
-                    }
-
-                    if (Groups.TryGetValue(baseGroup, out bGroup))
-                    {
-                        // set base group
-                        group.Base = baseGroup;
-                        // duplicar o arquivo da base
-                        // renomear todas as váriaveis da base
-                        bool isBGroupLoaded = bGroup.IsLoaded;
-
-                        // if base group not loaded
-                        if (!isBGroupLoaded)
-                            // load to copy
-                            bGroup.Load();
-
-                        // for each var on group
-                        foreach (CVarObject var in bGroup.Vars)
-                        {
-                            // clone
-                            CloneVarToGroup(var, group, true);
-                        }
-
-                        // if base group wasnt loaded
-                        if (!isBGroupLoaded)
-                            bGroup.Unload(); // unload
-                    }
-                    else // if there isnt a base group with this name
-                    {
-                        group.Base = string.Empty;// clear base group
-                    }
-
-                    // update group file
-                    SaveGroupListToFile();
-                }
-            }
-        }
-    }*/
 
     public static void RenameGroup(string name, string newName)
     {
@@ -380,53 +270,6 @@ public static class CVarSystem
         }
     }
 
-    public static void LoadGroup(string group)
-    {        
-        if (Groups.TryGetValue(group, out CVarGroup g) && !g.IsLoaded)
-        {
-            g.Load();
-
-            /*if (IsEditModeActived)
-            {
-                // load all deriveds if in editor mode to edit
-                foreach (CVarGroup derived in Groups.Values)
-                {
-                    // if base was the same
-                    if (derived.Base == g.Name)
-                    {
-                        // unload base
-                        derived.Load();
-                        //derived.LoadType = LoadedByBaseToEdit;
-                    }
-                }
-            }*/
-        }
-    }
-
-    public static void UnloadGroup(string group)
-    {
-        if (Groups.TryGetValue(group, out CVarGroup g) && g.IsLoaded)
-        {
-            g.Unload();
-
-            /*if (IsEditModeActived)
-            {
-                // load all deriveds if in editor mode to edit
-                foreach (CVarGroup derived in Groups.Values)
-                {
-                    // if base was the same
-                    if (derived.Base == g.Name)
-                    {
-                        //if(derived.LoadType == LoadedByBaseToEdit)
-                            // unload to
-                            derived.Unload();
-                    }
-                }
-            }*/
-        }
-    }
-
-
     public static CVarGroup[] GetGroups()
     {
         CVarGroup[] array = new CVarGroup[Groups.Values.Count];
@@ -434,7 +277,7 @@ public static class CVarSystem
         return array;
     }
 
-    private static void SaveGroupListToFile()
+    public static void SaveGroupListToFile()
     {
         M_XMLFileManager.Save<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), GetGroups());
     }
@@ -522,18 +365,6 @@ public static class CVarSystem
         SetValueByFullName(GetFullName(name, type, group), value, overrideValueIfExist);
     }
 
-    ///// <summary>
-    ///// Set value to var using full name
-    ///// </summary>
-    ///// <typeparam name="T"></typeparam>
-    ///// <param name="fullName"></param>
-    ///// <param name="value"></param>
-    ///// <param name="overrideValueIfExist"></param>
-    //public static void SetValueByFullName<T>(string fullName, T value, bool overrideValueIfExist = true)
-    //{
-    //    SetValueByFullName(fullName, value, overrideValueIfExist);
-    //}
-
     /// <summary>
     /// Set value to var using full name
     /// </summary>
@@ -553,7 +384,7 @@ public static class CVarSystem
                 if (overrideValueIfExist && !var.Value.Equals(value))
                 {
                     var.Value = value;// set the new value
-                    ///////////var.AlteredIn = var.Group;
+                    
                     OnVarChanged?.Invoke(var);
                     var.Group.Save();// save the var
 
@@ -701,19 +532,6 @@ public static class CVarSystem
 
             OnVarDeleted?.Invoke(obj);
 
-            /*if (IsEditModeActived)
-            {
-                // load all deriveds if in editor mode to edit
-                foreach (CVarGroup derived in Groups.Values)
-                {
-                    // if base was the same
-                    if (derived.Base == GetGroupNameByFullName(fullName))
-                    {
-                        // update value
-                        RemoveVarByFullName(ChangeVarGroupName(fullName, derived.Name));
-                    }
-                }
-            }*/
             // save
             obj.Group.Save();
 
@@ -955,7 +773,6 @@ public static class CVarSystem
     public static bool GetLockedAt<T>(int address)
     {
         if (TryGetCVarObjectAt<T>(address, out CVarObject obj))
-        //if (CVars.TryGetValue(GetFullName<T>(name), out CVarObject obj))
         {
             return obj.IsLocked;
         }
@@ -971,7 +788,6 @@ public static class CVarSystem
     /// <param name="state"></param>
     public static void SetLockedAt<T>(int address, bool state)
     {
-        //if (CVars.TryGetValue(GetFullName<T>(name), out CVarObject obj))
         if (TryGetCVarObjectAt<T>(address, out CVarObject obj))
         {
             if (obj.IsLocked != state)
@@ -1014,16 +830,10 @@ public static class CVarSystem
             Address.Add(obj.VarAddress, newObj);
             group.Add(newObj);
 
-            //if (obj.VarPersistent)
-            //    group.Add(newObj);// add to persistent list
-
             if (CurrentAddress < obj.VarAddress)
                 CurrentAddress = obj.VarAddress;
-        }/*
-#if UNITY_EDITOR
-            if (Application.isPlaying)// just question that if we are on editor otherwise ignore because the only mode was playing
-#endif
-                LoadPersistent();*/
+        }
+
     }
 
     public static void AddPersistentData(CVarDataObject[] objects, CVarGroup group)
@@ -1043,7 +853,6 @@ public static class CVarSystem
                 // just update data
                 current.Value = obj.ParseValue();
                 current.IsPersistent = obj.VarPersistent;
-                /////////////current.Name = RemoveTypeAndGroup(obj.VarName);
                 current.FullName = obj.VarName;
             }
             else // if var not exist (maybe was created in runtime)

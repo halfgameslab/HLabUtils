@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <objects>
-    <object type="Int32" address="1" persistent="true" group="global" loocked="false">
+    <object type="Int32" address="1" persistent="true" group="global" loocked="true">
       <name>Int32|global|CurrentAddress</name>
       <data>423</data>
     </object>
-    <object type="Int32" address="419" persistent="false" group="global" loocked="false">
+    <object type="Int32" address="419" persistent="true" group="global" loocked="true">
       <name>Int32|global|coins</name>
-      <data>0</data>
+      <data>120</data>
     </object>
-    <object type="String" address="420" persistent="true" group="global" loocked="false">
+    <object type="String" address="420" persistent="true" group="global" loocked="true">
       <name>String|global|string5</name>
-      <data />
+      <data>119</data>
     </object>
     <object type="String" address="421" persistent="false" group="global" loocked="false">
       <name>String|global|teste6</name>
@@ -19,7 +19,7 @@
     </object>
     <object type="String" address="422" persistent="false" group="global" loocked="false">
       <name>String|global|teste</name>
-      <data />
+      <data>120</data>
     </object>
     <object type="String" address="423" persistent="false" group="global" loocked="false">
       <name>String|global|teste1</name>

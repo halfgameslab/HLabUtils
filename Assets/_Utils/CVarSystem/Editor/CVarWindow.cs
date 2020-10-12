@@ -48,11 +48,6 @@ public class CVarWindow : EditorWindow
     {
         Undo.undoRedoPerformed += OnUndoRedoPerformedHandler;
         Undo.undoRedoPerformed += OnUndoRedoPerformedHandler;
-
-        //_logo = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Textures/HalfGamesLogoSymbol.png", typeof(Texture2D));
-
-        //if (!CVarSystem.DataWasLoaded)
-        //    CVarSystem.Load();
     }
 
     private void OnDisable()
@@ -83,21 +78,6 @@ public class CVarWindow : EditorWindow
         DrawSearchAndAddHeader();
         DrawAbas();
         DrawVars();
-
-        /*EditorGUILayout.BeginVertical();
-        foreach (string k in CVarSystem.GetVarNamesByType<int>())
-        {
-            EditorGUILayout.LabelField(k+" "+CVarSystem.GetPersistent<int>(k));
-        }
-        EditorGUILayout.EndVertical();*/
-
-        /*EditorGUILayout.BeginVertical();
-        foreach(KeyValuePair<uint, string> k in CVarSystem.Address)
-        {
-            EditorGUILayout.LabelField(k.Key + " " + k.Value);
-        }
-        EditorGUILayout.EndVertical();*/
-
     }//Close on GUI
 
     private string _currentGroupAux = string.Empty;
@@ -108,7 +88,7 @@ public class CVarWindow : EditorWindow
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
         EditorGUI.DrawRect(new Rect(0, EditorGUIUtility.singleLineHeight*1.5f, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight * 3.5f), new Color(0.2f, 0.2f, 0.2f));
         EditorGUILayout.BeginHorizontal();
-        //EditorGUILayout.ColorField(Color.white , GUILayout.Width(18), GUILayout.Height(18));
+        
         if(DefaultButton("+", "Criar Grupo"))
         {
             _editableName = ObjectNamesManager.GetUniqueName(CVarSystem.GetGroups().Select((CVarGroup g)=>g.Name).ToArray(),"new_group");
@@ -120,26 +100,7 @@ public class CVarWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
         EditorGUI.EndDisabledGroup();
 
-        //GUILayout.Box(GUIContent.none, GUILayout.ExpandWidth(true));
-
-        /*DrawPathField("Default file path", "Application.streamingAssetsPath", "Data/cvar_data.xml");
-        DrawPathField("Persist file path", "Application.persistentDataPath", "Data/cvar_data.xml");
-
-        if (GUILayout.Button("Clear All"))
-        {
-            CVarSystem.Clear();
-        }
-
-        if (GUILayout.Button("Clear Persistent"))
-        {
-            CVarSystem.ClearPersistent();
-        }
-
-        EditorGUILayout.Space();*/
     }
-
-    //private int _oldIndex;
-    //private int _nIndex;
 
     private void DrawGroupOptions()
     {
@@ -158,7 +119,7 @@ public class CVarWindow : EditorWindow
             {
                 // change group
                 _currentGroup = groups[newIndex];
-                CVarSystem.LoadGroup(_currentGroup);   
+                CVarSystem.GetGroup(_currentGroup)?.Load();   
             }
 
             EditorGUI.BeginDisabledGroup(_currentGroup == "global");
@@ -166,14 +127,18 @@ public class CVarWindow : EditorWindow
             {
                 _currentAction = CVarWindowAction.EDIT_GROUP;
                 _editableName = _currentGroup;
-                //////////_nIndex = _oldIndex = Mathf.Max(Array.IndexOf(groups, CVarSystem.GetGroup(_currentGroup).Base), 0);
+                
             }
             if (DefaultButton("-", "Delete Group") && EditorUtility.DisplayDialog("Delete Var", "Want delete group?", "Delete", "Cancel"))
             {
                 CVarSystem.RemoveGroup(_currentGroup);
                 _currentGroup = "global";
             }
+            EditorGUILayout.EndHorizontal();
+            CVarSystem.GetGroup(_currentGroup).SetPersistentTypeAndSave((CVarGroupPersistentType)EditorGUILayout.EnumPopup(new GUIContent("Persistent Type"), CVarSystem.GetGroup(_currentGroup).PersistentType));
+
             EditorGUI.EndDisabledGroup();
+
         }
         else
         {
@@ -184,54 +149,29 @@ public class CVarWindow : EditorWindow
                 CVarSystem.RenameGroup(_currentGroup, _editableName);
                 _currentGroup = _editableName;
 
-                /*if (_nIndex != _oldIndex)
-                {
-                    // change base
-                    if(_nIndex != 0)
-                        CVarSystem.SetGroupBase(_currentGroup, groups[_nIndex]);
-                    else
-                        CVarSystem.SetGroupBase(_currentGroup, string.Empty);
-                }*/
-
-                //_oldIndex = 0;
-                //_nIndex = 0;
             }
             if (DefaultButton("X", "Cancel"))
             {
                 _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
-                //_oldIndex = 0;
-                //_nIndex = 0;
+                
             }
 
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.EnumPopup(new GUIContent("Persistent Type"), CVarSystem.GetGroup(_currentGroup).PersistentType);
+            EditorGUI.EndDisabledGroup();
         }
 
-        EditorGUI.EndDisabledGroup();
-
-        // check if group change
-        // unload current
-        // load new
-
-        //EditorGUI.BeginDisabledGroup(true);
-        //EditorGUI.EndDisabledGroup();
-
         groups[0] = "<none>";
+                
+        EditorGUI.EndDisabledGroup();
 
-        EditorGUILayout.EndHorizontal();
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_GROUP);
-        //_oldIndex = Mathf.Max(Array.IndexOf(groups, CVarSystem.GetGroup(_currentGroup).Base), 0);
-        
-        /*if (_currentAction != CVarWindowAction.EDIT_GROUP)
-            EditorGUILayout.Popup("Base", Mathf.Max(Array.IndexOf(groups, CVarSystem.GetGroup(_currentGroup).Base), 0), groups);
-        else
-            _nIndex = EditorGUILayout.Popup("Base", _nIndex, groups);*/
+
 
 
         EditorGUI.EndDisabledGroup();
 
-        //EditorGUILayout.BeginHorizontal();
-        //GUILayout.Button("Override");
-        //GUILayout.Button("RevertAll");
-        //EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
         EditorGUILayout.Space();
@@ -244,9 +184,6 @@ public class CVarWindow : EditorWindow
 
         EditorGUI.DrawRect(rect, new Color(0.1f, 0.1f, 0.1f, 1));
 
-        /*GUI.backgroundColor = Color.black;
-        GUILayout.Box(GUIContent.none, GUILayout.Height(2), GUILayout.Width(EditorGUIUtility.currentViewWidth));
-        GUI.backgroundColor = Color.white;*/
     }
 
     private void DrawNewGroupOptions()
@@ -262,19 +199,19 @@ public class CVarWindow : EditorWindow
             CVarGroup group = CVarSystem.CreateGroup(_editableName);
 
             // load new group
-            CVarSystem.LoadGroup(_editableName);
+            CVarSystem.GetGroup(_editableName)?.Load();
             _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
 
             //unload current if
-            if (_currentGroup != _editableName)
+            if (_currentGroup != _editableName && CVarSystem.TryGetGroup(_currentGroup, out CVarGroup loadedGroup))
             {
-                foreach (CVarObject var in CVarSystem.GetGroup(_currentGroup).Vars)
+                foreach (CVarObject var in group.Vars)
                 {
                     // clone
                     CVarSystem.CloneVarToGroup(var, group);
                 }
 
-                CVarSystem.UnloadGroup(_currentGroup);
+                loadedGroup.Unload();
             }
             // set the current group to new group
             _currentGroup = _editableName;
@@ -301,11 +238,11 @@ public class CVarWindow : EditorWindow
         
         if(newIndex != Array.IndexOf(groups, _currentGroup))
         {
-            CVarSystem.UnloadGroup(_currentGroup);
+            CVarSystem.GetGroup(_currentGroup).Unload();
 
             _currentGroup = groups[newIndex];
 
-            CVarSystem.LoadGroup(_currentGroup);
+            CVarSystem.GetGroup(_currentGroup).Load();
         }
 
         /*EditorGUILayout.BeginHorizontal();
@@ -512,7 +449,7 @@ public class CVarWindow : EditorWindow
         EditorGUI.EndDisabledGroup();
         
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES || CVarSystem.GetLocked<T>(varName, _currentGroup));
-        aux = (T)DrawFieldByType(value);//EditorGUILayout.TextField(value);
+        aux = (T)DrawFieldByType(value);
 
         
         if (aux != null && !aux.Equals(value))
@@ -550,13 +487,6 @@ public class CVarWindow : EditorWindow
         CVarSystem.SetLocked<T>(name, EditorGUILayout.Toggle(CVarSystem.GetLocked<T>(name, _currentGroup), "IN LockButton", GUILayout.MaxWidth(15)), _currentGroup);
         EditorGUI.EndDisabledGroup();
     }
-
-    /*private void DrawEditorVisibility<T>(string name)
-    {
-        EditorGUI.BeginDisabledGroup(_editableName.Length > 0);
-        CVarSystem.SetLocked<T>(name, EditorGUILayout.Toggle(CVarSystem.GetLocked<T>(name), style, GUILayout.MaxWidth(15)));
-        EditorGUI.EndDisabledGroup();
-    }*/
 
     private object DrawFieldByType(object value)
     {

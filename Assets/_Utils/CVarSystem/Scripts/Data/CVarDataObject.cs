@@ -32,7 +32,6 @@ public class CVarDataObject
     {
         return new CVarObject 
         { 
-            ///////////Name = CVarSystem.RemoveType(VarName), 
             FullName = VarName, 
             Value = ParseValue(), 
             Address = VarAddress,
