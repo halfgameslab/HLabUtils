@@ -3,7 +3,7 @@
   <objects>
     <object type="Int32" address="1" persistent="true" group="global" loocked="true">
       <name>Int32|global|CurrentAddress</name>
-      <data>423</data>
+      <data>424</data>
     </object>
     <object type="Int32" address="419" persistent="true" group="global" loocked="true">
       <name>Int32|global|coins</name>

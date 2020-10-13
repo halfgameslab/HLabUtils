@@ -14,6 +14,8 @@ public class CVarSample : MonoBehaviour
 
     [SerializeField] private CVarString _teste1 = new CVarString("teste1");
 
+    [SerializeField] private CVarInt _teste13 = new CVarInt("teste", "group_01");
+
     public int Coins { get => _varCoins.Value; set => _varCoins.Value = value; }
 
     CVarCommand _command = new CVarCommand();

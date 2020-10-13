@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
+using System;
 
 [CustomPropertyDrawer(typeof(CVar<>), true)]
 public class CVarPropertyDrawerBase : PropertyDrawer
@@ -36,25 +38,39 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         EditorGUI.indentLevel = 0;
 
         string key = property.FindPropertyRelative("_name").stringValue;
+        string groupName = property.FindPropertyRelative("_groupName").stringValue;
 
         int address = property.FindPropertyRelative("_address").intValue;
 
         EditorGUI.LabelField(new Rect(position.x, position.y, position.width * 0.3f, position.height), label);
 
-        DrawNamePopup<T>(new Rect(position.x + position.width * 0.3f, position.y, position.width * 0.3f, position.height), key, address, property);
+        //property.FindPropertyRelative("_groupName").stringValue = 
+        string[] groups = CVarSystem.GetGroups().Select(x => x.Name).ToArray();
+        int indexOfCurrentGroup = Array.IndexOf(groups, groupName);
+        int selectedGroup = EditorGUI.Popup(new Rect(position.x + position.width * 0.12f, position.y, position.width * 0.18f, position.height), indexOfCurrentGroup, groups);
+        
+        if (selectedGroup != indexOfCurrentGroup)
+        {
+            groupName = groups[selectedGroup];
+            property.FindPropertyRelative("_groupName").stringValue = groupName;
+            address = property.FindPropertyRelative("_address").intValue = CVarSystem.GetAddress<T>(key, groupName);
+            property.serializedObject.ApplyModifiedProperties();
+        }
+
+        DrawNamePopup<T>(new Rect(position.x + position.width * 0.3f, position.y, position.width * 0.3f, position.height), key, address, groupName, property);
 
         T value;
 
         if (CVarSystem.ContainsVarAt(address))
         {
             EditorGUI.BeginDisabledGroup(CVarSystem.GetLockedAt<T>(address));
-            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValueAt<T>(address));
+            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValueAt<T>(address, (T)GetDefault<T>()));
             EditorGUI.EndDisabledGroup();
 
             // draw Edit button at the end of line
             if (GUI.Button(new Rect(position.x + position.width -17, position.y, 17, position.height), "E"))
             {
-                CVarWindow.ShowWindow();
+                CVarWindow.ShowWindow(groupName);
             }
 
             if (value != null)
@@ -63,30 +79,31 @@ public class CVarPropertyDrawerBase : PropertyDrawer
                 //SetPropertyValue<T>(property, value);
             }
         }
-        else if (CVarSystem.ContainsVar<T>(key))
+        else if (CVarSystem.ContainsVar<T>(key, groupName))
         {
-            EditorGUI.BeginDisabledGroup(CVarSystem.GetLocked<T>(key));
-            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValue<T>(key));
+            EditorGUI.BeginDisabledGroup(CVarSystem.GetLocked<T>(key, groupName));
+            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValue<T>(key, (T)GetDefault<T>(), groupName));
             EditorGUI.EndDisabledGroup();
 
             // draw Edit button at the end of line
             if (GUI.Button(new Rect(position.x + position.width - 17, position.y, 17, position.height), "E"))
             {
-                CVarWindow.ShowWindow();
+                CVarWindow.ShowWindow(groupName);
             }
 
             if (value != null)
             {
-                CVarSystem.SetValue<T>(key, value);
+                CVarSystem.SetValue<T>(key, value, groupName);
                 //SetPropertyValue<T>(property, value);
             }
         }
         else if (key != null && key.Length > 0)
-            if (GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), "Fix"))
+            if (GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Fix", "Click to create var at selected group.")))
             {
-                CVarSystem.SetValue<T>(key, (T)GetDefault<T>());
+                CVarSystem.SetValue<T>(key, (T)GetDefault<T>(), groupName);
             }
 
+        
 
         // Set indent back to what it was
         EditorGUI.indentLevel = indent;
@@ -136,24 +153,24 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         property.serializedObject.ApplyModifiedProperties();
     }*/
 
-    public static void DrawNamePopup<T>(Rect rect, string name, int address, SerializedProperty property)
+    public static void DrawNamePopup<T>(Rect rect, string name, int address, string groupName, SerializedProperty property)
     {
-        List<string> names = new List<string>(CVarSystem.GetVarNamesByType<T>());
+        List<string> names = new List<string>(CVarSystem.GetVarNamesByType<T>(groupName));
         int currentSelecion = 0;
 
         // if there is some var at the current address
         if (CVarSystem.ContainsVarAt(address))
         {
-            currentSelecion = names.IndexOf(CVarSystem.GetNameAt<T>(address)); // get the position on vector for the var
+            currentSelecion = names.IndexOf(CVarSystem.GetNameAt<T>(address, groupName)); // get the position on vector for the var
         }
-        else if (CVarSystem.ContainsVar<T>(name)) // else if the address are unsinging and the name still valid
+        else if (CVarSystem.ContainsVar<T>(name, groupName)) // else if the address are unsinging and the name still valid
         {
             currentSelecion = names.IndexOf(name);
             //names.Insert(0, "<moved>." + name); // if last name still valid but the current address not give user the hability to rebind
         }
         else if (name.Length > 0)
         {
-            names.Insert(0, "<missing>." + name); // if name and address and name was setup once are invalid show missing message
+            names.Insert(0, "<missing>." + name); // if name, address and name that was setup once are invalid show missing message
         }
         else
         {
@@ -167,9 +184,9 @@ public class CVarPropertyDrawerBase : PropertyDrawer
 
         if (selection != currentSelecion)
         {
-            if (CVarSystem.ContainsVar<T>(names[selection]) && selection != names.Count - 1)
+            if (CVarSystem.ContainsVar<T>(names[selection], groupName) && selection != names.Count - 1)
             {
-                OnClickNameButtonHandler<T>(new HelpProperty { Property = property, SelectedName = names[selection] });
+                OnClickNameButtonHandler<T>(new HelpProperty { Property = property, SelectedName = names[selection], GroupName = groupName });
             }
             else if (selection == names.Count - 1)
             {
@@ -188,7 +205,8 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         HelpProperty p = (HelpProperty)obj;
 
         p.Property.FindPropertyRelative("_name").stringValue = p.SelectedName;
-        p.Property.FindPropertyRelative("_address").intValue = (int)CVarSystem.GetAddress<T>(p.SelectedName);
+        //p.Property.
+        p.Property.FindPropertyRelative("_address").intValue = CVarSystem.GetAddress<T>(p.SelectedName, p.GroupName);
 
         p.Property.serializedObject.ApplyModifiedProperties();
     }
@@ -198,5 +216,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
 internal struct HelpProperty
 {
     public string SelectedName { get; set; }
+
+    public string GroupName { get; set; }
     public SerializedProperty Property { get; set; }
 }

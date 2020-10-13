@@ -42,6 +42,18 @@ public class CVarGroup
         }
     }
 
+    /// <summary>
+    /// Change the group save prefix given the group a new persistent file
+    /// the PersistentType was automatically changed for CUSTOM
+    /// </summary>
+    /// <param name="groupName"></param>
+    /// <param name="prefix"></param>
+    public void SetGroupPersistentPrefix(string prefix)
+    {
+        PersistentPrefix = ParsePrefixName(prefix);
+        SetPersistentTypeAndSave(CVarGroupPersistentType.CUSTOM);
+    }
+
     public void Add(CVarObject var)
     {
         Vars.Add(var);
@@ -66,7 +78,7 @@ public class CVarGroup
             }
             else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
             {
-                PersistentPrefix = SceneManager.GetActiveScene().name;
+                PersistentPrefix = ParsePrefixName(SceneManager.GetActiveScene().name);
             }
 
             LoadDefault();
@@ -313,6 +325,16 @@ public class CVarGroup
     private string GetPersistentFilePath(string name)
     {
         return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Format("{0}{1}.xml", PersistentPrefix, name));
+    }
+
+    /// <summary>
+    /// Format the prefix to add some espe                                                                                                                                                                                                                                                                                                                        cial characteres to the name
+    /// </summary>
+    /// <param name="prefix"></param>
+    /// <returns></returns>
+    private string ParsePrefixName(string prefix)
+    {
+        return string.Format("[{0}]_", prefix);
     }
 
 }// end CVarGroup

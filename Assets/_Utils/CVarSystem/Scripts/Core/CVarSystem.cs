@@ -82,21 +82,6 @@ public static class CVarSystem
                 //GetGroup("global")?.Load();
     }
 
-    /// <summary>
-    /// Change the group save prefix given the group a new persistent file
-    /// the PersistentType was automatically changed for CUSTOM
-    /// </summary>
-    /// <param name="groupName"></param>
-    /// <param name="prefix"></param>
-    public static void SetGroupPersistentPrefix(string groupName, string prefix)
-    {
-        if (Groups.TryGetValue(groupName, out CVarGroup group))
-        {
-            group.PersistentPrefix = prefix;
-            group.PersistentType = CVarGroupPersistentType.CUSTOM;
-        }
-    }
-
     public static void UnloadGroups()
     {
         foreach (CVarGroup group in Groups.Values)
@@ -890,9 +875,9 @@ public static class CVarSystem
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     /// <param name="callback"></param>
-    public static void AddOnValueChangeListener<T>(string name, ES_MupAction callback)
+    public static void AddOnValueChangeListener<T>(string name, string groupName, ES_MupAction callback)
     {
-        ES_EventManager.AddEventListener(GetFullName<T>(name), ES_Event.ON_VALUE_CHANGE, callback);
+        ES_EventManager.AddEventListener(GetFullName<T>(name, groupName), ES_Event.ON_VALUE_CHANGE, callback);
     }
     
     /// <summary>
@@ -901,9 +886,9 @@ public static class CVarSystem
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     /// <param name="callback"></param>
-    public static bool HasOnValueChangeListener<T>(string name, ES_MupAction callback)
+    public static bool HasOnValueChangeListener<T>(string name, string groupName, ES_MupAction callback)
     {
-        return ES_EventManager.HasEventListener(GetFullName<T>(name), ES_Event.ON_VALUE_CHANGE, callback);
+        return ES_EventManager.HasEventListener(GetFullName<T>(name, groupName), ES_Event.ON_VALUE_CHANGE, callback);
     }
 
     /// <summary>
@@ -912,9 +897,9 @@ public static class CVarSystem
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     /// <param name="callback"></param>
-    public static void RemoveOnValueChangeListener<T>(string name, ES_MupAction callback)
+    public static void RemoveOnValueChangeListener<T>(string name, string groupName, ES_MupAction callback)
     {
-        ES_EventManager.RemoveEventListener(GetFullName<T>(name), ES_Event.ON_VALUE_CHANGE, callback);
+        ES_EventManager.RemoveEventListener(GetFullName<T>(name, groupName), ES_Event.ON_VALUE_CHANGE, callback);
     }
 
     /// <summary>

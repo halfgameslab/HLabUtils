@@ -1,6 +1,7 @@
 ﻿using Mup.EventSystem.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// Hold values to edit in runtime from code or from console and system
@@ -11,6 +12,7 @@ using UnityEngine;
 public class CVar<T>: ISerializationCallbackReceiver
 {
     [SerializeField] private string _name;
+    [SerializeField] private string _groupName = "global";
     [SerializeField] private int _address = CVarSystem.VOID;
     //[SerializeField] private T _value;
 
@@ -18,13 +20,13 @@ public class CVar<T>: ISerializationCallbackReceiver
     {
         get
         {
-            return CVarSystem.ContainsVarAt(_address)?CVarSystem.GetValueAt<T>(_address):CVarSystem.GetValue<T>(_name);
+            return CVarSystem.ContainsVarAt(_address)?CVarSystem.GetValueAt<T>(_address):CVarSystem.GetValue<T>(_name, default, _groupName);
         }
         set
         {
             if (CVarSystem.ContainsVarAt(_address))
                 CVarSystem.SetValueAt<T>(_address, value);
-            else if(_name != null && _name.Length > 0) CVarSystem.SetValue<T>(_name, value);
+            else if(_name != null && _name.Length > 0) CVarSystem.SetValue<T>(_name, value, _groupName);
         }
     }
 
@@ -44,7 +46,7 @@ public class CVar<T>: ISerializationCallbackReceiver
                 {
                     // if there is some value before
                     if (_name != null && _name.Length > 0)
-                        CVarSystem.RemoveOnValueChangeListener<T>(_name, OnValueChangeHandler); // remove last value
+                        CVarSystem.RemoveOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler); // remove last value
 
                     // name receive new value
                     _name = value;
@@ -52,9 +54,9 @@ public class CVar<T>: ISerializationCallbackReceiver
                     // try get some adress from this var
                     _address = CVarSystem.GetAddress<T>(_name);
 
-                    if(!CVarSystem.HasOnValueChangeListener<T>(_name, OnValueChangeHandler))
+                    if(!CVarSystem.HasOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler))
                         // add listener to the new var
-                        CVarSystem.AddOnValueChangeListener<T>(_name, OnValueChangeHandler);
+                        CVarSystem.AddOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
                 }// end if value
             }// end if _name != value
         }// end set
@@ -79,14 +81,16 @@ public class CVar<T>: ISerializationCallbackReceiver
     //    SceneManager.sceneLoaded += OnSceneLoadHandler;//wait the scene be loaded to add callback
     //}
 
-    public CVar(string name):this()
+    public CVar(string name, string groupName = "global"):this()
     {
         _name = name;
+        _groupName = groupName;
         
     }
 
     public CVar()
     {
+        _groupName = "global";
         SceneManager.sceneLoaded -= OnSceneLoadHandler;
         SceneManager.sceneLoaded += OnSceneLoadHandler;
     }
@@ -97,7 +101,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         {
             _name = CVarSystem.RemoveType(obj.FullName);
         }
-        else if (obj.FullName == CVarSystem.GetFullName<T>(_name))
+        else if (obj.FullName == CVarSystem.GetFullName<T>(_name, _groupName))
         {
             _address = obj.Address;
         }
@@ -117,7 +121,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         {
             _name = CVarSystem.RemoveType(obj.FullName);
         }
-        else if(oldName == CVarSystem.GetFullName<T>(_name))
+        else if(oldName == CVarSystem.GetFullName<T>(_name, _groupName))
         {
             _address = obj.Address;
             _name = CVarSystem.RemoveType(obj.FullName);
@@ -131,7 +135,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         CVarSystem.OnVarDeleted -= OnVarDeletedHandler;
 
         SceneManager.sceneLoaded -= OnSceneLoadHandler;
-        CVarSystem.RemoveOnValueChangeListener<T>(_name, OnValueChangeHandler);
+        CVarSystem.RemoveOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
     }
 
     public override string ToString()
@@ -141,8 +145,8 @@ public class CVar<T>: ISerializationCallbackReceiver
 
     private void OnSceneLoadHandler(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (!CVarSystem.HasOnValueChangeListener<T>(_name, OnValueChangeHandler))
-            CVarSystem.AddOnValueChangeListener<T>(_name, OnValueChangeHandler);
+        if (!CVarSystem.HasOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler))
+            CVarSystem.AddOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
     }
 
     private void OnValueChangeHandler(ES_Event ev)
@@ -159,11 +163,11 @@ public class CVar<T>: ISerializationCallbackReceiver
                 _name = CVarSystem.GetNameAt<T>(_address);
             }
             else if (CVarSystem.ContainsVar<T>(_name))
-                _address = CVarSystem.GetAddress<T>(_name);
+                _address = CVarSystem.GetAddress<T>(_name, _groupName);
         }
         else
         {
-            _address = CVarSystem.GetAddress<T>(_name);
+            _address = CVarSystem.GetAddress<T>(_name, _groupName);
         }
     }
 
@@ -185,7 +189,12 @@ public class CVar<T>: ISerializationCallbackReceiver
 [System.Serializable]
 public class CVarString : CVar<string>
 {
-    public CVarString(string name) : base(name)
+    public CVarString(string name, string groupName = "global") : base(name, groupName)
+    {
+
+    }
+
+    public CVarString():base()
     {
 
     }
@@ -202,14 +211,18 @@ public class CVarString : CVar<string>
 [System.Serializable]
 public class CVarInt : CVar<int>
 {
-    public CVarInt(string name) : base(name)
+    public CVarInt(string name, string groupName = "global") : base(name, groupName)
     {
         
     }
 
+    public CVarInt() : base()
+    {
+
+    }
     //public CVarInt(string name, int value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
     //{
-        
+
     //}
 }
 
@@ -219,11 +232,15 @@ public class CVarInt : CVar<int>
 [System.Serializable]
 public class CVarFloat : CVar<float>
 {
-    public CVarFloat(string name) : base(name)
+    public CVarFloat(string name, string groupName = "global") : base(name, groupName)
     {
 
     }
 
+    public CVarFloat() : base()
+    {
+
+    }
     //public CVarFloat(string name, float value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
     //{
 
@@ -236,11 +253,15 @@ public class CVarFloat : CVar<float>
 [System.Serializable]
 public class CVarBool : CVar<bool>
 {
-    public CVarBool(string name) : base(name)
+    public CVarBool(string name, string groupName="global") : base(name, groupName)
     {
 
     }
 
+    public CVarBool() : base()
+    {
+
+    }
     //public CVarBool(string name, bool value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
     //{
 

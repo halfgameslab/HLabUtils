@@ -395,12 +395,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _varCoins:
     _name: new_name
+    _groupName: global
     _address: 6
   _coins4:
     _name: teste
+    _groupName: global
     _address: 422
   _teste1:
     _name: new_string (2)
+    _groupName: global
     _address: 0
 --- !u!4 &629853027
 Transform:
@@ -449,15 +452,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
+    _groupName: global
     _address: 0
   testeInt:
     _name: new_name
+    _groupName: 
     _address: 6
   testeIntFloat:
     _name: var float
+    _groupName: 
     _address: 7
   testeBool:
     _name: NovaVar
+    _groupName: 
     _address: 8
 --- !u!4 &1288610019
 Transform:
@@ -487,15 +494,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
+    _groupName: global
     _address: 0
   testeInt:
     _name: myInt
+    _groupName: 
     _address: 9
   testeIntFloat:
     _name: um float qualquer
+    _groupName: 
     _address: 10
   testeBool:
     _name: Novo Bool 6
+    _groupName: 
     _address: 11
 --- !u!114 &1288610021
 MonoBehaviour:
@@ -511,15 +522,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
+    _groupName: global
     _address: 0
   testeInt:
     _name: teste
+    _groupName: 
     _address: 5
   testeIntFloat:
     _name: 
+    _groupName: 
     _address: 0
   testeBool:
     _name: 
+    _groupName: 
     _address: 0
 --- !u!1001 &1460837824
 PrefabInstance:
@@ -654,12 +669,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _varCoins:
     _name: coins
+    _groupName: global
     _address: 419
   _coins4:
     _name: string5
+    _groupName: global
     _address: 420
   _teste1:
     _name: teste6
+    _groupName: global
     _address: 421
 --- !u!4 &1770459974
 Transform:
@@ -689,10 +707,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _varCoins:
     _name: coins
+    _groupName: global
     _address: 419
   _coins4:
-    _name: teste
-    _address: 422
+    _name: string5
+    _groupName: global
+    _address: 420
   _teste1:
     _name: teste1
+    _groupName: global
     _address: 423

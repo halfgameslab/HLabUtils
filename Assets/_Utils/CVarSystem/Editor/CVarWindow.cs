@@ -44,6 +44,12 @@ public class CVarWindow : EditorWindow
         //EditorApplication.hierarchyChanged += HierarchyWindowChangedHandler;
     }
 
+    public static void ShowWindow(string currentGroup)
+    {
+        _currentGroup = currentGroup;
+        ShowWindow();
+    }
+
     private void OnEnable()
     {
         Undo.undoRedoPerformed += OnUndoRedoPerformedHandler;
