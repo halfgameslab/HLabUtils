@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 public static class M_XMLFileManager
 {
+    //ios error use this 
+    //System.Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER","yes");
+
+
     public static void Save<T>(string path, T data, bool checkDirectory = true)
     {
         if (checkDirectory && !Directory.Exists(Path.GetDirectoryName(path)))
@@ -81,8 +85,31 @@ public static class M_XMLFileManager
                 if (!Directory.Exists(Path.GetDirectoryName(newPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(newPath));
 
+                // use copy instead move because u can rename some file so move will destroy the file so u can change the content
                 File.Copy(path, newPath, true);
                 File.Delete(path);
+            }
+            else
+            {
+                Debug.LogWarning(string.Format("There is another file with the name {0}", path));
+            }
+        }
+        else
+        {
+            Debug.LogWarning(string.Format("File {0} doesnt exist!", path));
+        }
+    }
+
+    public static void Copy(string path, string newPath)
+    {
+        if (File.Exists(path))
+        {
+            if (!File.Exists(newPath))
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(newPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(newPath));
+
+                File.Copy(path, newPath, true);
             }
             else
             {

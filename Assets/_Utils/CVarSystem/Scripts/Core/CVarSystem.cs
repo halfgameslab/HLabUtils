@@ -44,20 +44,54 @@ public static class CVarSystem
     /// </summary>
     public static bool InGameAutoSave { get; set; } = true;
 
+    /// <summary>
+    /// Tell if all data is ready to use
+    /// </summary>
+    public static bool IsReady { get; set; } = false;
+
     public static Action<CVarObject> OnVarDeleted { get; set; }
     public static Action<CVarObject, string> OnVarRenamed { get; set; }
     public static Action<CVarObject> OnVarChanged { get; set; }
 
+
     [RuntimeInitializeOnLoadMethod]
+    static void InitializeOnLoad()
+    {
+#if UNITY_EDITOR
+        UnloadGroups();
+        Groups.Clear();
+#endif
+        RunOnStart();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
     static void RunOnStart()
     {
-        //Load();
-        UnloadGroups();
+        Debug.Log("RunOnStart");        
         IsEditModeActived = false;
         Init();
-        Application.quitting += OnApplicationQuitHandler;
-        Debug.Log("RunOnStart");
-        //SceneManager.sceneLoaded += (s, m) => Debug.Log("sceneLoaded");
+        Application.quitting += OnApplicationQuitHandler;        
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        UnloadNotShared();
+        RunOnStart();
+    }
+
+    private static void UnloadNotShared()
+    {
+        foreach(CVarGroup group in Groups.Values)
+        {
+            if (group.PersistentType != CVarGroupPersistentType.SHARED)
+                group.Unload();
+        }
+    }
+
+    private static void ResetToDefault()
+    {
+        UnloadGroups();
+        LoadGroups();
     }
 
     private static void OnApplicationQuitHandler()
@@ -66,8 +100,8 @@ public static class CVarSystem
 
 #if UNITY_EDITOR
         Application.quitting -= OnApplicationQuitHandler;
+        IsEditModeActived = true;   
 #endif
-        IsEditModeActived = true;
     }
 
     public static void Init()
@@ -86,12 +120,30 @@ public static class CVarSystem
     {
         foreach (CVarGroup group in Groups.Values)
             group.Unload();
+
+        IsReady = false;
+    }
+    private static void CopyDefaultFilesToPersistentFolder(CVarGroup[] data)
+    {
+        foreach (CVarGroup group in data)
+        {
+            M_XMLFileManager.Copy
+                (
+                System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
+                System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+                );
+        }
     }
 
     private static void OnLoadGroupDataHandler(CVarGroup[] data)
     {
         if (data != null)
         {
+            if (Application.isPlaying)
+            {
+                CopyDefaultFilesToPersistentFolder(data);
+            }
+
             foreach (CVarGroup group in data)
             {
                 Groups.Add(group.Name, group);
@@ -106,17 +158,37 @@ public static class CVarSystem
         {
             // create global group
             CreateGroup("global");
+            IsReady = true;
             CurrentAddress = 0;
             SetPersistent<int>("CurrentAddress", true);
         }
+
+        
     }
 
     public static void LoadGroups()
     {
-        foreach(CVarGroup group in Groups.Values)
-        {
+        _loadedGroups = Groups.Values.Count;
+        foreach (CVarGroup group in Groups.Values)
+        {            
             group.Load();
+            if(!ES_EventManager.HasEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler))
+                ES_EventManager.AddEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler);
         }
+    }
+    private static int _loadedGroups = 0;
+    public static void OnGroupLoadedHandler(ES_Event ev)
+    {
+        ES_EventManager.RemoveEventListener( ev.TargetIdentifier , ES_Event.ON_LOAD, OnGroupLoadedHandler);
+
+        _loadedGroups--;        
+        
+        if (_loadedGroups == 0)
+        {
+            IsReady = true;
+            ES_EventManager.DispatchEvent("CVarSystem", "OnLoadComplete");
+        }
+
     }
 
     /// <summary>
@@ -802,7 +874,7 @@ public static class CVarSystem
     public static Dictionary<string, CVarObject>.KeyCollection VarNames => CVars.Keys;
 
 
-    public static void AddData(CVarData data, CVarGroup group)
+    /*public static void AddData(CVarData data, CVarGroup group)
     {
         //para cada entrada ou elemento no arquivo faça
         foreach (CVarDataObject obj in data.Objects)
@@ -819,13 +891,13 @@ public static class CVarSystem
                 CurrentAddress = obj.VarAddress;
         }
 
-    }
+    }*/
 
-    public static void AddPersistentData(CVarDataObject[] objects, CVarGroup group)
+    public static void AddData(CVarData data, CVarGroup group)
     {
         CVarObject current;
         //para cada entrada ou elemento no arquivo faça
-        foreach (CVarDataObject obj in objects)
+        foreach (CVarDataObject obj in data.Objects)
         {
             if(CVars.TryGetValue(obj.VarName, out current))// if the var exists name
             {

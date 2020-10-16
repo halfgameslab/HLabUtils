@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Mup.EventSystem.Events;
+using Mup.EventSystem.Events.Internal;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -84,6 +86,10 @@ public class CVarGroup
             LoadDefault();
             IsLoaded = true;
         }
+        else
+        {
+            ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
+        }
     }
 
     /// <summary>
@@ -101,6 +107,7 @@ public class CVarGroup
         {
             //IsLoaded = true;
             CVarSystem.AddData(obj, this);
+            ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD);
         }
 
         if(!CVarSystem.IsEditModeActived)
@@ -117,8 +124,9 @@ public class CVarGroup
         if (data != null)
         {
             //IsLoaded = true;
-            CVarSystem.AddPersistentData(data.Objects, this);
+            CVarSystem.AddData(data, this);
         }
+        ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
     }
 
     /// <summary>
@@ -306,25 +314,30 @@ public class CVarGroup
     /// <returns></returns>
     private string GetPersistentFilePath()
     {
-        return GetPersistentFilePath(Name);
+        return GetPersistentFilePath(Name, PersistentPrefix);
     }
 
     /// <summary>
     /// Return the file path to default data
     /// </summary>
     /// <returns></returns>
-    private string GetFilePath(string name)
+    public static string GetFilePath(string name)
     {
-        return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(name, ".xml"));
+#if UNITY_EDITOR
+        if(!Application.isPlaying)
+            return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(name, ".xml"));
+#endif
+
+        return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));
     }
 
     /// <summary>
     /// Reeturn the file path to persistent data
     /// </summary>
     /// <returns></returns>
-    private string GetPersistentFilePath(string name)
+    private static string GetPersistentFilePath(string name, string persistentPrefix)
     {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Data", string.Format("{0}{1}.xml", PersistentPrefix, name));
+        return System.IO.Path.Combine(Application.persistentDataPath, "Data","Persistent", string.Format("{0}{1}.xml", persistentPrefix, name));
     }
 
     /// <summary>
@@ -332,7 +345,7 @@ public class CVarGroup
     /// </summary>
     /// <param name="prefix"></param>
     /// <returns></returns>
-    private string ParsePrefixName(string prefix)
+    private static string ParsePrefixName(string prefix)
     {
         return string.Format("[{0}]_", prefix);
     }

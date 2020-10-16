@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Utils/CVarSystem/Scenes/CVarSample.unity
     guid: 5195e01f668b6644bb1ce19f3a14712b
+  - enabled: 1
+    path: Assets/_Utils/CVarSystem/Scenes/CVarSample 1.unity
+    guid: ba10f04f635f14c44b8c3f09720f29de
   m_configObjects: {}
