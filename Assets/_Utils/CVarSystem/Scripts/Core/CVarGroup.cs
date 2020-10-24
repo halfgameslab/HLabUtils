@@ -330,7 +330,6 @@ public class CVarGroup
 
         return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));
     }
-
     /// <summary>
     /// Reeturn the file path to persistent data
     /// </summary>

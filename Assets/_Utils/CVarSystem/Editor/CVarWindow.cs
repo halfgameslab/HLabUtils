@@ -244,11 +244,11 @@ public class CVarWindow : EditorWindow
         
         if(newIndex != Array.IndexOf(groups, _currentGroup))
         {
-            CVarSystem.GetGroup(_currentGroup).Unload();
+            CVarSystem.GetGroup(_currentGroup)?.Unload();
 
             _currentGroup = groups[newIndex];
 
-            CVarSystem.GetGroup(_currentGroup).Load();
+            CVarSystem.GetGroup(_currentGroup)?.Load();
         }
 
         /*EditorGUILayout.BeginHorizontal();

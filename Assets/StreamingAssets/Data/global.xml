@@ -7,23 +7,11 @@
     </object>
     <object type="Int32" address="419" persistent="true" group="global" loocked="true">
       <name>Int32|global|coins</name>
-      <data>402</data>
+      <data>562</data>
     </object>
     <object type="String" address="420" persistent="true" group="global" loocked="true">
       <name>String|global|string5</name>
-      <data>402</data>
-    </object>
-    <object type="String" address="421" persistent="false" group="global" loocked="false">
-      <name>String|global|teste6</name>
-      <data />
-    </object>
-    <object type="String" address="422" persistent="false" group="global" loocked="false">
-      <name>String|global|teste</name>
-      <data>120</data>
-    </object>
-    <object type="String" address="423" persistent="false" group="global" loocked="false">
-      <name>String|global|teste1</name>
-      <data />
+      <data>562</data>
     </object>
   </objects>
 </cvar_data>

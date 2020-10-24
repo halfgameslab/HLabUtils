@@ -26,16 +26,18 @@ internal static class CVarSystemInitializer
         if (CVarSystem.EditorAutoSave = (state == PlayModeStateChange.EnteredEditMode))
         {
             Debug.Log("state == PlayModeStateChange.EnteredEditMode");
-            CVarSystem.UnloadGroups();
-            CVarSystem.IsEditModeActived = true;
-            CVarSystem.Init();
+            //CVarSystem.UnloadGroups();
+            //CVarSystem.IsEditModeActived = true;
+            //CVarSystem.Init();
+            CVarSystem.ActiveEditMode(true);
         }
         else if (CVarSystem.EditorAutoSave = (state == PlayModeStateChange.ExitingEditMode))
         {
             Debug.Log("state == PlayModeStateChange.ExitingEditMode");
-            CVarSystem.UnloadGroups();
-            CVarSystem.IsEditModeActived = false;
-            CVarSystem.Init();
+            //CVarSystem.UnloadGroups();
+            //CVarSystem.IsEditModeActived = false;
+            //CVarSystem.Init();
+            CVarSystem.ActiveEditMode(false);
         }
         /*else if (state == PlayModeStateChange.ExitingPlayMode)
         {

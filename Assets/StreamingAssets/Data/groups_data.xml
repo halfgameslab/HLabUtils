@@ -18,6 +18,6 @@
   </CVarGroup>
   <CVarGroup>
     <Name>group_09</Name>
-    <PersistentType>PER_SCENE</PersistentType>
+    <PersistentType>SHARED</PersistentType>
   </CVarGroup>
 </ArrayOfCVarGroup>

@@ -100,11 +100,11 @@ public static class M_XMLFileManager
         }
     }
 
-    public static void Copy(string path, string newPath)
+    public static void Copy(string path, string newPath, bool overwrite = false)
     {
         if (File.Exists(path))
         {
-            if (!File.Exists(newPath))
+            if (!File.Exists(newPath) || overwrite)
             {
                 if (!Directory.Exists(Path.GetDirectoryName(newPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(newPath));

@@ -16,8 +16,19 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class CVarSystem
 {
-    public static bool IsEditModeActived { get; set; } = true;
+    public static bool IsEditModeActived { get; private set; } = true;
+    public static void ActiveEditMode(bool status)
+    {
+        if (IsEditModeActived != status)
+        {
+            // reload groups
+            UnloadGroups();
+            
+            IsEditModeActived = status;
 
+            Init();
+        }
+    }
     private static int CurrentAddress { 
         get { return GetValue<int>("CurrentAddress", 0, "global"); }
         set { SetValue<int>("CurrentAddress", value); } 
@@ -61,6 +72,12 @@ public static class CVarSystem
         UnloadGroups();
         Groups.Clear();
 #endif
+
+        if (Application.isPlaying)
+        {
+            CopyDefaultFilesToPersistentFolder();
+        }
+
         RunOnStart();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -88,9 +105,17 @@ public static class CVarSystem
         }
     }
 
-    private static void ResetToDefault()
+    public static void ResetToDefault()
     {
         UnloadGroups();
+
+        PlayerPrefs.SetInt("FilesCopied", 0);
+        
+        System.IO.Directory.Delete(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+        System.IO.Directory.Delete(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+
+        CopyDefaultFilesToPersistentFolder();
+
         LoadGroups();
     }
 
@@ -110,10 +135,14 @@ public static class CVarSystem
         // on groups file loaded load global group
         if (Groups != null)
             if (Groups.Count == 0)
-                M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
+            {
+                if(!Application.isPlaying)
+                    M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
+                else
+                    M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", "groups_data.xml"), OnLoadGroupDataHandler);
+            }
             else
                 LoadGroups();
-                //GetGroup("global")?.Load();
     }
 
     public static void UnloadGroups()
@@ -123,15 +152,42 @@ public static class CVarSystem
 
         IsReady = false;
     }
-    private static void CopyDefaultFilesToPersistentFolder(CVarGroup[] data)
+    private static bool _copied = false;
+    private static void CopyDefaultFilesToPersistentFolder()
     {
-        foreach (CVarGroup group in data)
+#if UNITY_EDITOR
+        if (!_copied)
+#else
+        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
+#endif
         {
-            M_XMLFileManager.Copy
+            string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "*.*", System.IO.SearchOption.TopDirectoryOnly)
+                .Where(s => s.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToArray();
+
+            //foreach (CVarGroup group in data)
+            foreach (string file in files)
+            {
+                //Debug.Log("File copied " + file);
+            
+                M_XMLFileManager.Copy
                 (
-                System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
-                System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+                    //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
+                    file,
+                    //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+                    System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", System.IO.Path.GetFileName(file)),
+                    true
                 );
+            }
+
+            M_XMLFileManager.Copy
+            (
+                System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"),
+                System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", "groups_data.xml"),
+                true
+            );
+
+            PlayerPrefs.SetInt("FilesCopied", 1);
+            _copied = true;
         }
     }
 
@@ -139,11 +195,6 @@ public static class CVarSystem
     {
         if (data != null)
         {
-            if (Application.isPlaying)
-            {
-                CopyDefaultFilesToPersistentFolder(data);
-            }
-
             foreach (CVarGroup group in data)
             {
                 Groups.Add(group.Name, group);
@@ -451,30 +502,47 @@ public static class CVarSystem
             }
             else// if the table doesnt contains the var
             {
-                // get new address
-                int address = CurrentAddress+1;
+                CVarObject cVarObject = CreateVar(fullName, value);
 
+                if (cVarObject != null)
+                {
+                    OnVarChanged?.Invoke(cVarObject);
 
-                CVarGroup group = GetGroup(GetGroupNameByFullName(fullName));
-                
-                CVarObject obj = new CVarObject() { FullName = fullName, Value = value, Address = address, Group=group };
-                
-                // add var
-                CVars.Add(fullName, obj);
-                Address.Add(address, obj);
-                obj.Group.Add(obj);
-
-                // save table
-                obj.Group.Save();
-
-                CurrentAddress = address;
-                                
-                OnVarChanged?.Invoke(CVars[fullName]);
-
-                // dispatch value change
-                ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, null, value);
+                    // dispatch value change
+                    ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, null, value);
+                }
             }
         }
+    }
+
+    private static CVarObject CreateVar(string fullName, object value)
+    {
+        // get new address
+        CVarGroup group = GetGroup(GetGroupNameByFullName(fullName));
+
+        // if group exist create the var on new group
+        if (group != null)
+        {
+            int address = CurrentAddress + 1;
+
+            CVarObject obj = new CVarObject() { FullName = fullName, Value = value, Address = address, Group = group };
+
+            // add var
+            CVars.Add(fullName, obj);
+            Address.Add(address, obj);
+            obj.Group.Add(obj);
+
+            // save table
+            obj.Group.Save();
+
+            CurrentAddress = address;
+
+            return obj;
+        }
+
+        Debug.LogWarning(string.Format("Trying create Var {0}. Group not found {1}. Are You missing something?", RemoveTypeAndGroup(fullName),GetGroupNameByFullName(fullName)));
+
+        return null;
     }
 
     public static CVarGroup GetGroup(string name)
