@@ -29,9 +29,74 @@ public static class CVarSystem
             Init();
         }
     }
-    private static int CurrentAddress { 
-        get { return GetValue<int>("CurrentAddress", 0, "global"); }
-        set { SetValue<int>("CurrentAddress", value); } 
+
+    private static int _currentAddress = -1;
+    //private static int CurrentAddress { 
+    //    get { return GetValue<int>("CurrentAddress", 0, "global"); }
+    //    set { SetValue<int>("CurrentAddress", value); } 
+    //}
+
+    /// <summary>
+    /// Used after build
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    public static string ParsePersistentDefaultDataPathWith(string filename)
+    {
+        return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", filename);     
+    }
+
+    /// <summary>
+    /// Used after build
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    public static string ParsePersistentDataPathWith(string filename)
+    {
+        return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent", filename);
+    }
+
+    /// <summary>
+    /// Used on editor
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    public static string ParseStreamingDefaultDataPathWith(string filename)
+    {
+        return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", filename);
+    }
+
+    public static string ParseDataPathWith(string filename)
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            return ParseStreamingDefaultDataPathWith(filename);
+#endif
+        return ParsePersistentDefaultDataPathWith(filename);
+    }
+
+    private static int CurrentAddress
+    {
+        get 
+        {
+            /*if (_currentAddress == -1)
+            {
+                string text = System.IO.File.ReadAllText(@"C:\Users\Public\TestFolder\WriteText.txt");
+                _currentAddress = int.Parse(text);//load
+            }*/
+
+            return _currentAddress;
+        }
+        set 
+        {
+            if (_currentAddress != value)
+            {
+                _currentAddress = value;
+
+                //save
+                H_FileManager.Save(ParseStreamingDefaultDataPathWith("current_address.xml"), _currentAddress.ToString());
+            }
+        }
     }
 
     private const char SLASH = '|';
@@ -125,7 +190,7 @@ public static class CVarSystem
 
 #if UNITY_EDITOR
         Application.quitting -= OnApplicationQuitHandler;
-        IsEditModeActived = true;   
+        //IsEditModeActived = true;   
 #endif
     }
 
@@ -136,10 +201,11 @@ public static class CVarSystem
         if (Groups != null)
             if (Groups.Count == 0)
             {
-                if(!Application.isPlaying)
-                    M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), OnLoadGroupDataHandler);
-                else
-                    M_XMLFileManager.NewLoad<CVarGroup[]>(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", "groups_data.xml"), OnLoadGroupDataHandler);
+                M_XMLFileManager.NewLoad<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
+                //if(!Application.isPlaying)
+                //    M_XMLFileManager.NewLoad<CVarGroup[]>(ParseStreamingDefaultDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
+                //else
+                //    M_XMLFileManager.NewLoad<CVarGroup[]>(ParsePersistentDefaultDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
             }
             else
                 LoadGroups();
@@ -174,15 +240,15 @@ public static class CVarSystem
                     //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
                     file,
                     //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
-                    System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", System.IO.Path.GetFileName(file)),
+                    ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),
                     true
                 );
             }
 
             M_XMLFileManager.Copy
             (
-                System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"),
-                System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", "groups_data.xml"),
+                ParseStreamingDefaultDataPathWith("groups_data.xml"),
+                ParsePersistentDefaultDataPathWith("groups_data.xml"),
                 true
             );
 
@@ -200,10 +266,13 @@ public static class CVarSystem
                 Groups.Add(group.Name, group);
             }
 
-            LoadGroups();
-
+#if UNITY_EDITOR
+            H_FileManager.Load(ParseStreamingDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
+#else
+            H_FileManager.Load(ParsePersistentDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
+#endif
             //GetGroup("global")?.Load();
-            SetPersistent<int>("CurrentAddress", true);
+            //SetPersistent<int>("CurrentAddress", true);
         }
         else
         {
@@ -211,7 +280,7 @@ public static class CVarSystem
             CreateGroup("global");
             IsReady = true;
             CurrentAddress = 0;
-            SetPersistent<int>("CurrentAddress", true);
+            //SetPersistent<int>("CurrentAddress", true);
         }
 
         
@@ -387,7 +456,7 @@ public static class CVarSystem
 
     public static void SaveGroupListToFile()
     {
-        M_XMLFileManager.Save<CVarGroup[]>(System.IO.Path.Combine(Application.streamingAssetsPath, "Data", "groups_data.xml"), GetGroups());
+        M_XMLFileManager.Save<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), GetGroups());
     }
 
     /// <summary>
@@ -761,7 +830,9 @@ public static class CVarSystem
         {
             if (obj.IsPersistent != state)
             {
-                obj.IsPersistent = state;
+                //obj.IsPersistent = state;
+
+                obj.Group.SetPersistentVar(obj, state);
 
                 obj.Group.Save();
             }
@@ -825,7 +896,9 @@ public static class CVarSystem
         {
             if (obj.IsPersistent != state)
             {
-                obj.IsPersistent = state;
+                //obj.IsPersistent = state;
+
+                obj.Group.SetPersistentVar(obj, state);
 
                 obj.Group.Save();
             }
@@ -971,13 +1044,20 @@ public static class CVarSystem
             {
                 // just update data
                 current.Value = obj.ParseValue();
-                current.IsPersistent = obj.VarPersistent;
+                //current.IsPersistent = obj.VarPersistent;
+                current.IsLocked = obj.VarLocked;
+                current.Group.SetPersistentVar(current, obj.VarPersistent);
+
             }
             else if(Address.TryGetValue(obj.VarAddress, out current))// the var name doesnt exists but the address yes (maybe was renamed at runtime)
             {
                 // just update data
                 current.Value = obj.ParseValue();
-                current.IsPersistent = obj.VarPersistent;
+                //current.IsPersistent = obj.VarPersistent;
+
+                current.IsLocked = obj.VarLocked;
+                current.Group.SetPersistentVar(current, obj.VarPersistent);
+
                 current.FullName = obj.VarName;
             }
             else // if var not exist (maybe was created in runtime)

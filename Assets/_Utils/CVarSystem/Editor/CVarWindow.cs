@@ -103,7 +103,9 @@ public class CVarWindow : EditorWindow
             _currentGroupAux = _currentGroup;
             _currentGroup = "<none>";
         }
+
         EditorGUILayout.EndHorizontal();
+
         EditorGUI.EndDisabledGroup();
 
     }
@@ -144,6 +146,16 @@ public class CVarWindow : EditorWindow
             CVarSystem.GetGroup(_currentGroup).SetPersistentTypeAndSave((CVarGroupPersistentType)EditorGUILayout.EnumPopup(new GUIContent("Persistent Type"), CVarSystem.GetGroup(_currentGroup).PersistentType));
 
             EditorGUI.EndDisabledGroup();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            //EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.ToggleLeft("Show Runtime Default", true);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.ToggleLeft("Show Runtime Persistent", true);
+            EditorGUILayout.Popup(0, new string[] { "a", "b" });
+            EditorGUILayout.EndHorizontal();
+
 
         }
         else

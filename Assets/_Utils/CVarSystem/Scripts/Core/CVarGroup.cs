@@ -56,6 +56,26 @@ public class CVarGroup
         SetPersistentTypeAndSave(CVarGroupPersistentType.CUSTOM);
     }
 
+    public void SetPersistentVar(CVarObject var, bool state)
+    {
+        if (var.IsPersistent != state)
+        {
+            var.IsPersistent = state;
+            if(state)
+            {
+                if (!_persistentsVars.Contains(var))
+                    _persistentsVars.Add(var);
+            }
+            else
+            {
+                if (_persistentsVars.Contains(var))
+                    _persistentsVars.Remove(var);
+            }
+
+        }
+
+    }
+
     public void Add(CVarObject var)
     {
         Vars.Add(var);
@@ -323,12 +343,13 @@ public class CVarGroup
     /// <returns></returns>
     public static string GetFilePath(string name)
     {
-#if UNITY_EDITOR
-        if(!Application.isPlaying)
-            return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(name, ".xml"));
-#endif
+        /*#if UNITY_EDITOR
+                if(!Application.isPlaying)
+                    return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(name, ".xml"));
+        #endif
 
-        return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));
+                return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));*/
+        return CVarSystem.ParseDataPathWith(string.Concat(name, ".xml"));
     }
     /// <summary>
     /// Reeturn the file path to persistent data
@@ -336,7 +357,8 @@ public class CVarGroup
     /// <returns></returns>
     private static string GetPersistentFilePath(string name, string persistentPrefix)
     {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Data","Persistent", string.Format("{0}{1}.xml", persistentPrefix, name));
+        return CVarSystem.ParsePersistentDataPathWith(string.Format("{0}{1}.xml", persistentPrefix, name));
+        //return System.IO.Path.Combine(Application.persistentDataPath, "Data","Persistent", string.Format("{0}{1}.xml", persistentPrefix, name));
     }
 
     /// <summary>
