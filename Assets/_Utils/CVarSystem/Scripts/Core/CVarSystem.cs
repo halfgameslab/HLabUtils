@@ -16,6 +16,11 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class CVarSystem
 {
+    /// <summary>
+    /// When playing the game edit mode will be automatically desactivated
+    /// if you want active the edit mode again use ActiveEditMode(true);
+    /// When the edit mode is activated all changes will affect the persistent file
+    /// </summary>
     public static bool IsEditModeActived { get; private set; } = true;
     public static void ActiveEditMode(bool status)
     {
@@ -23,12 +28,24 @@ public static class CVarSystem
         {
             // reload groups
             UnloadGroups();
-            
+
             IsEditModeActived = status;
+            CanLoadRuntimeDefault = !IsEditModeActived || Application.isPlaying;
+            CanLoadRuntimePersistent = !IsEditModeActived;
 
             Init();
         }
     }
+
+    /// <summary>
+    /// If activated all changes will affect the file on Application.persistentDataPath
+    /// </summary>
+    public static bool CanLoadRuntimeDefault{ get; set; }
+    /// <summary>
+    /// If activated all changes will affect the persistent file on Application.persistentDataPath
+    /// If true changes on default file will be ignored
+    /// </summary>
+    public static bool CanLoadRuntimePersistent { get; set; }
 
     private static int _currentAddress = -1;
     //private static int CurrentAddress { 
@@ -69,7 +86,7 @@ public static class CVarSystem
     public static string ParseDataPathWith(string filename)
     {
 #if UNITY_EDITOR
-        if (!Application.isPlaying)
+        if (!CanLoadRuntimeDefault)
             return ParseStreamingDefaultDataPathWith(filename);
 #endif
         return ParsePersistentDefaultDataPathWith(filename);
@@ -151,6 +168,8 @@ public static class CVarSystem
     {
         Debug.Log("RunOnStart");        
         IsEditModeActived = false;
+        CanLoadRuntimeDefault = true;
+        CanLoadRuntimePersistent = true;
         Init();
         Application.quitting += OnApplicationQuitHandler;        
     }
@@ -286,12 +305,12 @@ public static class CVarSystem
         
     }
 
-    public static void LoadGroups()
+    public static void LoadGroups(bool canChangePrefix = true)
     {
         _loadedGroups = Groups.Values.Count;
         foreach (CVarGroup group in Groups.Values)
         {            
-            group.Load();
+            group.Load(canChangePrefix);
             if(!ES_EventManager.HasEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler))
                 ES_EventManager.AddEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler);
         }

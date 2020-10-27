@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 enum CVarWindowAction
 { 
@@ -54,14 +55,19 @@ public class CVarWindow : EditorWindow
     {
         Undo.undoRedoPerformed += OnUndoRedoPerformedHandler;
         Undo.undoRedoPerformed += OnUndoRedoPerformedHandler;
+        SceneManager.sceneLoaded += OnSceneLoadedHandler;
     }
 
     private void OnDisable()
     {
         Undo.undoRedoPerformed -= OnUndoRedoPerformedHandler;
         Undo.undoRedoPerformed -= OnUndoRedoPerformedHandler;
+        SceneManager.sceneLoaded -= OnSceneLoadedHandler;
     }
-
+    private void OnSceneLoadedHandler(Scene s, LoadSceneMode m)
+    {
+        Repaint();
+    }
     private void OnUndoRedoPerformedHandler()
     {
         Repaint();
@@ -149,13 +155,87 @@ public class CVarWindow : EditorWindow
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
             //EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.ToggleLeft("Show Runtime Default", true);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.ToggleLeft("Show Runtime Persistent", true);
-            EditorGUILayout.Popup(0, new string[] { "a", "b" });
-            EditorGUILayout.EndHorizontal();
 
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            
+            EditorGUILayout.BeginHorizontal();
+
+            bool boolAux = CVarSystem.CanLoadRuntimeDefault;
+            GUI.backgroundColor = Color.yellow;
+            boolAux = EditorGUILayout.ToggleLeft("Show Runtime Default", CVarSystem.CanLoadRuntimeDefault);
+            GUI.backgroundColor = Color.white;
+            if (boolAux != CVarSystem.CanLoadRuntimeDefault)
+            {
+                CVarSystem.UnloadGroups();
+                // change state
+                CVarSystem.CanLoadRuntimeDefault = boolAux;
+                CVarSystem.LoadGroups(false);
+                
+            }
+
+            if (GUILayout.Button("Overwrite editor default"))
+            {
+
+            }
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+
+            boolAux = CVarSystem.CanLoadRuntimePersistent;
+            GUI.backgroundColor = Color.red;
+            boolAux = EditorGUILayout.ToggleLeft("Show Runtime Persistent", CVarSystem.CanLoadRuntimePersistent);
+            GUI.backgroundColor = Color.white;
+
+            if (boolAux != CVarSystem.CanLoadRuntimePersistent)
+            {
+                CVarSystem.UnloadGroups();
+                // change state
+                CVarSystem.CanLoadRuntimePersistent = boolAux;
+                CVarSystem.LoadGroups(false);
+            }
+            string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(_currentGroup) ).ToArray();
+            for (int i = 0; i < files.Length; i++)
+                files[i] = System.IO.Path.GetFileNameWithoutExtension(files[i]).Split('_')[0].Replace("[", string.Empty).Replace("]", string.Empty);
+
+            
+            if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
+            {
+                EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
+
+                if (files.Length > 0)
+                {
+                    CVarGroup g = CVarSystem.GetGroup(_currentGroup);
+
+                    int id = Array.IndexOf(files, string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
+                    int currentId = id;
+                    if (id >= 0 && id < files.Length)
+                    {
+                        currentId = EditorGUILayout.Popup(id, files);
+                        
+                        if(id != currentId)
+                        {
+                            g.Unload();
+                            g.PersistentPrefix = string.Format("[{0}]_",files[currentId]);
+                            g.Load(false);
+                        }
+                    }
+                    else
+                    {
+
+                        //g.PersistentPrefix = files[0];
+                        g.Unload();
+                        g.PersistentPrefix = string.Format("[{0}]_", files[EditorGUILayout.Popup(0, files)]);
+                        g.Load(false);
+                    }
+                }
+                EditorGUI.EndDisabledGroup();
+            }
+            
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
 
         }
         else
@@ -191,7 +271,7 @@ public class CVarWindow : EditorWindow
         EditorGUI.EndDisabledGroup();
 
 
-        EditorGUILayout.Space();
+        //EditorGUILayout.Space();
         EditorGUILayout.Space();
 
         float i_height = 2f;
@@ -458,6 +538,11 @@ public class CVarWindow : EditorWindow
         T value = CVarSystem.GetValue<T>(varName, default, _currentGroup);
         T aux;
         GUILayout.BeginHorizontal();
+        
+        if(CVarSystem.CanLoadRuntimePersistent && CVarSystem.GetPersistent<T>(varName, _currentGroup))
+            GUI.backgroundColor = Color.red;
+        else if(CVarSystem.CanLoadRuntimeDefault)
+            GUI.backgroundColor = Color.yellow;
 
         DrawLocked<T>(varName);
         DrawPersistentField<T>(varName);
@@ -490,6 +575,8 @@ public class CVarWindow : EditorWindow
                 
         EditorGUI.EndDisabledGroup();
         GUILayout.EndHorizontal();
+
+        GUI.backgroundColor = Color.white;
     }
 
     private void DrawPersistentField<T>(string varName)

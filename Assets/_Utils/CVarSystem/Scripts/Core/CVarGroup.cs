@@ -90,19 +90,21 @@ public class CVarGroup
             _persistentsVars.Remove(var);
     }
 
-    public void Load()
+    public void Load(bool canChangePrefix = true)
     {
         if (!IsLoaded)
         {
-            if (PersistentType == CVarGroupPersistentType.SHARED)
+            if (canChangePrefix)
             {
-                PersistentPrefix = string.Empty;
+                if (PersistentType == CVarGroupPersistentType.SHARED)
+                {
+                    PersistentPrefix = string.Empty;
+                }
+                else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
+                {
+                    PersistentPrefix = ParsePrefixName(SceneManager.GetActiveScene().name);
+                }
             }
-            else if (PersistentType == CVarGroupPersistentType.PER_SCENE)
-            {
-                PersistentPrefix = ParsePrefixName(SceneManager.GetActiveScene().name);
-            }
-
             LoadDefault();
             IsLoaded = true;
         }
@@ -130,7 +132,8 @@ public class CVarGroup
             ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD);
         }
 
-        if(!CVarSystem.IsEditModeActived)
+        //if(!CVarSystem.IsEditModeActived)
+        if(CVarSystem.CanLoadRuntimePersistent)
             LoadPersistent();
     }
 
@@ -178,12 +181,12 @@ public class CVarGroup
     {
         if (!HasChanged)
         {
-            if (CVarSystem.EditorAutoSave && CVarSystem.IsEditModeActived)
+            if (CVarSystem.EditorAutoSave && CVarSystem.CanLoadRuntimeDefault && !CVarSystem.CanLoadRuntimePersistent)
             {
                 HasChanged = true;
                 DelayToSaveOnEditor();
             }
-            else if (CVarSystem.InGameAutoSave && !CVarSystem.IsEditModeActived)
+            else if (CVarSystem.InGameAutoSave && CVarSystem.CanLoadRuntimePersistent)
             {
                 HasChanged = true;
                 DelayToSaveRuntime();
