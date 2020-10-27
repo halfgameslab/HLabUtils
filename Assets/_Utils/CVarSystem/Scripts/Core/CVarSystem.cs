@@ -92,6 +92,20 @@ public static class CVarSystem
         return ParsePersistentDefaultDataPathWith(filename);
     }
 
+    public static string[] ListAllPersistentFilesNameByGroup(string group)
+    {
+        // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
+        Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
+
+        string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(group)).ToArray();
+        for (int i = 0; i < files.Length; i++)
+        {
+            files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;
+        }
+
+        return files;
+    }
+
     private static int CurrentAddress
     {
         get 

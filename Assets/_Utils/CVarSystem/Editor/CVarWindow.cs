@@ -5,6 +5,7 @@ using UnityEditor;
 using System;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 
 enum CVarWindowAction
 { 
@@ -196,20 +197,29 @@ public class CVarWindow : EditorWindow
                 CVarSystem.CanLoadRuntimePersistent = boolAux;
                 CVarSystem.LoadGroups(false);
             }
-            string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(_currentGroup) ).ToArray();
-            for (int i = 0; i < files.Length; i++)
-                files[i] = System.IO.Path.GetFileNameWithoutExtension(files[i]).Split('_')[0].Replace("[", string.Empty).Replace("]", string.Empty);
 
-            
+            //(?<=\[)(.*?)(?=\]_)
+
             if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
             {
+                // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
+                Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
+
+                /*string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(_currentGroup)).ToArray();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    //Debug.Log(pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value+ " "+ System.IO.Path.GetFileNameWithoutExtension(files[i]));
+                    files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;//System.IO.Path.GetFileNameWithoutExtension(files[i]).Split('_')[0].Replace("[", string.Empty).Replace("]", string.Empty);
+                }*/
+                string[] files = CVarSystem.ListAllPersistentFilesNameByGroup(_currentGroup);
+
                 EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
 
                 if (files.Length > 0)
                 {
                     CVarGroup g = CVarSystem.GetGroup(_currentGroup);
 
-                    int id = Array.IndexOf(files, string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
+                    int id = Array.IndexOf(files, pattern.Match(g.PersistentPrefix).Value);//string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
                     int currentId = id;
                     if (id >= 0 && id < files.Length)
                     {

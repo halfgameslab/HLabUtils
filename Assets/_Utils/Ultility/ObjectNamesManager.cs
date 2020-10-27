@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+/// <summary>
+/// Alterado em 2020/10/27
+///   -- string.Concat changed to string.Format
+///   -- Array.Find changed to Array.Exist
+///   -- Regex field changed to readonly
+/// </summary>
 public static class ObjectNamesManager
 {
     //use to create regular expresions.
     //http://rubular.com/r/ImZaRigMv5              
     //ivate static Regex Pattern = new Regex(@"\.*?\([^\d]*(\d+)[^\d]*\)$");
-    private static Regex Pattern = new Regex(@"\((\d+)\)$");
+    private static readonly Regex Pattern = new Regex(@"\((\d+)\)$");
 
     /// <summary>
     /// Make a unique name using the provided name as a base.
@@ -18,12 +24,11 @@ public static class ObjectNamesManager
     /// <returns></returns>
     public static string GetUniqueName(string[] existingNames, string name, string space=" ")
     {
-        if (Array.Find(existingNames, (T => T == name)) == name)
+        if (Array.Exists(existingNames, (T => T == name)))
         {
-            int index;
-
-            if (int.TryParse(Pattern.Match(name).Groups[1].Value, out index))
-                return GetUniqueName(existingNames, Pattern.Replace(name, string.Concat("(", ++index, ")")));
+            //return GetUniqueName(existingNames, Pattern.Replace(name, string.Concat("(", ++index, ")")));
+            if (int.TryParse(Pattern.Match(name).Groups[1].Value, out int index))
+                return GetUniqueName(existingNames, Pattern.Replace(name, string.Format("({0})", ++index)));
             else
                 return GetUniqueName(existingNames, string.Concat(name, space, "(0)"));
         }
@@ -43,7 +48,7 @@ public static class ObjectNamesManager
         if (existingNames.ContainsKey(name))
         {
             if (int.TryParse(Pattern.Match(name).Groups[1].Value, out int index))
-                return GetUniqueNameFromDictionary(existingNames, Pattern.Replace(name, string.Concat("(", ++index, ")")));
+                return GetUniqueNameFromDictionary(existingNames, Pattern.Replace(name, string.Format("({0})", ++index)));
             else
                 return GetUniqueNameFromDictionary(existingNames, string.Concat(name, space, "(0)"));
         }
