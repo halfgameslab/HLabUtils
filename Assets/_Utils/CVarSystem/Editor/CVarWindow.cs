@@ -14,6 +14,7 @@ enum CVarWindowAction
     EDIT_VAR_VALUES,
     EDIT_VAR_NAME,
     EDIT_GROUP,
+    CREATE_PERSISTENT_FILE
 }
 
 
@@ -117,6 +118,138 @@ public class CVarWindow : EditorWindow
 
     }
 
+    private void DrawFileManager()
+    {
+        EditorGUI.BeginDisabledGroup(Application.isPlaying);
+
+        EditorGUILayout.BeginHorizontal();
+
+        bool boolAux = CVarSystem.CanLoadRuntimeDefault;
+        EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
+        GUI.backgroundColor = Color.yellow;
+        boolAux = EditorGUILayout.ToggleLeft("Show Runtime Default", CVarSystem.CanLoadRuntimeDefault);
+        GUI.backgroundColor = Color.white;
+        if (boolAux != CVarSystem.CanLoadRuntimeDefault)
+        {
+            CVarSystem.UnloadGroups();
+            // change state
+            CVarSystem.CanLoadRuntimeDefault = boolAux;
+            CVarSystem.LoadGroups(false);
+
+        }
+
+        if (GUILayout.Button("Overwrite editor default"))
+        {
+
+        }
+        
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.BeginHorizontal();
+
+        boolAux = CVarSystem.CanLoadRuntimePersistent;
+        GUI.backgroundColor = Color.red;
+        boolAux = EditorGUILayout.ToggleLeft("Show Runtime Persistent", CVarSystem.CanLoadRuntimePersistent);
+        GUI.backgroundColor = Color.white;
+        EditorGUI.EndDisabledGroup();
+        if (boolAux != CVarSystem.CanLoadRuntimePersistent)
+        {
+            CVarSystem.UnloadGroups();
+            // change state
+            CVarSystem.CanLoadRuntimePersistent = boolAux;
+            CVarSystem.LoadGroups(false);
+        }
+
+        if (_currentAction != CVarWindowAction.CREATE_PERSISTENT_FILE)
+        {
+            if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
+            {
+                // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
+                Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
+
+                string[] files = CVarSystem.ListAllPersistentFilesNameByGroup(_currentGroup);
+
+                EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
+
+                if (files.Length > 0)
+                {
+                    CVarGroup g = CVarSystem.GetGroup(_currentGroup);
+
+                    int id = Array.IndexOf(files, pattern.Match(g.PersistentPrefix).Value);//string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
+                    int currentId = id;
+
+                    if (id >= 0 && id < files.Length)
+                    {
+                        currentId = EditorGUILayout.Popup(id, files);
+
+                        if (id != currentId)
+                        {
+                            g.Unload();
+                            g.PersistentPrefix = string.Format("[{0}]_", files[currentId]);
+                            g.Load(false);
+                        }
+                    }
+                    else
+                    {
+
+                        //g.PersistentPrefix = files[0];
+                        g.Unload();
+                        g.PersistentPrefix = string.Format("[{0}]_", files[EditorGUILayout.Popup(0, files)]);
+                        g.Load(false);
+                    }
+
+                    if (GUILayout.Button("+"))
+                    {
+                        _currentAction = CVarWindowAction.CREATE_PERSISTENT_FILE;
+                        _editableAuxName = SceneManager.GetActiveScene().name;
+                    }
+
+                    if (GUILayout.Button("-") && EditorUtility.DisplayDialog("Delete persistent", "Want delete persistent file?", "Deletar", "Cancel"))
+                    {
+                        g.ResetToDefault();
+                    }
+
+                    if (GUILayout.Button("R") && EditorUtility.DisplayDialog("Reset persistent", "Want reset persistent file?", "Reset", "Cancel"))
+                    {
+                        //rename
+                        /*g.ResetToDefault();
+                        CVarSystem.GetGroup(_currentGroup).Save();
+                        CVarSystem.GetGroup(_currentGroup).FlushPersistent();*/
+                    }
+                    if (GUILayout.Button("C") && EditorUtility.DisplayDialog("Reset persistent", "Want clear persistent file?", "Reset", "Cancel"))
+                    {
+                        g.ResetToDefault();
+                        CVarSystem.GetGroup(_currentGroup).Save();
+                        CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                    }
+                }
+                EditorGUI.EndDisabledGroup();
+            }
+        }
+        else
+        {
+            _editableAuxName = EditorGUILayout.TextField(_editableAuxName);
+
+            if (GUILayout.Button("v"))
+            {
+                _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
+                CVarSystem.GetGroup(_currentGroup).Save();
+                CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                CVarSystem.GetGroup(_currentGroup).SetGroupPersistentPrefix(_editableAuxName, CVarSystem.GetGroup(_currentGroup).PersistentType);
+                CVarSystem.GetGroup(_currentGroup).Save();
+                CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                _editableAuxName = string.Empty;
+            }
+
+            if (GUILayout.Button("x"))
+            {
+                _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
+                _editableAuxName = string.Empty;
+            }
+        }
+
+        EditorGUILayout.EndHorizontal();
+    }
+
     private void DrawGroupOptions()
     {
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_GROUP && _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
@@ -160,92 +293,9 @@ public class CVarWindow : EditorWindow
             EditorGUILayout.Space();
             //EditorGUILayout.BeginHorizontal();
 
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
-            
-            EditorGUILayout.BeginHorizontal();
-
-            bool boolAux = CVarSystem.CanLoadRuntimeDefault;
-            GUI.backgroundColor = Color.yellow;
-            boolAux = EditorGUILayout.ToggleLeft("Show Runtime Default", CVarSystem.CanLoadRuntimeDefault);
-            GUI.backgroundColor = Color.white;
-            if (boolAux != CVarSystem.CanLoadRuntimeDefault)
-            {
-                CVarSystem.UnloadGroups();
-                // change state
-                CVarSystem.CanLoadRuntimeDefault = boolAux;
-                CVarSystem.LoadGroups(false);
-                
-            }
-
-            if (GUILayout.Button("Overwrite editor default"))
-            {
-
-            }
-
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.BeginHorizontal();
-
-            boolAux = CVarSystem.CanLoadRuntimePersistent;
-            GUI.backgroundColor = Color.red;
-            boolAux = EditorGUILayout.ToggleLeft("Show Runtime Persistent", CVarSystem.CanLoadRuntimePersistent);
-            GUI.backgroundColor = Color.white;
-
-            if (boolAux != CVarSystem.CanLoadRuntimePersistent)
-            {
-                CVarSystem.UnloadGroups();
-                // change state
-                CVarSystem.CanLoadRuntimePersistent = boolAux;
-                CVarSystem.LoadGroups(false);
-            }
-
-            //(?<=\[)(.*?)(?=\]_)
-
-            if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
-            {
-                // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
-                Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
-
-                /*string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(_currentGroup)).ToArray();
-                for (int i = 0; i < files.Length; i++)
-                {
-                    //Debug.Log(pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value+ " "+ System.IO.Path.GetFileNameWithoutExtension(files[i]));
-                    files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;//System.IO.Path.GetFileNameWithoutExtension(files[i]).Split('_')[0].Replace("[", string.Empty).Replace("]", string.Empty);
-                }*/
-                string[] files = CVarSystem.ListAllPersistentFilesNameByGroup(_currentGroup);
-
-                EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
-
-                if (files.Length > 0)
-                {
-                    CVarGroup g = CVarSystem.GetGroup(_currentGroup);
-
-                    int id = Array.IndexOf(files, pattern.Match(g.PersistentPrefix).Value);//string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
-                    int currentId = id;
-                    if (id >= 0 && id < files.Length)
-                    {
-                        currentId = EditorGUILayout.Popup(id, files);
-                        
-                        if(id != currentId)
-                        {
-                            g.Unload();
-                            g.PersistentPrefix = string.Format("[{0}]_",files[currentId]);
-                            g.Load(false);
-                        }
-                    }
-                    else
-                    {
-
-                        //g.PersistentPrefix = files[0];
-                        g.Unload();
-                        g.PersistentPrefix = string.Format("[{0}]_", files[EditorGUILayout.Popup(0, files)]);
-                        g.Load(false);
-                    }
-                }
-                EditorGUI.EndDisabledGroup();
-            }
-            
-            EditorGUILayout.EndHorizontal();
             EditorGUI.EndDisabledGroup();
+
+            DrawFileManager();
 
         }
         else
@@ -274,11 +324,11 @@ public class CVarWindow : EditorWindow
                 
         EditorGUI.EndDisabledGroup();
 
-        EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_GROUP);
+        //EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_GROUP);
 
 
 
-        EditorGUI.EndDisabledGroup();
+        //EditorGUI.EndDisabledGroup();
 
 
         //EditorGUILayout.Space();

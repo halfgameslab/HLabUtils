@@ -50,10 +50,10 @@ public class CVarGroup
     /// </summary>
     /// <param name="groupName"></param>
     /// <param name="prefix"></param>
-    public void SetGroupPersistentPrefix(string prefix)
+    public void SetGroupPersistentPrefix(string prefix, CVarGroupPersistentType persistentType = CVarGroupPersistentType.CUSTOM)
     {
         PersistentPrefix = ParsePrefixName(prefix);
-        SetPersistentTypeAndSave(CVarGroupPersistentType.CUSTOM);
+        SetPersistentTypeAndSave(persistentType);
     }
 
     public void SetPersistentVar(CVarObject var, bool state)
