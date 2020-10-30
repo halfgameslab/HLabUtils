@@ -70,7 +70,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             // draw Edit button at the end of line
             if (GUI.Button(new Rect(position.x + position.width -17, position.y, 17, position.height), "E"))
             {
-                CVarWindow.ShowWindow(groupName);
+                CVarWindow.SelectWindow(groupName);
             }
 
             if (value != null)
@@ -88,7 +88,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             // draw Edit button at the end of line
             if (GUI.Button(new Rect(position.x + position.width - 17, position.y, 17, position.height), "E"))
             {
-                CVarWindow.ShowWindow(groupName);
+                CVarWindow.SelectWindow(groupName);
             }
 
             if (value != null)

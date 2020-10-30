@@ -21,11 +21,79 @@ public static class CVarSystem
     /// if you want active the edit mode again use ActiveEditMode(true);
     /// When the edit mode is activated all changes will affect the persistent file
     /// </summary>
-    public static bool IsEditModeActived { get; private set; } = true;
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// If activated all changes will affect the file on Application.persistentDataPath
+    /// </summary>
+    public static bool CanLoadRuntimeDefault
+    {
+        get
+        {
+            return UnityEditor.EditorPrefs.GetBool("CanLoadRuntimeDefault", false);
+        }
+        set
+        {
+            UnityEditor.EditorPrefs.SetBool("CanLoadRuntimeDefault", value);
+        }
+    }
+    /// <summary>
+    /// If activated all changes will affect the persistent file on Application.persistentDataPath
+    /// If true changes on default file will be ignored
+    /// </summary>
+    public static bool CanLoadRuntimePersistent
+    {
+        get
+        {
+            return UnityEditor.EditorPrefs.GetBool("CanLoadRuntimePersistent", false);
+        }
+        set
+        {
+            UnityEditor.EditorPrefs.SetBool("CanLoadRuntimePersistent", value);
+        }
+    }
+
+    public static bool IsEditModeActived 
+    { 
+        get 
+        { 
+            return UnityEditor.EditorPrefs.GetBool("IsEditModeActived", false); 
+        } 
+        private set 
+        { 
+            UnityEditor.EditorPrefs.SetBool("IsEditModeActived", value); 
+        } 
+    }
+    
+#else
+/// <summary>
+    /// If activated all changes will affect the file on Application.persistentDataPath
+    /// </summary>
+    public static bool CanLoadRuntimeDefault
+    {
+        get;set;
+    }
+    /// <summary>
+    /// If activated all changes will affect the persistent file on Application.persistentDataPath
+    /// If true changes on default file will be ignored
+    /// </summary>
+    public static bool CanLoadRuntimePersistent
+    {
+        get;set;
+    }
+
+    public static bool IsEditModeActived 
+    { 
+        get;set;
+    }
+
+#endif
+
     public static void ActiveEditMode(bool status)
     {
         if (IsEditModeActived != status)
         {
+
             // reload groups
             UnloadGroups();
 
@@ -37,15 +105,7 @@ public static class CVarSystem
         }
     }
 
-    /// <summary>
-    /// If activated all changes will affect the file on Application.persistentDataPath
-    /// </summary>
-    public static bool CanLoadRuntimeDefault{ get; set; }
-    /// <summary>
-    /// If activated all changes will affect the persistent file on Application.persistentDataPath
-    /// If true changes on default file will be ignored
-    /// </summary>
-    public static bool CanLoadRuntimePersistent { get; set; }
+    
 
     private static int _currentAddress = -1;
     //private static int CurrentAddress { 

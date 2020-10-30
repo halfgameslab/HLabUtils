@@ -99,7 +99,7 @@ public class CVar<T>: ISerializationCallbackReceiver
     {
         if (obj.Address == _address)
         {
-            _name = CVarSystem.RemoveType(obj.FullName);
+            _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
         }
         else if (obj.FullName == CVarSystem.GetFullName<T>(_name, _groupName))
         {
@@ -119,12 +119,12 @@ public class CVar<T>: ISerializationCallbackReceiver
     {
         if (obj.Address == _address)
         {
-            _name = CVarSystem.RemoveType(obj.FullName);
+            _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
         }
         else if(oldName == CVarSystem.GetFullName<T>(_name, _groupName))
         {
             _address = obj.Address;
-            _name = CVarSystem.RemoveType(obj.FullName);
+            _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
         }
     }
 
