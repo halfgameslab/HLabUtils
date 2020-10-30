@@ -10,7 +10,7 @@
   </CVarGroup>
   <CVarGroup>
     <Name>group_04</Name>
-    <PersistentType>SHARED</PersistentType>
+    <PersistentType>PER_SCENE</PersistentType>
   </CVarGroup>
   <CVarGroup>
     <Name>group_07</Name>

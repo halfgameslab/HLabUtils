@@ -14,7 +14,8 @@ enum CVarWindowAction
     EDIT_VAR_VALUES,
     EDIT_VAR_NAME,
     EDIT_GROUP,
-    CREATE_PERSISTENT_FILE
+    CREATE_PERSISTENT_FILE,
+    RENAME_PERSISTENT_FILE
 }
 
 
@@ -112,6 +113,11 @@ public class CVarWindow : EditorWindow
             _currentGroup = "<none>";
         }
 
+        if(GUILayout.Button(CVarSystem.IsEditModeActived?"Disable Edit Mode": "Enable Edit Mode"))
+        {
+            CVarSystem.ActiveEditMode(!CVarSystem.IsEditModeActived);
+        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUI.EndDisabledGroup();
@@ -120,7 +126,7 @@ public class CVarWindow : EditorWindow
 
     private void DrawFileManager()
     {
-        EditorGUI.BeginDisabledGroup(Application.isPlaying);
+        EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived);
 
         EditorGUILayout.BeginHorizontal();
 
@@ -138,11 +144,43 @@ public class CVarWindow : EditorWindow
 
         }
 
-        if (GUILayout.Button("Overwrite editor default"))
+        if (CVarSystem.CanLoadRuntimeDefault)
         {
-
+            if (GUILayout.Button("Overwrite editor default") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
+            {
+                CVarSystem.GetGroup(_currentGroup).Unload();
+                M_XMLFileManager.Copy
+                (
+                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CVarSystem.GetGroup(_currentGroup).Name, ".xml")),
+                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CVarSystem.GetGroup(_currentGroup).Name, ".xml")),
+                    /*   //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
+                       file,
+                       //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+                       CVarSystem.ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),*/
+                    true
+                );
+                CVarSystem.GetGroup(_currentGroup).Load(false);
+            }
         }
-        
+        else 
+        {
+            if (GUILayout.Button("Overwrite persistent default") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
+            {
+                CVarSystem.GetGroup(_currentGroup).Unload();
+                M_XMLFileManager.Copy
+                (
+                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CVarSystem.GetGroup(_currentGroup).Name, ".xml")),
+                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CVarSystem.GetGroup(_currentGroup).Name, ".xml")),
+                    /*   //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
+                       file,
+                       //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+                       CVarSystem.ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),*/
+                    true
+                );
+                CVarSystem.GetGroup(_currentGroup).Load(false);
+            }
+        }
+
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
 
@@ -159,9 +197,9 @@ public class CVarWindow : EditorWindow
             CVarSystem.LoadGroups(false);
         }
 
-        if (_currentAction != CVarWindowAction.CREATE_PERSISTENT_FILE)
+        if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
         {
-            if (CVarSystem.GetGroup(_currentGroup).PersistentType != CVarGroupPersistentType.SHARED)
+            if (_currentAction != CVarWindowAction.CREATE_PERSISTENT_FILE && _currentAction != CVarWindowAction.RENAME_PERSISTENT_FILE)
             {
                 // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
                 Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
@@ -169,11 +207,10 @@ public class CVarWindow : EditorWindow
                 string[] files = CVarSystem.ListAllPersistentFilesNameByGroup(_currentGroup);
 
                 EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
+                CVarGroup g = CVarSystem.GetGroup(_currentGroup);
 
                 if (files.Length > 0)
                 {
-                    CVarGroup g = CVarSystem.GetGroup(_currentGroup);
-
                     int id = Array.IndexOf(files, pattern.Match(g.PersistentPrefix).Value);//string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
                     int currentId = id;
 
@@ -197,54 +234,117 @@ public class CVarWindow : EditorWindow
                         g.Load(false);
                     }
 
-                    if (GUILayout.Button("+"))
-                    {
-                        _currentAction = CVarWindowAction.CREATE_PERSISTENT_FILE;
-                        _editableAuxName = SceneManager.GetActiveScene().name;
-                    }
 
-                    if (GUILayout.Button("-") && EditorUtility.DisplayDialog("Delete persistent", "Want delete persistent file?", "Deletar", "Cancel"))
-                    {
-                        g.ResetToDefault();
-                    }
-
-                    if (GUILayout.Button("R") && EditorUtility.DisplayDialog("Reset persistent", "Want reset persistent file?", "Reset", "Cancel"))
-                    {
-                        //rename
-                        /*g.ResetToDefault();
-                        CVarSystem.GetGroup(_currentGroup).Save();
-                        CVarSystem.GetGroup(_currentGroup).FlushPersistent();*/
-                    }
-                    if (GUILayout.Button("C") && EditorUtility.DisplayDialog("Reset persistent", "Want clear persistent file?", "Reset", "Cancel"))
-                    {
-                        g.ResetToDefault();
-                        CVarSystem.GetGroup(_currentGroup).Save();
-                        CVarSystem.GetGroup(_currentGroup).FlushPersistent();
-                    }
                 }
+                else
+                {
+                    EditorGUILayout.Popup(0, new string[] { "<none>" });
+                }
+
+                if (GUILayout.Button("+"))
+                {
+                    _currentAction = CVarWindowAction.CREATE_PERSISTENT_FILE;
+                    _editableAuxName = SceneManager.GetActiveScene().name;
+                }
+                EditorGUI.BeginDisabledGroup(files.Length == 0);
+                if (GUILayout.Button("-") && EditorUtility.DisplayDialog("Delete persistent", "Want delete persistent file?", "Delete", "Cancel"))
+                {
+                    g.ResetToDefault();
+                }
+
+                if (GUILayout.Button("E"))
+                {
+                    //rename
+                    _currentAction = CVarWindowAction.RENAME_PERSISTENT_FILE;
+                    _editableAuxName = pattern.Match(g.PersistentPrefix).Value;
+                    /*g.ResetToDefault();
+                    CVarSystem.GetGroup(_currentGroup).Save();
+                    CVarSystem.GetGroup(_currentGroup).FlushPersistent();*/
+                }
+                if (GUILayout.Button("R") && EditorUtility.DisplayDialog("Reset persistent", "Want reset persistent file to default?", "Reset", "Cancel"))
+                {
+                    g.ResetToDefault();
+                    CVarSystem.GetGroup(_currentGroup).Save();
+                    CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                }
+                EditorGUI.EndDisabledGroup();// disable files.Length == 0
+
                 EditorGUI.EndDisabledGroup();
             }
+
+            else
+            {
+                _editableAuxName = EditorGUILayout.TextField(_editableAuxName);
+
+                if (GUILayout.Button("v"))
+                {
+                    // check name consistence
+                    if (_editableAuxName.Replace(" ", "").Length > 0 && !System.IO.File.Exists(CVarGroup.GetPersistentFilePath(_currentGroup, CVarGroup.ParsePrefixName(_editableAuxName))))
+                    {
+                        if (_currentAction == CVarWindowAction.CREATE_PERSISTENT_FILE && CVarSystem.GetGroup(_currentGroup).PersistentPrefix.Length > 0)
+                        {
+                            // save the current file
+                            CVarSystem.GetGroup(_currentGroup).Save();
+                            CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                        }
+                        else if (_currentAction == CVarWindowAction.RENAME_PERSISTENT_FILE)
+                        {
+                            // delete the current file
+                            CVarSystem.GetGroup(_currentGroup).DeletePersistentFile();
+                        }
+
+                        // set the new persistent prefix
+                        CVarSystem.GetGroup(_currentGroup).SetGroupPersistentPrefix(_editableAuxName, CVarSystem.GetGroup(_currentGroup).PersistentType);
+                        // save the new persistent file
+                        CVarSystem.GetGroup(_currentGroup).Save();
+                        // force create file
+                        CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+
+                        _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
+                        _editableAuxName = string.Empty;
+                    }
+                    else
+                    {
+                        if (_editableAuxName.Replace(" ", "").Length == 0)
+                            EditorUtility.DisplayDialog("Invalid name", "Invalid name try another one!\nThe name can't have only spaces!", "OK");
+                        else
+                            EditorUtility.DisplayDialog("Invalid name", "There is another file with this name!", "OK");
+                    }
+                }
+
+                if (GUILayout.Button("x"))
+                {
+                    _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
+                    _editableAuxName = string.Empty;
+                }
+            }
         }
-        else
+        else 
         {
-            _editableAuxName = EditorGUILayout.TextField(_editableAuxName);
-
-            if (GUILayout.Button("v"))
+            EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
+            if (!System.IO.File.Exists(CVarGroup.GetPersistentFilePath(_currentGroup, string.Empty)))
             {
-                _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
-                CVarSystem.GetGroup(_currentGroup).Save();
-                CVarSystem.GetGroup(_currentGroup).FlushPersistent();
-                CVarSystem.GetGroup(_currentGroup).SetGroupPersistentPrefix(_editableAuxName, CVarSystem.GetGroup(_currentGroup).PersistentType);
-                CVarSystem.GetGroup(_currentGroup).Save();
-                CVarSystem.GetGroup(_currentGroup).FlushPersistent();
-                _editableAuxName = string.Empty;
+                if (GUILayout.Button("Create File"))
+                {
+                    CVarSystem.GetGroup(_currentGroup).Save();
+                    CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                    EditorUtility.DisplayDialog("Success", "Group Created", "Continue");
+                }
             }
-
-            if (GUILayout.Button("x"))
+            else
             {
-                _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
-                _editableAuxName = string.Empty;
+                if (GUILayout.Button("Delete File") && EditorUtility.DisplayDialog("Delete persistent", "Want delete persistent file?", "Delete", "Cancel"))
+                {
+                    CVarSystem.GetGroup(_currentGroup).ResetToDefault();
+                }
+                if (GUILayout.Button("Reset File") && EditorUtility.DisplayDialog("Reset persistent", "Want reset persistent file?", "Reset", "Cancel"))
+                {
+                    CVarSystem.GetGroup(_currentGroup).ResetToDefault();
+                    CVarSystem.GetGroup(_currentGroup).Save();
+                    CVarSystem.GetGroup(_currentGroup).FlushPersistent();
+                }
             }
+            EditorGUI.EndDisabledGroup();
         }
 
         EditorGUILayout.EndHorizontal();

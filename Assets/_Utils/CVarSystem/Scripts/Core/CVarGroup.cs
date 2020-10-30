@@ -181,7 +181,7 @@ public class CVarGroup
     {
         if (!HasChanged)
         {
-            if (CVarSystem.EditorAutoSave && CVarSystem.CanLoadRuntimeDefault && !CVarSystem.CanLoadRuntimePersistent)
+            if (CVarSystem.EditorAutoSave && !CVarSystem.CanLoadRuntimePersistent)
             {
                 HasChanged = true;
                 DelayToSaveOnEditor();
@@ -297,8 +297,7 @@ public class CVarGroup
     /// </summary>
     public void ResetToDefault()
     {
-        // delete persistent file
-        M_XMLFileManager.Delete(GetPersistentFilePath());
+        DeletePersistentFile();
 
         // unload current data to avoid garbage to be saved again
         Unload();
@@ -306,6 +305,12 @@ public class CVarGroup
         // load default values
         LoadDefault();
     }// end ResetToDefault
+
+    public void DeletePersistentFile()
+    {
+        // delete persistent file
+        M_XMLFileManager.Delete(GetPersistentFilePath());
+    }
 
     /// <summary>
     /// Only can be used on editor
@@ -358,7 +363,7 @@ public class CVarGroup
     /// Reeturn the file path to persistent data
     /// </summary>
     /// <returns></returns>
-    private static string GetPersistentFilePath(string name, string persistentPrefix)
+    public static string GetPersistentFilePath(string name, string persistentPrefix)
     {
         return CVarSystem.ParsePersistentDataPathWith(string.Format("{0}{1}.xml", persistentPrefix, name));
         //return System.IO.Path.Combine(Application.persistentDataPath, "Data","Persistent", string.Format("{0}{1}.xml", persistentPrefix, name));
@@ -369,7 +374,7 @@ public class CVarGroup
     /// </summary>
     /// <param name="prefix"></param>
     /// <returns></returns>
-    private static string ParsePrefixName(string prefix)
+    public static string ParsePrefixName(string prefix)
     {
         return string.Format("[{0}]_", prefix);
     }
