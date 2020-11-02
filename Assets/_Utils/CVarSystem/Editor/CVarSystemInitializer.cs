@@ -17,27 +17,29 @@ internal static class CVarSystemInitializer
     // register an event handler when the class is initialized
     static CVarSystemInitializer()
     {
-        CVarSystem.Init();
-
+        //PlayerPrefs.SetInt("FilesCopied", 0);
+        CVarSystem.ActiveEditMode(true, true);
+        //CVarSystem.Init();
+        Debug.Log("CVarSystemInitializer");
         EditorApplication.playModeStateChanged += OnPlayModeStateChangeHandler;
     }
     private static void OnPlayModeStateChangeHandler(PlayModeStateChange state)
     {
-        if (CVarSystem.EditorAutoSave = (state == PlayModeStateChange.EnteredEditMode))
+        if ((state == PlayModeStateChange.EnteredEditMode))
         {
             Debug.Log("state == PlayModeStateChange.EnteredEditMode");
             //CVarSystem.UnloadGroups();
             //CVarSystem.IsEditModeActived = true;
             //CVarSystem.Init();
-            CVarSystem.ActiveEditMode(true);
+            CVarSystem.ActiveEditMode(true, true);
         }
-        else if (CVarSystem.EditorAutoSave = (state == PlayModeStateChange.ExitingEditMode))
+        else if ((state == PlayModeStateChange.ExitingEditMode))
         {
             Debug.Log("state == PlayModeStateChange.ExitingEditMode");
             //CVarSystem.UnloadGroups();
             //CVarSystem.IsEditModeActived = false;
             //CVarSystem.Init();
-            CVarSystem.ActiveEditMode(false);
+            CVarSystem.ActiveEditMode(false, true);
         }
         /*else if (state == PlayModeStateChange.ExitingPlayMode)
         {

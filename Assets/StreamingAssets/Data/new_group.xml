@@ -1,21 +1,25 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <objects>
-    <object type="String" address="294" persistent="false" group="new_group" alteredIn="grupo01" loocked="false">
-      <name>String|new_group|VarStringGrupo01</name>
-      <data>valorDaVarStringGrupo01</data>
-    </object>
-    <object type="Int32" address="295" persistent="false" group="new_group" alteredIn="grupo01" loocked="false">
-      <name>Int32|new_group|VarIntGrupo01</name>
-      <data>0</data>
-    </object>
-    <object type="Single" address="296" persistent="false" group="new_group" alteredIn="grupo01" loocked="false">
-      <name>Single|new_group|VarFloatGrupo01</name>
-      <data>0</data>
-    </object>
-    <object type="Boolean" address="297" persistent="false" group="new_group" alteredIn="grupo01" loocked="false">
-      <name>Boolean|new_group|VarBoolGrupo01</name>
-      <data>False</data>
-    </object>
-  </objects>
+  <os>
+    <o a="5" f="LOCKED">
+      <n>new_string1</n>
+      <v xsi:type="xsd:string">new_string2</v>
+    </o>
+    <o a="6" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">0</v>
+    </o>
+    <o a="7" f="NONE">
+      <n>new_float</n>
+      <v xsi:type="xsd:float">1</v>
+    </o>
+    <o a="8" f="NONE">
+      <n>new_bool</n>
+      <v xsi:type="xsd:boolean">true</v>
+    </o>
+    <o a="28" f="PERSISTENT LOCKED">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+  </os>
 </cvar_data>

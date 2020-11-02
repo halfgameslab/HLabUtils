@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <objects>
-    <object type="String" address="424" persistent="false" group="group_09" loocked="false">
-      <name>String|group_09|222222</name>
-      <data />
-    </object>
-  </objects>
-</cvar_data>

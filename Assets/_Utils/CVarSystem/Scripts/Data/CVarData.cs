@@ -3,7 +3,7 @@
 [XmlRoot("cvar_data")]
 public class CVarData
 {
-    [XmlArray("objects")]
-    [XmlArrayItem("object")]
-    public CVarDataObject[] Objects { get; set; }
+    [XmlArray("os")]
+    [XmlArrayItem("o")]
+    public CVarObject[] Objects { get; set; }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [Flags]
 public enum CVarFlag
@@ -10,20 +12,23 @@ public enum CVarFlag
     LOCKED = 0x08
 }
 
-
+[Serializable]
 public class CVarObject
 {
-    //public string Name { get; set; }
+    [XmlElement("n")]
+    public string Name { get; set; }
 
-    public string FullName { get; set; }
-
+    [XmlAttribute("a")]
     public int Address { get; set; }
 
+    [XmlElement("v")]
     public object Value { get; set; }
 
+    [XmlAttribute("f")]
     public CVarFlag Flag { get; set; }
-    public CVarGroup Group { get; set; }// qual grupo a variavel pertence
     
+    //[IgnoreDataMember]
+    [XmlIgnore]
     public bool IsPersistent 
     { 
         get 
@@ -37,6 +42,7 @@ public class CVarObject
         }
     }
 
+    [XmlIgnore]
     public bool IsLocked
     {
         get
@@ -49,7 +55,26 @@ public class CVarObject
             SetFlagByBoolValue(CVarFlag.LOCKED, value);
         }
     }
-        
+
+    [XmlIgnore]
+    public string FullName { get; set;  }
+
+    [XmlIgnore]
+    public CVarGroup Group { get; set; }
+
+    public CVarObject(string fullName, object value, int address, CVarGroup group)
+    {
+        Value = value;
+        Group = group;
+        Address = address;
+        FullName = fullName;
+        Name = CVarSystem.RemoveTypeAndGroup(fullName);
+    }
+
+    public CVarObject()
+    {
+
+    }
 
     private void SetFlagByBoolValue(CVarFlag flag, bool value)
     {

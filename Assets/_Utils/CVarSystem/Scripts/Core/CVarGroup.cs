@@ -76,18 +76,26 @@ public class CVarGroup
 
     }
 
-    public void Add(CVarObject var)
+    public void Add(CVarObject var, bool canSave = false)
     {
         Vars.Add(var);
+        var.Group = this;
         if (var.IsPersistent)
-            _persistentsVars.Add(var); 
+            _persistentsVars.Add(var);
+
+        if(canSave)
+            Save();
     }
 
-    public void Remove(CVarObject var)
+    public void Remove(CVarObject var, bool canSave = false)
     {
         Vars.Remove(var);
+        var.Group = null;
         if (var.IsPersistent)
             _persistentsVars.Remove(var);
+
+        if(canSave)
+            Save();
     }
 
     public void Load(bool canChangePrefix = true)
@@ -161,10 +169,10 @@ public class CVarGroup
         {
             if (HasChanged)
             {
-                if (CVarSystem.IsEditModeActived)
-                    Flush();
-                else
+                if (CVarSystem.CanLoadRuntimePersistent)
                     FlushPersistent();
+                else
+                    Flush();
             }
 
             for (int i = Vars.Count - 1; i >= 0; i--)
@@ -222,17 +230,17 @@ public class CVarGroup
         if (!HasChanged)
             return;
 
-        List<CVarDataObject> objects = new List<CVarDataObject>();
+        /*List<CVarDataObject> objects = new List<CVarDataObject>();
         //para cada entrada do dicionario faça
         foreach (CVarObject objectData in Vars)
         {
             //transforme o valor para string
             //armazene em um vetor temporário
             objects.Add(CVarDataObject.ParseToCVarDataObject(objectData));
-        }
+        }*/
 
         //salve o vetor temporário de strings em um arquivo
-        M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = objects.ToArray() });
+        M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
 
         HasChanged = false;
     }
@@ -245,17 +253,17 @@ public class CVarGroup
         if (!HasChanged)
             return;
 
-        List<CVarDataObject> objects = new List<CVarDataObject>();
+        /*List<CVarDataObject> objects = new List<CVarDataObject>();
         //para cada entrada do dicionario faça
         foreach (CVarObject objectData in _persistentsVars)
         {
             //transforme o valor para string
             //armazene em um vetor temporário
             objects.Add(CVarDataObject.ParseToCVarDataObject(objectData));
-        }
+        }*/
 
         //salve o vetor temporário de strings em um arquivo
-        M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = objects.ToArray() });
+        M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });
 
         HasChanged = false;
     }
@@ -274,22 +282,53 @@ public class CVarGroup
         string oldPath = GetFilePath();
         string oldPersistentPath = GetPersistentFilePath();
 
+        Unload();
+
         // rename
         Name = newName;
 
-#if UNITY_EDITOR
         // move files
         M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
-#endif
         M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());
 
-        // rename all vars
+        Load();
+        /*// rename all vars
         foreach(CVarObject c in Vars)
         {
             CVarSystem.MoveVarToGroup(c, this);
         }
 
-        Save();
+        if (CVarSystem.CanLoadRuntimePersistent)
+            FlushPersistent();
+        else
+            Flush();
+
+        Unload();
+
+        bool canLoadRuntimeDefault = CVarSystem.CanLoadRuntimeDefault;
+        bool canLoadRuntimePersistent = CVarSystem.CanLoadRuntimePersistent;
+
+        if (!CVarSystem.CanLoadRuntimePersistent)
+        {
+
+        }
+            
+
+        
+
+        CVarSystem.CanLoadRuntimeDefault = true;
+        CVarSystem.CanLoadRuntimePersistent = false;
+        HasChanged = true;
+        Flush();*/
+        
+
+/*#if UNITY_EDITOR
+        // move files
+        M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
+#endif
+        M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());*/
+
+        //Save();
     }
 
     /// <summary>

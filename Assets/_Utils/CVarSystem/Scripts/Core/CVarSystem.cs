@@ -89,13 +89,12 @@ public static class CVarSystem
 
 #endif
 
-    public static void ActiveEditMode(bool status)
+    public static void ActiveEditMode(bool status, bool force = false)
     {
-        if (IsEditModeActived != status)
+        if (IsEditModeActived != status || force)
         {
-
             // reload groups
-            UnloadGroups();
+            UnloadGroups(true);
 
             IsEditModeActived = status;
             CanLoadRuntimeDefault = !IsEditModeActived || Application.isPlaying;
@@ -240,11 +239,15 @@ public static class CVarSystem
 
     static void RunOnStart()
     {
-        Debug.Log("RunOnStart");        
-        IsEditModeActived = false;
+        Debug.Log("RunOnStart");
+
+        ActiveEditMode(false);
+
+        /*IsEditModeActived = false;
         CanLoadRuntimeDefault = true;
         CanLoadRuntimePersistent = true;
-        Init();
+        Init();*/
+
         Application.quitting += OnApplicationQuitHandler;        
     }
 
@@ -279,7 +282,10 @@ public static class CVarSystem
 
     private static void OnApplicationQuitHandler()
     {
-        FlushPersistent();
+        if (CanLoadRuntimePersistent)
+            FlushPersistent();
+        else
+            Flush();
 
 #if UNITY_EDITOR
         Application.quitting -= OnApplicationQuitHandler;
@@ -291,6 +297,7 @@ public static class CVarSystem
     {
         // load groups file
         // on groups file loaded load global group
+        
         if (Groups != null)
             if (Groups.Count == 0)
             {
@@ -304,21 +311,20 @@ public static class CVarSystem
                 LoadGroups();
     }
 
-    public static void UnloadGroups()
+    public static void UnloadGroups(bool removeGroupsAfterUnload = false)
     {
         foreach (CVarGroup group in Groups.Values)
             group.Unload();
 
+        if (removeGroupsAfterUnload)
+            Groups.Clear();
+
         IsReady = false;
     }
-    private static bool _copied = false;
-    private static void CopyDefaultFilesToPersistentFolder()
+    
+    public static void CopyDefaultFilesToPersistentFolder()
     {
-#if UNITY_EDITOR
-        if (!_copied)
-#else
         if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
-#endif
         {
             string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "*.*", System.IO.SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToArray();
@@ -346,7 +352,6 @@ public static class CVarSystem
             );
 
             PlayerPrefs.SetInt("FilesCopied", 1);
-            _copied = true;
         }
     }
 
@@ -502,10 +507,12 @@ public static class CVarSystem
                 CVars.Add(newFullName, var);// add new
 
                 // change the identifier
-                var.FullName = newFullName;
+                var.Name = RemoveTypeAndGroup(newFullName);
 
+                var.Group.Remove(var);
                 // set group to current
-                var.Group = group;
+                group.Add(var, true);
+                //var.Group = group;
 
             }
         }
@@ -542,9 +549,9 @@ public static class CVarSystem
 
     public static CVarGroup[] GetGroups()
     {
-        CVarGroup[] array = new CVarGroup[Groups.Values.Count];
-        Groups.Values.CopyTo(array, 0);
-        return array;
+        //CVarGroup[] array = Groups.Values.ToArray();//new CVarGroup[Groups.Values.Count];
+        //Groups.Values.CopyTo(array, 0);
+        return Groups.Values.ToArray();
     }
 
     public static void SaveGroupListToFile()
@@ -562,7 +569,9 @@ public static class CVarSystem
     public static T GetValue<T>(string name, T defautValue = default, string group = "global")
     {
         if (CVars.TryGetValue(GetFullName<T>(name, group), out CVarObject value))
+        {
             return (T)value.Value;
+        }
         
         return defautValue;
     }
@@ -687,7 +696,7 @@ public static class CVarSystem
         {
             int address = CurrentAddress + 1;
 
-            CVarObject obj = new CVarObject() { FullName = fullName, Value = value, Address = address, Group = group };
+            CVarObject obj = new CVarObject(fullName, value, address, group);// { Value = value, Address = address, Group = group, Name = RemoveTypeAndGroup(fullName) };
 
             // add var
             CVars.Add(fullName, obj);
@@ -815,12 +824,12 @@ public static class CVarSystem
             // remove from cvars table
             CVars.Remove(fullName);
 
-            obj.Group.Remove(obj);
-
+            obj.Group.Remove(obj, true);
+            
             OnVarDeleted?.Invoke(obj);
 
             // save
-            obj.Group.Save();
+            //obj.Group.Save();
 
             //ES_EventManager.RemoveEventListeners(fullName, ES_Event.ON_VALUE_CHANGE);
         }
@@ -843,38 +852,39 @@ public static class CVarSystem
     /// Give a new name from some var
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="currentName"></param>
+    /// <param name="name"></param>
     /// <param name="newName"></param>
-    public static void RenameVar<T>(string currentName, string newName, string group="global")
+    public static void RenameVar<T>(string name, string newName, string group="global")
     {
         // only rename if the name was different
-        if (currentName != newName)
+        if (name != newName)
         {
-            currentName = GetFullName<T>(currentName, group);
+            string fullName = GetFullName<T>(name, group);
             // there is some var with this name
-            if (CVars.TryGetValue(currentName, out CVarObject varToRename))
+            if (CVars.TryGetValue(fullName, out CVarObject varToRename))
             {
                 // get full name
-                newName = GetFullName<T>(newName, group);
-
+                string fullNewName = GetFullName<T>(newName, group);
+                
                 // there isnt some var with the new name
-                if (!CVars.ContainsKey(newName))
+                if (!CVars.ContainsKey(fullNewName))
                 {
                     /////////////varToRename.Name = RemoveTypeAndGroup(newName);
-                    varToRename.FullName = newName;
+                    varToRename.FullName = fullNewName;
+                    varToRename.Name = newName;
 
                     // get the current value at currentName and add to the newName key
-                    CVars.Add(newName, varToRename);
+                    CVars.Add(fullNewName, varToRename);
                     // add the new key to the address
                     //Address[currentVar.Address] = newName;
                     // remove the old key
-                    CVars.Remove(currentName);
+                    CVars.Remove(fullName);
 
-                    OnVarRenamed(varToRename, currentName);
+                    OnVarRenamed(varToRename, fullName);
 
                     varToRename.Group.Save();
 
-                    ES_EventManager.SwapInstanceEvents(currentName, newName);
+                    ES_EventManager.SwapInstanceEvents(fullName, fullNewName);
                 }
             }
         }
@@ -1090,10 +1100,10 @@ public static class CVarSystem
         }
     }
 
-    private static int GetValidAddress()
+    /*private static int GetValidAddress()
     {
         return CurrentAddress = CurrentAddress + 1;
-    }
+    }*/
 
     /// <summary>
     /// Return the type of some var
@@ -1131,38 +1141,41 @@ public static class CVarSystem
     {
         CVarObject current;
         //para cada entrada ou elemento no arquivo faça
-        foreach (CVarDataObject obj in data.Objects)
+        foreach (CVarObject obj in data.Objects)
         {
-            if(CVars.TryGetValue(obj.VarName, out current))// if the var exists name
+            obj.Group = group;
+            obj.FullName = GetFullName(obj.Name, obj.Value.GetType().Name, obj.Group.Name);
+
+            if(CVars.TryGetValue(obj.FullName, out current))// if the var exists name
             {
                 // just update data
-                current.Value = obj.ParseValue();
+                current.Value = obj.Value;
                 //current.IsPersistent = obj.VarPersistent;
-                current.IsLocked = obj.VarLocked;
-                current.Group.SetPersistentVar(current, obj.VarPersistent);
-
+                current.IsLocked = obj.IsLocked;
+                current.Group.SetPersistentVar(current, obj.IsPersistent);
             }
-            else if(Address.TryGetValue(obj.VarAddress, out current))// the var name doesnt exists but the address yes (maybe was renamed at runtime)
+            else if(Address.TryGetValue(obj.Address, out current))// the var name doesnt exists but the address yes (maybe was renamed at runtime)
             {
                 // just update data
-                current.Value = obj.ParseValue();
+                current.Value = obj.Value;
                 //current.IsPersistent = obj.VarPersistent;
 
-                current.IsLocked = obj.VarLocked;
-                current.Group.SetPersistentVar(current, obj.VarPersistent);
+                current.IsLocked = obj.IsLocked;
+                current.Group.SetPersistentVar(current, obj.IsPersistent);
 
-                current.FullName = obj.VarName;
+                current.Name = obj.Name;
+                current.FullName = obj.FullName;
             }
             else // if var not exist (maybe was created in runtime)
             {
-                current = obj.ToCVarObject();
-                CVars.Add(obj.VarName, current);// add var
-                Address.Add(obj.VarAddress, current);// add var address
+                current = obj;
+                CVars.Add(obj.FullName, current);// add var
+                Address.Add(obj.Address, current);// add var address
                 group.Add(current);
                 //Persistent.Add(current);// add to persistent list
 
-                if (CurrentAddress < obj.VarAddress)// try update cvar address
-                    CurrentAddress = obj.VarAddress;
+                if (CurrentAddress < obj.Address)// try update cvar address
+                    CurrentAddress = obj.Address;
             }
         }
     }
@@ -1171,6 +1184,12 @@ public static class CVarSystem
     {
         foreach (CVarGroup g in Groups.Values)
             g.FlushPersistent();
+    }
+
+    public static void Flush()
+    {
+        foreach (CVarGroup g in Groups.Values)
+            g.Flush();
     }
 
     /// <summary>
@@ -1222,7 +1241,14 @@ public static class CVarSystem
     {
         if (Groups.TryGetValue(group, out CVarGroup g))
             g.Clear();
+    }
 
+    public static void Reload()
+    {
+        UnloadGroups(true);
+        Address.Clear();
+        CVars.Clear();
+        Init();
     }
 
     public static string GetVarGroupName(string fullName)

@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <objects>
-    <object type="Int32" address="1" persistent="true" group="global" loocked="false">
-      <name>Int32|global|CurrentAddress</name>
-      <data>412</data>
-    </object>
-  </objects>
-</cvar_data>

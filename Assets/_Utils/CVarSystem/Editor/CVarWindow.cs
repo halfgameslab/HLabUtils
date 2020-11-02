@@ -91,6 +91,11 @@ public class CVarWindow : EditorWindow
 
     void OnGUI()
     {
+        if(CVarSystem.GetGroup(CurrentGroupName) == null)
+        {
+            CurrentGroupName = "global";
+        }
+
         DrawTopBar();
         if (_currentAction != CVarWindowAction.CREATE_GROUP)
             DrawGroupOptions();
@@ -125,6 +130,16 @@ public class CVarWindow : EditorWindow
             CVarSystem.ActiveEditMode(!CVarSystem.IsEditModeActived);
         }
 
+        if (GUILayout.Button("Reload"))
+        {
+            CVarSystem.Reload();
+        }
+
+        if (GUILayout.Button("Copy Default to Pers"))
+        {
+            CVarSystem.CopyDefaultFilesToPersistentFolder();
+        }
+
         EditorGUILayout.EndHorizontal();
 
         EditorGUI.EndDisabledGroup();
@@ -139,7 +154,7 @@ public class CVarWindow : EditorWindow
 
         bool boolAux = CVarSystem.CanLoadRuntimeDefault;
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
-        GUI.backgroundColor = Color.yellow;
+        GUI.backgroundColor = Color.cyan;
         boolAux = EditorGUILayout.ToggleLeft("Show Runtime Default", CVarSystem.CanLoadRuntimeDefault);
         GUI.backgroundColor = Color.white;
         if (boolAux != CVarSystem.CanLoadRuntimeDefault)
@@ -148,7 +163,6 @@ public class CVarWindow : EditorWindow
             // change state
             CVarSystem.CanLoadRuntimeDefault = boolAux;
             CVarSystem.LoadGroups(false);
-
         }
 
         if (CVarSystem.CanLoadRuntimeDefault)
@@ -709,11 +723,20 @@ public class CVarWindow : EditorWindow
         T value = CVarSystem.GetValue<T>(varName, default, CurrentGroupName);
         T aux;
         GUILayout.BeginHorizontal();
-        
-        if(CVarSystem.CanLoadRuntimePersistent && CVarSystem.GetPersistent<T>(varName, CurrentGroupName))
-            GUI.backgroundColor = Color.red;
-        else if(CVarSystem.CanLoadRuntimeDefault)
-            GUI.backgroundColor = Color.yellow;
+
+        if (CVarSystem.CanLoadRuntimePersistent)
+        {
+            if (CVarSystem.GetPersistent<T>(varName, CurrentGroupName))
+            {
+                GUI.backgroundColor = Color.red;
+            }
+            else
+            {
+                GUI.backgroundColor = Color.yellow;
+            }
+        }
+        else if (CVarSystem.CanLoadRuntimeDefault)
+            GUI.backgroundColor = Color.cyan;
 
         DrawLocked<T>(varName);
         DrawPersistentField<T>(varName);
