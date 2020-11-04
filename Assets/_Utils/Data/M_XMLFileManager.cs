@@ -6,6 +6,11 @@ using System;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 
+
+/// <summary>
+/// Para serializar Vector3 e outros tipos não serializados por padrão
+/// https://stackoverflow.com/questions/11886290/use-the-xmlinclude-or-soapinclude-attribute-to-specify-types-that-are-not-known
+/// </summary>
 public static class M_XMLFileManager
 {
     //ios error use this 
@@ -125,7 +130,7 @@ public static class M_XMLFileManager
     public static string Serialize<T>(T objectToSerialize)
     {
         MemoryStream mem = new MemoryStream();
-        XmlSerializer ser = new XmlSerializer(typeof(T));
+        XmlSerializer ser = new XmlSerializer(typeof(T), new Type[] { typeof(UnityEngine.Vector3) });
         ser.Serialize(mem, objectToSerialize);
         ASCIIEncoding ascii = new ASCIIEncoding();
 
@@ -136,7 +141,7 @@ public static class M_XMLFileManager
     {
         byte[] bytes = Encoding.UTF8.GetBytes(xmlString);
         MemoryStream mem = new MemoryStream(bytes);
-        XmlSerializer ser = new XmlSerializer(typeof(T));
+        XmlSerializer ser = new XmlSerializer(typeof(T), new Type[] { typeof(UnityEngine.Vector3) });
         return (T)ser.Deserialize(mem);
     }
 }

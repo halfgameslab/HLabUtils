@@ -29,7 +29,7 @@ public class CVarWindow : EditorWindow
     private string _editableAuxName = string.Empty;
     private object _editableAuxValue;
     private int _selectedType = SELECTED_ALL_INDEX;
-    private bool[] _fouldout = new bool[] { true, true, true, true };
+    private bool[] _fouldout = new bool[] { true, true, true, true, true };
     private bool _persistentAux = false;
     private bool _lockedAux = false;
     private GUIStyle style;
@@ -138,6 +138,11 @@ public class CVarWindow : EditorWindow
         if (GUILayout.Button("Copy Default to Pers"))
         {
             CVarSystem.CopyDefaultFilesToPersistentFolder();
+        }
+
+        if (GUILayout.Button("Open persistent folder"))
+        {
+            Application.OpenURL(Application.persistentDataPath);
         }
 
         EditorGUILayout.EndHorizontal();
@@ -608,6 +613,10 @@ public class CVarWindow : EditorWindow
         {
             menu.AddItem(new GUIContent("bool"), false, OnAddNewClickedHandler<bool>, GetNewDefaultValue<bool>());
         }
+        if (_selectedType == SELECTED_ALL_INDEX || _selectedType == 4)
+        {
+            menu.AddItem(new GUIContent("vector3"), false, OnAddNewClickedHandler<bool>, GetNewDefaultValue<bool>());
+        }
 
         menu.ShowAsContext();
     }
@@ -629,7 +638,7 @@ public class CVarWindow : EditorWindow
     {
         GUILayout.BeginHorizontal();
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
-        _selectedType = EditorGUILayout.Popup(_selectedType, new string[] { "string", "int", "float", "bool", "", "all" });
+        _selectedType = EditorGUILayout.Popup(_selectedType, new string[] { "string", "int", "float", "bool", "vector3", "", "all" });
         EditorGUI.EndDisabledGroup();
         GUILayout.EndHorizontal();
     }
@@ -643,6 +652,7 @@ public class CVarWindow : EditorWindow
         DrawHeaderFooterAndVars<int>("Int Vars", _selectedType, 1);
         DrawHeaderFooterAndVars<float>("Float Vars", _selectedType, 2);
         DrawHeaderFooterAndVars<bool>("Boolean Vars", _selectedType, 3);
+        DrawHeaderFooterAndVars<Vector3>("Vector3 Vars", _selectedType, 4);
 
         EditorGUILayout.EndScrollView();
     }
@@ -789,7 +799,7 @@ public class CVarWindow : EditorWindow
 
     private object DrawFieldByType(object value)
     {
-        if(value is string)
+        if (value is string)
             return EditorGUILayout.TextField((string)value);
         else if (value is int)
             return EditorGUILayout.IntField((int)value);
@@ -797,6 +807,8 @@ public class CVarWindow : EditorWindow
             return EditorGUILayout.FloatField((float)value);
         else if (value is bool)
             return EditorGUILayout.Toggle((bool)value);
+        else if (value is Vector3)
+            return EditorGUILayout.Vector3Field("", (Vector3)value);
 
         return null;
     }
@@ -811,6 +823,8 @@ public class CVarWindow : EditorWindow
             return 0.0f;
         else if (typeof(T) == typeof(bool))
             return false;
+        else if (typeof(T) == typeof(Vector3))
+            return Vector3.zero;
 
         return null;
     }
@@ -825,6 +839,8 @@ public class CVarWindow : EditorWindow
             return ObjectNamesManager.GetUniqueName(CVarSystem.GetVarNamesByType<T>(currentGroup), "new_float");
         else if (typeof(T) == typeof(bool))
             return ObjectNamesManager.GetUniqueName(CVarSystem.GetVarNamesByType<T>(currentGroup), "new_bool");
+        else if (typeof(T) == typeof(Vector3))
+            return ObjectNamesManager.GetUniqueName(CVarSystem.GetVarNamesByType<T>(currentGroup), "new_vector3");
 
         return null;
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
@@ -12,7 +13,7 @@ public enum CVarFlag
     LOCKED = 0x08
 }
 
-[Serializable]
+[XmlInclude(typeof(UnityEngine.Vector3))]
 public class CVarObject
 {
     [XmlElement("n")]

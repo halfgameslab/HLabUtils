@@ -10,17 +10,25 @@ public class CVarPropertyDrawerBase : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        if (property.type.Contains("String"))
-            DrawProperty<string>(position, property, label);
-        else if (property.type.Contains("Int"))
-            DrawProperty<int>(position, property, label);
-        else if (property.type.Contains("Float") || property.type.Contains("Single"))
-            DrawProperty<float>(position, property, label);
-        else if (property.type.Contains("Bool"))
-            DrawProperty<bool>(position, property, label);
+        Type[] type = this.fieldInfo.FieldType.GetGenericArguments();
+
+        if (type.Length > 0)
+        {
+            if (type[0] == typeof(string))
+                DrawProperty<string>(position, property, label);
+            else if (type[0] == typeof(int))
+                DrawProperty<int>(position, property, label);
+            else if (type[0] == typeof(float))
+                DrawProperty<float>(position, property, label);
+            else if (type[0] == typeof(bool))
+                DrawProperty<bool>(position, property, label);
+            else if (type[0] == typeof(Vector3))
+                DrawProperty<Vector3>(position, property, label);
+            else            
+                EditorGUI.HelpBox(position, string.Format("Var {0}: Generic Type {1} not suported! ", property.name, this.fieldInfo.FieldType), MessageType.Warning);
+        }
         else
-            EditorGUILayout.HelpBox("Type not suported", MessageType.Warning);
-        
+            EditorGUILayout.HelpBox(string.Format("Var {0}: Type {1} not suported! ", property.name, property.type), MessageType.Warning);
     }
     public static void DrawProperty<T>(Rect position, SerializedProperty property, GUIContent label)
     {
@@ -121,6 +129,8 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             return EditorGUI.FloatField(rect, (float)value);
         else if (value is bool)
             return EditorGUI.Toggle(rect, (bool)value);
+        else if (value is Vector3)
+            return EditorGUI.Vector3Field(rect, "", (Vector3)value);
 
         return null;
     }
@@ -135,6 +145,8 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             return 0.0f;
         else if (typeof(T) == typeof(bool))
             return false;
+        else if (typeof(T) == typeof(Vector3))
+            return Vector3.zero;
 
         return null;
     }

@@ -10,13 +10,30 @@ using UnityEngine.SceneManagement;
 
 public class CVarSample : MonoBehaviour
 {
-    [SerializeField] private CVarInt _varCoins = new CVarInt("coins");
+    /*[SerializeField] private CVarInt _varCoins = new CVarInt("coins");
 
     [SerializeField] private CVarString _coins4 = new CVarString("teste");
 
     [SerializeField] private CVarString _teste1 = new CVarString("teste1");
 
     [SerializeField] private CVarInt _teste13 = new CVarInt("teste", "group_01");
+
+    [SerializeField] private CVarVector3 _v3 = new CVarVector3("new_vector4");*/
+
+    [SerializeField] private CVar<int> _varInt;
+    [SerializeField] private CVar<float> _varFloat;
+
+    [SerializeField] private CVar<Transform> _varT;
+
+    [SerializeField] private CVar<int> _varCoins = new CVar<int>("coins");
+
+    [SerializeField] private CVar<string> _coins4 = new CVar<string>("teste");
+
+    [SerializeField] private CVar<string> _teste1 = new CVar<string>("teste1");
+
+    [SerializeField] private CVar<int> _teste13 = new CVar<int>("teste", "group_01");
+
+    [SerializeField] private CVar<Vector3> _v3 = new CVar<Vector3>("new_vector4");
 
     public int Coins { get => _varCoins.Value; set => _varCoins.Value = value; }
 

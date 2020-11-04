@@ -2,6 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using System;
 
 /// <summary>
 /// Hold values to edit in runtime from code or from console and system
@@ -14,7 +15,6 @@ public class CVar<T>: ISerializationCallbackReceiver
     [SerializeField] private string _name;
     [SerializeField] private string _groupName = "global";
     [SerializeField] private int _address = CVarSystem.VOID;
-    //[SerializeField] private T _value;
 
     public T Value
     {
@@ -67,19 +67,6 @@ public class CVar<T>: ISerializationCallbackReceiver
     /// </summary>
     /// <param name="d"></param>
     public static implicit operator T(CVar<T> d) => d.Value;
-
-    //public CVar(string name, T value, bool overrideValueIfExist = false):this(name)
-    //{
-    //    CVarSystem.SetValue<T>(name, value, overrideValueIfExist);
-    //}
-
-    //public CVar(string name)
-    //{
-    //    Name = name;
-    //    // if has sceneLoaded listener - remove
-    //    SceneManager.sceneLoaded -= OnSceneLoadHandler;
-    //    SceneManager.sceneLoaded += OnSceneLoadHandler;//wait the scene be loaded to add callback
-    //}
 
     public CVar(string name, string groupName = "global"):this()
     {
@@ -181,89 +168,4 @@ public class CVar<T>: ISerializationCallbackReceiver
         CVarSystem.OnVarRenamed += OnVarRenamedHandler;
         CVarSystem.OnVarDeleted += OnVarDeletedHandler;
     }
-}
-
-/// <summary>
-/// Used on unity serialization
-/// </summary>
-[System.Serializable]
-public class CVarString : CVar<string>
-{
-    public CVarString(string name, string groupName = "global") : base(name, groupName)
-    {
-
-    }
-
-    public CVarString():base()
-    {
-
-    }
-
-    //public CVarString(string name, string value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
-    //{
-
-    //}
-}
-
-/// <summary>
-/// Used on unity serialization
-/// </summary>
-[System.Serializable]
-public class CVarInt : CVar<int>
-{
-    public CVarInt(string name, string groupName = "global") : base(name, groupName)
-    {
-        
-    }
-
-    public CVarInt() : base()
-    {
-
-    }
-    //public CVarInt(string name, int value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
-    //{
-
-    //}
-}
-
-/// <summary>
-/// Used on unity serialization
-/// </summary>
-[System.Serializable]
-public class CVarFloat : CVar<float>
-{
-    public CVarFloat(string name, string groupName = "global") : base(name, groupName)
-    {
-
-    }
-
-    public CVarFloat() : base()
-    {
-
-    }
-    //public CVarFloat(string name, float value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
-    //{
-
-    //}
-}
-
-/// <summary>
-/// Used on unity serialization
-/// </summary>
-[System.Serializable]
-public class CVarBool : CVar<bool>
-{
-    public CVarBool(string name, string groupName="global") : base(name, groupName)
-    {
-
-    }
-
-    public CVarBool() : base()
-    {
-
-    }
-    //public CVarBool(string name, bool value, bool overrideValueIfExist = false) : base(name, value, overrideValueIfExist)
-    //{
-
-    //}
 }

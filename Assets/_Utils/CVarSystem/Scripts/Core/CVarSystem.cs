@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -1145,6 +1146,8 @@ public static class CVarSystem
         {
             obj.Group = group;
             obj.FullName = GetFullName(obj.Name, obj.Value.GetType().Name, obj.Group.Name);
+            //if(obj.Value.GetType().Name == "Vector3")
+            //    Debug.Log(obj.Value.GetType());
 
             if(CVars.TryGetValue(obj.FullName, out current))// if the var exists name
             {
