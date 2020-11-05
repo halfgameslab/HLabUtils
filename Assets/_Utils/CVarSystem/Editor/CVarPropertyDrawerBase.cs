@@ -55,7 +55,17 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         //property.FindPropertyRelative("_groupName").stringValue = 
         string[] groups = CVarSystem.GetGroups().Select(x => x.Name).ToArray();
         int indexOfCurrentGroup = Array.IndexOf(groups, groupName);
-        int selectedGroup = EditorGUI.Popup(new Rect(position.x + position.width * 0.12f, position.y, position.width * 0.18f, position.height), indexOfCurrentGroup, groups);
+        int selectedGroup;
+
+        if (indexOfCurrentGroup < 0)
+        {
+            Array.Resize(ref groups, groups.Length + 1);
+            groups[groups.Length-1] = string.Concat("<missing>.", groupName);
+            indexOfCurrentGroup = groups.Length-1;
+        }
+            
+
+        selectedGroup = EditorGUI.Popup(new Rect(position.x + position.width * 0.12f, position.y, position.width * 0.18f, position.height), indexOfCurrentGroup, groups);
         
         if (selectedGroup != indexOfCurrentGroup)
         {

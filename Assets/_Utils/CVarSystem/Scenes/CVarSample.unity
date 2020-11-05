@@ -624,10 +624,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _varCoins:
-    _name: new_name
+  _varInt:
+    _name: 
     _groupName: global
-    _address: 6
+    _address: 0
+  _varFloat:
+    _name: 
+    _groupName: global
+    _address: 0
+  _varCoins:
+    _name: new_int
+    _groupName: global
+    _address: 2
   _coins4:
     _name: teste
     _groupName: global
@@ -638,6 +646,10 @@ MonoBehaviour:
     _address: 0
   _teste13:
     _name: teste
+    _groupName: global
+    _address: 0
+  _v3:
+    _name: 
     _groupName: global
     _address: 0
 --- !u!4 &629853027
@@ -689,18 +701,6 @@ MonoBehaviour:
     _name: 
     _groupName: global
     _address: 0
-  testeInt:
-    _name: new_name
-    _groupName: 
-    _address: 6
-  testeIntFloat:
-    _name: var float
-    _groupName: 
-    _address: 7
-  testeBool:
-    _name: NovaVar
-    _groupName: 
-    _address: 8
 --- !u!4 &1288610019
 Transform:
   m_ObjectHideFlags: 0
@@ -731,18 +731,6 @@ MonoBehaviour:
     _name: 
     _groupName: global
     _address: 0
-  testeInt:
-    _name: myInt
-    _groupName: 
-    _address: 9
-  testeIntFloat:
-    _name: um float qualquer
-    _groupName: 
-    _address: 10
-  testeBool:
-    _name: Novo Bool 6
-    _groupName: 
-    _address: 11
 --- !u!114 &1288610021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -758,18 +746,6 @@ MonoBehaviour:
   teste:
     _name: 
     _groupName: global
-    _address: 0
-  testeInt:
-    _name: teste
-    _groupName: 
-    _address: 5
-  testeIntFloat:
-    _name: 
-    _groupName: 
-    _address: 0
-  testeBool:
-    _name: 
-    _groupName: 
     _address: 0
 --- !u!1001 &1460837824
 PrefabInstance:
@@ -902,14 +878,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _varInt:
+    _name: 
+    _groupName: global
+    _address: 0
+  _varFloat:
+    _name: 
+    _groupName: global
+    _address: 0
   _varCoins:
     _name: coins
     _groupName: global
-    _address: 419
+    _address: 0
   _coins4:
     _name: string5
     _groupName: global
-    _address: 420
+    _address: 0
   _teste1:
     _name: teste6
     _groupName: global
@@ -918,6 +902,10 @@ MonoBehaviour:
     _name: teste
     _groupName: global
     _address: 0
+  _v3:
+    _name: new_vector3 (0)
+    _groupName: global
+    _address: 38
 --- !u!4 &1770459974
 Transform:
   m_ObjectHideFlags: 0
@@ -944,14 +932,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _varInt:
+    _name: 
+    _groupName: global
+    _address: 0
+  _varFloat:
+    _name: 
+    _groupName: global
+    _address: 0
   _varCoins:
     _name: coins
     _groupName: global
-    _address: 419
+    _address: 0
   _coins4:
     _name: string5
     _groupName: global
-    _address: 420
+    _address: 0
   _teste1:
     _name: 222222
     _groupName: group_09
@@ -960,6 +956,10 @@ MonoBehaviour:
     _name: teste
     _groupName: global
     _address: 0
+  _v3:
+    _name: new_vector4
+    _groupName: global
+    _address: 37
 --- !u!1 &2125729517
 GameObject:
   m_ObjectHideFlags: 0

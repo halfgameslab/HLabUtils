@@ -712,7 +712,7 @@ public static class CVarSystem
             return obj;
         }
 
-        Debug.LogWarning(string.Format("Trying create Var {0}. Group not found {1}. Are You missing something?", RemoveTypeAndGroup(fullName),GetGroupNameByFullName(fullName)));
+        Debug.LogWarning(string.Format("Trying create CVar <b>{0}</b>. Group <b>{1}</b> not found. Are You missing something?", RemoveTypeAndGroup(fullName),GetGroupNameByFullName(fullName)));
 
         return null;
     }

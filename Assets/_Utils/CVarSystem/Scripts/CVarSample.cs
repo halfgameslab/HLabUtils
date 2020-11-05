@@ -23,7 +23,7 @@ public class CVarSample : MonoBehaviour
     [SerializeField] private CVar<int> _varInt;
     [SerializeField] private CVar<float> _varFloat;
 
-    [SerializeField] private CVar<Transform> _varT;
+    //[SerializeField] private CVar<Transform> _varT;
 
     [SerializeField] private CVar<int> _varCoins = new CVar<int>("coins");
 

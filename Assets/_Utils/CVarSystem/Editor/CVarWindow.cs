@@ -21,7 +21,7 @@ enum CVarWindowAction
 
 public class CVarWindow : EditorWindow
 {
-    private const int SELECTED_ALL_INDEX = 5;
+    private const int SELECTED_ALL_INDEX = 6;
 
     private string _searchString = string.Empty;
 
@@ -169,7 +169,8 @@ public class CVarWindow : EditorWindow
             CVarSystem.CanLoadRuntimeDefault = boolAux;
             CVarSystem.LoadGroups(false);
         }
-
+        EditorGUI.EndDisabledGroup();
+        EditorGUI.EndDisabledGroup();
         if (CVarSystem.CanLoadRuntimeDefault)
         {
             if (GUILayout.Button("Overwrite editor default") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
@@ -209,12 +210,13 @@ public class CVarWindow : EditorWindow
 
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
-
+        EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived);
         boolAux = CVarSystem.CanLoadRuntimePersistent;
         GUI.backgroundColor = Color.red;
         boolAux = EditorGUILayout.ToggleLeft("Show Runtime Persistent", CVarSystem.CanLoadRuntimePersistent);
         GUI.backgroundColor = Color.white;
         EditorGUI.EndDisabledGroup();
+        
         if (boolAux != CVarSystem.CanLoadRuntimePersistent)
         {
             CVarSystem.UnloadGroups();
@@ -295,7 +297,7 @@ public class CVarWindow : EditorWindow
                 }
                 EditorGUI.EndDisabledGroup();// disable files.Length == 0
 
-                EditorGUI.EndDisabledGroup();
+                //EditorGUI.EndDisabledGroup();
             }
 
             else
@@ -615,7 +617,7 @@ public class CVarWindow : EditorWindow
         }
         if (_selectedType == SELECTED_ALL_INDEX || _selectedType == 4)
         {
-            menu.AddItem(new GUIContent("vector3"), false, OnAddNewClickedHandler<bool>, GetNewDefaultValue<bool>());
+            menu.AddItem(new GUIContent("vector3"), false, OnAddNewClickedHandler<Vector3>, GetNewDefaultValue<Vector3>());
         }
 
         menu.ShowAsContext();
