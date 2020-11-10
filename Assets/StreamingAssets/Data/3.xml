@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <os>
+    <o a="4" f="NONE">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">new_string1</v>
+    </o>
+    <o a="5" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">23</v>
+    </o>
+    <o a="6" f="NONE">
+      <n>new_float</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+  </os>
+</cvar_data>

@@ -15,9 +15,8 @@ public enum CVarGroupPersistentType
 
 public class CVarGroup
 {
+    public string UID { get; set; }
     public string Name { get; set; }
-
-    public string SceneName { get; set; }
 
     public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
@@ -279,19 +278,26 @@ public class CVarGroup
          */
 
         // store the old file path
-        string oldPath = GetFilePath();
-        string oldPersistentPath = GetPersistentFilePath();
+        //string oldPath = GetFilePath();
+        //string oldPersistentPath = GetPersistentFilePath();
 
-        Unload();
+        //Unload();
 
         // rename
         Name = newName;
 
-        // move files
-        M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
-        M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());
+        foreach (CVarObject var in Vars)
+            var.FullName = CVarSystem.ChangeVarGroupName(var.FullName, newName);
 
-        Load();
+        Save();// update group table
+        // move files
+        //M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
+        //M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());
+
+        //Load();
+
+        CVarSystem.SaveGroupListToFile();// update group list table
+
         /*// rename all vars
         foreach(CVarObject c in Vars)
         {
@@ -372,7 +378,7 @@ public class CVarGroup
     /// <returns></returns>
     private string GetFilePath()
     {
-        return GetFilePath(Name);
+        return GetFilePath(UID);
     }
 
     /// <summary>
@@ -381,7 +387,7 @@ public class CVarGroup
     /// <returns></returns>
     private string GetPersistentFilePath()
     {
-        return GetPersistentFilePath(Name, PersistentPrefix);
+        return GetPersistentFilePath(UID, PersistentPrefix);
     }
 
     /// <summary>

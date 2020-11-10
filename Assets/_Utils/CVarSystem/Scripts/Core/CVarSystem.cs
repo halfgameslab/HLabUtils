@@ -362,7 +362,7 @@ public static class CVarSystem
         {
             foreach (CVarGroup group in data)
             {
-                Groups.Add(group.Name, group);
+                Groups.Add(group.UID, group);
             }
 
 #if UNITY_EDITOR
@@ -419,22 +419,24 @@ public static class CVarSystem
     /// <returns>if not override and already exists will return a reference from current</returns>
     public static CVarGroup CreateGroup(string name, bool overrideIfExist = false)
     {
+        CVarGroup oldGroup = GetGroupByName(name);
+
         // check if group exists
-        if (!Groups.TryGetValue(name, out CVarGroup oldGroup) || overrideIfExist)//  se o grupo não existir
+        if (oldGroup == null || overrideIfExist)//  se o grupo não existir
         {
             // Create group with the desired name
-            CVarGroup group = new CVarGroup() { Name = name };
+            CVarGroup group = new CVarGroup() { Name = name, UID = (++CurrentAddress).ToString() };
 
             if (oldGroup == null)
                 // update group list
-                Groups.Add(name, group);
+                Groups.Add(group.UID, group);
             else
             {
                 // Delete old
-                Groups[name].Clear();
+                Groups[oldGroup.UID].Clear();
 
                 // insert new group
-                Groups[name] = group;
+                Groups[oldGroup.UID] = group;
             }
 
             // update group file
@@ -450,32 +452,48 @@ public static class CVarSystem
         //  ignore
     }
 
-    public static void RenameGroup(string name, string newName)
+    public static bool TryRenameGroup(string name, string newName)
     {
+        CVarGroup group = GetGroupByName(name);
         // check if exist group with the desired name
-        if (Groups.TryGetValue(name, out CVarGroup g))
+        if (group != null)
         {
             // if exist
             // check if there isnt another group with the same name
-            if (!Groups.ContainsKey(newName))
+            if (GetGroupByName(newName) == null)
             {
-                Groups.Remove(name);
-                Groups.Add(newName, g);
+                //Groups.Remove(name);
+                //Groups.Add(newName, g);
 
                 // rename group
-                g.Rename(newName);
-                SaveGroupListToFile();
+                group.Rename(newName);
+                return true;
+                //SaveGroupListToFile();
             }
+        }
+
+        return false;
+    }
+
+    public static void RemoveGroupByName(string name)
+    {
+        RemoveGroup(GetGroupByName(name));
+    }
+
+    public static void RemoveGroupByUID(string uid)
+    {
+        if (Groups.TryGetValue(uid, out CVarGroup g))
+        {
+            RemoveGroup(g);
         }
     }
 
-    public static void RemoveGroup(string name)
+    public static void RemoveGroup(CVarGroup group)
     {
-        if(Groups.TryGetValue(name, out CVarGroup g))
+        if (group != null)
         {
-            g.Clear();
-            Groups.Remove(name);
-
+            group.Clear();
+            Groups.Remove(group.UID);
             SaveGroupListToFile();
         }
     }
@@ -690,7 +708,7 @@ public static class CVarSystem
     private static CVarObject CreateVar(string fullName, object value)
     {
         // get new address
-        CVarGroup group = GetGroup(GetGroupNameByFullName(fullName));
+        CVarGroup group = GetGroupByName(GetGroupNameByFullName(fullName));
 
         // if group exist create the var on new group
         if (group != null)
@@ -717,12 +735,13 @@ public static class CVarSystem
         return null;
     }
 
-    public static CVarGroup GetGroup(string name)
+    public static CVarGroup GetGroupByUID(string UID)
     {
-        return Groups.TryGetValue(name, out CVarGroup g)?g:null;
+        return Groups.TryGetValue(UID, out CVarGroup g) ? g : null;
+        
     }
 
-    public static bool TryGetGroup(string name, out CVarGroup g)
+    public static bool TryGetGroupByUID(string name, out CVarGroup g)
     {
         return Groups.TryGetValue(name, out g);
     }
@@ -730,6 +749,11 @@ public static class CVarSystem
     public static bool ContainsGroup(string name)
     {
         return Groups.ContainsKey(name);
+    }
+
+    public static CVarGroup GetGroupByName(string name)
+    {
+        return Groups.Values.FirstOrDefault(group => group.Name == name);
     }
 
     /// <summary>
@@ -895,7 +919,7 @@ public static class CVarSystem
     {
         List<string> names = new List<string>();
 
-        CVarGroup g = GetGroup(group);
+        CVarGroup g = GetGroupByName(group);
 
         if (g != null)
         {

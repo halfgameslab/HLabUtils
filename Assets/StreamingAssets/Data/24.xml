@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <os>
+    <o a="25" f="NONE">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="26" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">0</v>
+    </o>
+    <o a="27" f="NONE">
+      <n>new_float</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+    <o a="28" f="NONE">
+      <n>new_bool</n>
+      <v xsi:type="xsd:boolean">false</v>
+    </o>
+  </os>
+</cvar_data>

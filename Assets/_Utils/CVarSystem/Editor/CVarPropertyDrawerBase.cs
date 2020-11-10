@@ -45,9 +45,10 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         var indent = EditorGUI.indentLevel;
         EditorGUI.indentLevel = 0;
 
+        CVarGroup group = CVarSystem.GetGroupByUID(property.FindPropertyRelative("_groupUID").stringValue);
         string key = property.FindPropertyRelative("_name").stringValue;
-        string groupName = property.FindPropertyRelative("_groupName").stringValue;
-
+        string groupName = group != null?group.Name:string.Empty;
+        
         int address = property.FindPropertyRelative("_address").intValue;
 
         EditorGUI.LabelField(new Rect(position.x, position.y, position.width * 0.3f, position.height), label);
@@ -56,7 +57,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         string[] groups = CVarSystem.GetGroups().Select(x => x.Name).ToArray();
         int indexOfCurrentGroup = Array.IndexOf(groups, groupName);
         int selectedGroup;
-
+        
         if (indexOfCurrentGroup < 0)
         {
             Array.Resize(ref groups, groups.Length + 1);
@@ -64,13 +65,13 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             indexOfCurrentGroup = groups.Length-1;
         }
             
-
         selectedGroup = EditorGUI.Popup(new Rect(position.x + position.width * 0.12f, position.y, position.width * 0.18f, position.height), indexOfCurrentGroup, groups);
         
         if (selectedGroup != indexOfCurrentGroup)
         {
             groupName = groups[selectedGroup];
-            property.FindPropertyRelative("_groupName").stringValue = groupName;
+            property.FindPropertyRelative("_groupUID").stringValue = CVarSystem.GetGroupByName(groupName).UID;
+            Debug.Log(property.FindPropertyRelative("_groupUID").stringValue);
             address = property.FindPropertyRelative("_address").intValue = CVarSystem.GetAddress<T>(key, groupName);
             property.serializedObject.ApplyModifiedProperties();
         }

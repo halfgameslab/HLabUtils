@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <os>
+    <o a="29" f="NONE">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">413241324123</v>
+    </o>
+    <o a="30" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">2147483647</v>
+    </o>
+  </os>
+</cvar_data>

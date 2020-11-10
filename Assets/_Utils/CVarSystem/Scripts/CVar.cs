@@ -13,20 +13,40 @@ using System;
 public class CVar<T>: ISerializationCallbackReceiver
 {
     [SerializeField] private string _name;
-    [SerializeField] private string _groupName = "global";
+    //[SerializeField] private string _groupName = "global";
+    [SerializeField] private string _groupUID = "1";
     [SerializeField] private int _address = CVarSystem.VOID;
+
+    public string GroupName 
+    {
+        get
+        {
+            if(CVarSystem.TryGetGroupByUID(_groupUID, out CVarGroup group))
+                return group.Name;
+
+            return string.Empty;
+        }
+
+        set
+        {
+            CVarGroup group = CVarSystem.GetGroupByName(value);
+
+            if(group != null)
+                _groupUID = group.UID;
+        }
+    }
 
     public T Value
     {
         get
         {
-            return CVarSystem.ContainsVarAt(_address)?CVarSystem.GetValueAt<T>(_address):CVarSystem.GetValue<T>(_name, default, _groupName);
+            return CVarSystem.ContainsVarAt(_address)?CVarSystem.GetValueAt<T>(_address):CVarSystem.GetValue<T>(_name, default, GroupName);
         }
         set
         {
             if (CVarSystem.ContainsVarAt(_address))
                 CVarSystem.SetValueAt<T>(_address, value);
-            else if(_name != null && _name.Length > 0) CVarSystem.SetValue<T>(_name, value, _groupName);
+            else if(_name != null && _name.Length > 0) CVarSystem.SetValue<T>(_name, value, GroupName);
         }
     }
 
@@ -46,7 +66,7 @@ public class CVar<T>: ISerializationCallbackReceiver
                 {
                     // if there is some value before
                     if (_name != null && _name.Length > 0)
-                        CVarSystem.RemoveOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler); // remove last value
+                        CVarSystem.RemoveOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler); // remove last value
 
                     // name receive new value
                     _name = value;
@@ -54,13 +74,15 @@ public class CVar<T>: ISerializationCallbackReceiver
                     // try get some adress from this var
                     _address = CVarSystem.GetAddress<T>(_name);
 
-                    if(!CVarSystem.HasOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler))
+                    if(!CVarSystem.HasOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler))
                         // add listener to the new var
-                        CVarSystem.AddOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
+                        CVarSystem.AddOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler);
                 }// end if value
             }// end if _name != value
         }// end set
     }// end property Name
+
+    
 
     /// <summary>
     /// When you convert the class to the type base you receive direct the value
@@ -71,13 +93,13 @@ public class CVar<T>: ISerializationCallbackReceiver
     public CVar(string name, string groupName = "global"):this()
     {
         _name = name;
-        _groupName = groupName;
+        GroupName = groupName;
         
     }
 
     public CVar()
     {
-        _groupName = "global";
+        GroupName = "global";
         SceneManager.sceneLoaded -= OnSceneLoadHandler;
         SceneManager.sceneLoaded += OnSceneLoadHandler;
     }
@@ -88,7 +110,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         {
             _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
         }
-        else if (obj.FullName == CVarSystem.GetFullName<T>(_name, _groupName))
+        else if (obj.FullName == CVarSystem.GetFullName<T>(_name, GroupName))
         {
             _address = obj.Address;
         }
@@ -108,7 +130,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         {
             _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
         }
-        else if(oldName == CVarSystem.GetFullName<T>(_name, _groupName))
+        else if(oldName == CVarSystem.GetFullName<T>(_name, GroupName))
         {
             _address = obj.Address;
             _name = CVarSystem.RemoveTypeAndGroup(obj.FullName);
@@ -122,7 +144,7 @@ public class CVar<T>: ISerializationCallbackReceiver
         CVarSystem.OnVarDeleted -= OnVarDeletedHandler;
 
         SceneManager.sceneLoaded -= OnSceneLoadHandler;
-        CVarSystem.RemoveOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
+        CVarSystem.RemoveOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler);
     }
 
     public override string ToString()
@@ -132,8 +154,8 @@ public class CVar<T>: ISerializationCallbackReceiver
 
     private void OnSceneLoadHandler(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (!CVarSystem.HasOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler))
-            CVarSystem.AddOnValueChangeListener<T>(_name, _groupName, OnValueChangeHandler);
+        if (!CVarSystem.HasOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler))
+            CVarSystem.AddOnValueChangeListener<T>(_name, GroupName, OnValueChangeHandler);
     }
 
     private void OnValueChangeHandler(ES_Event ev)
@@ -150,11 +172,11 @@ public class CVar<T>: ISerializationCallbackReceiver
                 _name = CVarSystem.GetNameAt<T>(_address);
             }
             else if (CVarSystem.ContainsVar<T>(_name))
-                _address = CVarSystem.GetAddress<T>(_name, _groupName);
+                _address = CVarSystem.GetAddress<T>(_name, GroupName);
         }
         else
         {
-            _address = CVarSystem.GetAddress<T>(_name, _groupName);
+            _address = CVarSystem.GetAddress<T>(_name, GroupName);
         }
     }
 
