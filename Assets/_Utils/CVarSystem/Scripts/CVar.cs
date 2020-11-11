@@ -13,7 +13,7 @@ using System;
 public class CVar<T>: ISerializationCallbackReceiver
 {
     [SerializeField] private string _name;
-    //[SerializeField] private string _groupName = "global";
+    [SerializeField] private string _groupName = "global";
     [SerializeField] private string _groupUID = "1";
     [SerializeField] private int _address = CVarSystem.VOID;
 
@@ -21,10 +21,23 @@ public class CVar<T>: ISerializationCallbackReceiver
     {
         get
         {
-            if(CVarSystem.TryGetGroupByUID(_groupUID, out CVarGroup group))
-                return group.Name;
+            CVarGroup group;
 
-            return string.Empty;
+            if (CVarSystem.TryGetGroupByUID(_groupUID, out group))
+            {
+                _groupName = group.Name;
+            }
+            else
+            {
+                group = CVarSystem.GetGroupByName(_groupName);
+
+                if (group != null)
+                {
+                    _groupUID = group.UID;
+                }
+            }
+
+            return _groupName;
         }
 
         set
@@ -33,6 +46,8 @@ public class CVar<T>: ISerializationCallbackReceiver
 
             if(group != null)
                 _groupUID = group.UID;
+
+            _groupName = value;
         }
     }
 

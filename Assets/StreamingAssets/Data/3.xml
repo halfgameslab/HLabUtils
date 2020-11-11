@@ -13,5 +13,9 @@
       <n>new_float</n>
       <v xsi:type="xsd:float">0</v>
     </o>
+    <o a="36" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">23</v>
+    </o>
   </os>
 </cvar_data>

@@ -735,6 +735,11 @@ public static class CVarSystem
         return null;
     }
 
+    public static bool ContainsGroupByUID(string uid)
+    {
+        return Groups.ContainsKey(uid);
+    }
+
     public static CVarGroup GetGroupByUID(string UID)
     {
         return Groups.TryGetValue(UID, out CVarGroup g) ? g : null;

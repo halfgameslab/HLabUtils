@@ -626,31 +626,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _varInt:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
   _varFloat:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
   _varCoins:
     _name: new_int
-    _groupUID: 1
-    _address: 0
+    _groupName: global
+    _groupUID: 0
+    _address: 35
   _coins4:
     _name: teste
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 422
   _teste1:
     _name: new_string (2)
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
   _teste13:
     _name: teste
-    _groupUID: 1
+    _groupName: group_01
+    _groupUID: 37
     _address: 0
   _v3:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
 --- !u!4 &629853027
 Transform:
@@ -699,7 +706,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
 --- !u!4 &1288610019
 Transform:
@@ -729,7 +737,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
 --- !u!114 &1288610021
 MonoBehaviour:
@@ -745,7 +754,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teste:
     _name: 
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
 --- !u!1001 &1460837824
 PrefabInstance:
@@ -879,33 +889,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varInt:
-    _name: 
+    _name: new_int
+    _groupName: global
     _groupUID: 0
-    _address: 0
+    _address: 35
   _varFloat:
     _name: 
+    _groupName: new_group_001
     _groupUID: 3
     _address: 0
   _varCoins:
     _name: coins
+    _groupName: new_group333
     _groupUID: 7
     _address: 0
   _coins4:
     _name: string5
+    _groupName: new_group_001
     _groupUID: 3
     _address: 0
   _teste1:
     _name: teste6
+    _groupName: new_group1234
     _groupUID: 12
     _address: 0
   _teste13:
     _name: teste
-    _groupUID: 1
+    _groupName: group_01
+    _groupUID: 37
     _address: 0
   _v3:
-    _name: new_vector3 (0)
-    _groupUID: 1
-    _address: 38
+    _name: teste
+    _groupName: global
+    _groupUID: 0
+    _address: 0
 --- !u!4 &1770459974
 Transform:
   m_ObjectHideFlags: 0
@@ -934,30 +951,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _varInt:
     _name: new_int
+    _groupName: new_group_001
     _groupUID: 3
     _address: 5
   _varFloat:
     _name: 
+    _groupName: global
     _groupUID: 0
     _address: 0
   _varCoins:
     _name: coins
+    _groupName: new_group1234
     _groupUID: 12
     _address: 0
   _coins4:
     _name: string5
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 0
   _teste1:
     _name: 222222
-    _groupUID: 1
+    _groupName: global
+    _groupUID: 0
     _address: 424
   _teste13:
     _name: teste
+    _groupName: new_group1234
     _groupUID: 12
     _address: 0
   _v3:
     _name: new_vector4
+    _groupName: global
     _groupUID: 0
     _address: 0
 --- !u!1 &2125729517

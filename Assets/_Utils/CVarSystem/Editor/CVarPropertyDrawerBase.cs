@@ -47,7 +47,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
 
         CVarGroup group = CVarSystem.GetGroupByUID(property.FindPropertyRelative("_groupUID").stringValue);
         string key = property.FindPropertyRelative("_name").stringValue;
-        string groupName = group != null?group.Name:string.Empty;
+        string groupName = group != null?group.Name: property.FindPropertyRelative("_groupName").stringValue;
         
         int address = property.FindPropertyRelative("_address").intValue;
 
@@ -71,7 +71,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         {
             groupName = groups[selectedGroup];
             property.FindPropertyRelative("_groupUID").stringValue = CVarSystem.GetGroupByName(groupName).UID;
-            Debug.Log(property.FindPropertyRelative("_groupUID").stringValue);
+            property.FindPropertyRelative("_groupName").stringValue = CVarSystem.GetGroupByName(groupName).Name;
             address = property.FindPropertyRelative("_address").intValue = CVarSystem.GetAddress<T>(key, groupName);
             property.serializedObject.ApplyModifiedProperties();
         }
@@ -83,11 +83,11 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         if (CVarSystem.ContainsVarAt(address))
         {
             EditorGUI.BeginDisabledGroup(CVarSystem.GetLockedAt<T>(address));
-            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValueAt<T>(address, (T)GetDefault<T>()));
+            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f - 20, position.height), CVarSystem.GetValueAt<T>(address, (T)GetDefault<T>()));
             EditorGUI.EndDisabledGroup();
 
             // draw Edit button at the end of line
-            if (GUI.Button(new Rect(position.x + position.width -17, position.y, 17, position.height), "E"))
+            if (GUI.Button(new Rect(position.x + position.width - 17, position.y, 17, position.height), "E"))
             {
                 CVarWindow.SelectWindow(groupName);
             }
@@ -97,11 +97,12 @@ public class CVarPropertyDrawerBase : PropertyDrawer
                 CVarSystem.SetValueAt<T>(address, value);
                 //SetPropertyValue<T>(property, value);
             }
+            //EditorGUI.EndProperty();
         }
         else if (CVarSystem.ContainsVar<T>(key, groupName))
         {
             EditorGUI.BeginDisabledGroup(CVarSystem.GetLocked<T>(key, groupName));
-            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f -20, position.height), CVarSystem.GetValue<T>(key, (T)GetDefault<T>(), groupName));
+            value = (T)DrawFieldByType(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f - 20, position.height), CVarSystem.GetValue<T>(key, (T)GetDefault<T>(), groupName));
             EditorGUI.EndDisabledGroup();
 
             // draw Edit button at the end of line
@@ -115,14 +116,22 @@ public class CVarPropertyDrawerBase : PropertyDrawer
                 CVarSystem.SetValue<T>(key, value, groupName);
                 //SetPropertyValue<T>(property, value);
             }
+            //EditorGUI.EndProperty();
         }
         else if (key != null && key.Length > 0)
+        {
             if (GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Fix", "Click to create var at selected group.")))
             {
+                if (CVarSystem.GetGroupByName(groupName) == null)
+                {
+                    property.FindPropertyRelative("_groupUID").stringValue = CVarSystem.CreateGroup(groupName).UID;
+                    property.serializedObject.ApplyModifiedProperties();
+                }
+
                 CVarSystem.SetValue<T>(key, (T)GetDefault<T>(), groupName);
             }
-
-        
+            
+        }        
 
         // Set indent back to what it was
         EditorGUI.indentLevel = indent;

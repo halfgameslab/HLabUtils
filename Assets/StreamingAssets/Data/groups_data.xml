@@ -7,7 +7,7 @@
   </CVarGroup>
   <CVarGroup>
     <UID>3</UID>
-    <Name>new_group</Name>
+    <Name>new_group_001</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup>
@@ -17,7 +17,7 @@
   </CVarGroup>
   <CVarGroup>
     <UID>12</UID>
-    <Name>new_group4321</Name>
+    <Name>new_group1234</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup>

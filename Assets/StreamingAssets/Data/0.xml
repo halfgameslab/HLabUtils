@@ -5,5 +5,9 @@
       <n>new_string</n>
       <v xsi:type="xsd:string">new_string</v>
     </o>
+    <o a="35" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">5</v>
+    </o>
   </os>
 </cvar_data>
