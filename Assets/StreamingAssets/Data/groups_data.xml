@@ -1,38 +1,23 @@
 <?xml version="1.0"?>
 <ArrayOfCVarGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <CVarGroup>
-    <UID>0</UID>
+    <UID>1</UID>
     <Name>global</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup>
     <UID>3</UID>
-    <Name>new_group_001</Name>
-    <PersistentType>SHARED</PersistentType>
+    <Name>new_group</Name>
+    <PersistentType>PER_SCENE</PersistentType>
   </CVarGroup>
   <CVarGroup>
-    <UID>7</UID>
-    <Name>new_group333</Name>
-    <PersistentType>SHARED</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>12</UID>
-    <Name>new_group1234</Name>
-    <PersistentType>SHARED</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>14</UID>
-    <Name>new_group (3)</Name>
-    <PersistentType>SHARED</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>19</UID>
-    <Name>new_group (4)</Name>
-    <PersistentType>SHARED</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>24</UID>
+    <UID>6</UID>
     <Name>new_group (0)</Name>
+    <PersistentType>SHARED</PersistentType>
+  </CVarGroup>
+  <CVarGroup>
+    <UID>10</UID>
+    <Name>new_group (1)</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
 </ArrayOfCVarGroup>

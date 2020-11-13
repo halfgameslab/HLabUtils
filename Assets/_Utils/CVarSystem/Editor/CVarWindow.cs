@@ -133,10 +133,17 @@ public class CVarWindow : EditorWindow
     private void DrawTopBar()
     {
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
-        EditorGUI.DrawRect(new Rect(0, EditorGUIUtility.singleLineHeight*1.5f, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight * 3.5f), new Color(0.2f, 0.2f, 0.2f));
-        EditorGUILayout.BeginHorizontal();
+        //EditorGUI.DrawRect(new Rect(0, 0, EditorGUIUtility.currentViewWidth, this.maxSize.y), new Color(0.15f, 0.15f, 0.15f));
+        //EditorGUI.DrawRect(new Rect(0, 0, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight * 9.5f), new Color(0.15f, 0.15f, 0.15f));
+        EditorGUI.DrawRect(new Rect(0, EditorGUIUtility.singleLineHeight * 9.5f, EditorGUIUtility.currentViewWidth, this.maxSize.y), new Color(0.2f, 0.2f, 0.2f));
+        //EditorGUI.DrawRect(new Rect(0, 23f, EditorGUIUtility.currentViewWidth, 22f), new Color(0.15f, 0.15f, 0.15f));
+        EditorGUI.DrawRect(new Rect(0, EditorGUIUtility.singleLineHeight * 2.5f, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight * 3.5f), new Color(0.2f, 0.2f, 0.2f));
         
-        if(DefaultButton("+", "Criar Grupo"))
+        EditorGUILayout.BeginHorizontal();
+
+        GUI.backgroundColor = new Color(1, 1, 1, 0);
+        if (DefaultTextureButton("d_Collab.FileAdded", "Create New Group"))
+        //if(DefaultButton("+", "Criar Grupo"))
         {
             _editableName = ObjectNamesManager.GetUniqueName(CVarSystem.GetGroups().Select((CVarGroup g)=>g.Name).ToArray(),"new_group");
             _editableAuxName = "undefined";
@@ -144,31 +151,57 @@ public class CVarWindow : EditorWindow
             _currentGroupAux = CurrentGroup;
             CurrentGroup = null;
         }
-
-        if(GUILayout.Button(CVarSystem.IsEditModeActived?"Disable Edit Mode": "Enable Edit Mode"))
-        {
-            CVarSystem.ActiveEditMode(!CVarSystem.IsEditModeActived);
-        }
-
-        if (GUILayout.Button("Reload"))
+        
+        if (DefaultTextureButton("d_Refresh@2x", "Reload"))
         {
             CVarSystem.Reload();
         }
 
-        if (GUILayout.Button("Copy Default to Pers"))
+        //if (GUILayout.Button(CVarSystem.IsEditModeActived?"Disable Edit Mode": "Enable Edit Mode"))
+        if (DefaultTextureButton(CVarSystem.IsEditModeActived ? "d_PlayButton@2x" : "d_PauseButton@2x", CVarSystem.IsEditModeActived ? "Disable Edit Mode" : "Enable Edit Mode"))
         {
-            CVarSystem.CopyDefaultFilesToPersistentFolder();
+            CVarSystem.ActiveEditMode(!CVarSystem.IsEditModeActived);
         }
 
-        if (GUILayout.Button("Open persistent folder"))
+        if (DefaultTextureButton("FolderOpened Icon", "Open persistent folder"))
         {
             Application.OpenURL(Application.persistentDataPath);
         }
+
+        if (PlayerPrefs.GetInt("FilesCopied", 0) == 0)
+        {
+            //if (GUILayout.Button("Copy Default to Pers"))
+            if (DefaultTextureButton("d_Collab.FolderMoved", "Copy default files to persistent folder"))
+            {
+                CVarSystem.CopyDefaultFilesToPersistentFolder();
+                EditorUtility.DisplayDialog("Copy files", "Files coppied with successed!", "Continue");
+            }
+        }
+        else
+        {
+            //if (GUILayout.Button("Delete Pers Default "))
+            if (DefaultTextureButton("Collab.FolderDeleted", "Delete all data files in persistent folder") && EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel"))
+            {
+                CVarSystem.ResetToDefault(false);
+            }
+        }
+        
+        if (DefaultTextureButton("d_Grid.EraserTool@2x", "Delete all files") && EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel"))
+        {
+            CVarSystem.DeleteAll();
+        }
+
+        GUI.backgroundColor = new Color(1, 1, 1, 1);
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUI.EndDisabledGroup();
 
+    }
+
+    private bool DefaultTextureButton(string textureName, string hint, float w = 50, float h = 40)
+    {
+        return GUILayout.Button(new GUIContent(EditorGUIUtility.FindTexture(textureName), hint), GUILayout.Width(w), GUILayout.Height(h));
     }
 
     private void DrawFileManager()
@@ -252,7 +285,7 @@ public class CVarWindow : EditorWindow
                 // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
                 Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
 
-                string[] files = CVarSystem.ListAllPersistentFilesNameByGroup(CurrentGroup.Name);
+                string[] files = CurrentGroup.ListAllPersistentFileNames();
 
                 EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
                 
@@ -369,13 +402,13 @@ public class CVarWindow : EditorWindow
         else 
         {
             EditorGUI.BeginDisabledGroup(!CVarSystem.CanLoadRuntimePersistent);
-            if (!System.IO.File.Exists(CVarGroup.GetPersistentFilePath(CurrentGroup.Name, string.Empty)))
+            if (!System.IO.File.Exists(CVarGroup.GetPersistentFilePath(CurrentGroup.UID, string.Empty)))
             {
                 if (GUILayout.Button("Create File"))
                 {
                     CurrentGroup?.Save();
                     CurrentGroup?.FlushPersistent();
-                    EditorUtility.DisplayDialog("Success", "Group Created", "Continue");
+                    EditorUtility.DisplayDialog("Success", "File Created", "Continue");
                 }
             }
             else
@@ -421,6 +454,7 @@ public class CVarWindow : EditorWindow
 
             EditorGUI.BeginDisabledGroup(CurrentGroup.Name == "global");
             if (DefaultButton("E", "Edit Group"))
+            //if(DefaultTextureButton("d_editicon.sml", "Edit Group", 19, 19))
             {
                 _currentAction = CVarWindowAction.EDIT_GROUP;
                 _editableName = CurrentGroup.Name;

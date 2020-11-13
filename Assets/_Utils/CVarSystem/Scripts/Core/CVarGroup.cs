@@ -1,6 +1,8 @@
 ﻿using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -281,15 +283,19 @@ public class CVarGroup
         //string oldPath = GetFilePath();
         //string oldPersistentPath = GetPersistentFilePath();
 
-        //Unload();
+        Unload();
 
         // rename
         Name = newName;
 
-        foreach (CVarObject var in Vars)
+        Load();
+        
+        /*foreach (CVarObject var in Vars)
+        {
             var.FullName = CVarSystem.ChangeVarGroupName(var.FullName, newName);
+        }*/
 
-        Save();// update group table
+        //Save();// update group table
         // move files
         //M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
         //M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());
@@ -371,6 +377,30 @@ public class CVarGroup
         // delete persistent
         M_XMLFileManager.Delete(GetPersistentFilePath());        
     }// end Clear
+
+    public string[] ListAllPersistentFileNames()
+    {
+        // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
+        Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
+
+        string[] files;
+        string directory = System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent");
+
+        if (System.IO.Directory.Exists(directory))
+        {
+            files = System.IO.Directory.EnumerateFiles(directory).Where(name => name.Contains(UID)).ToArray();
+            for (int i = 0; i < files.Length; i++)
+            {
+                files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;
+            }
+        }
+        else
+        {
+            files = new string[] { };
+        }
+
+        return files;
+    }
 
     /// <summary>
     /// Return the file path to default data

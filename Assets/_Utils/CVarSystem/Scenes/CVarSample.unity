@@ -643,7 +643,7 @@ MonoBehaviour:
     _name: teste
     _groupName: global
     _groupUID: 0
-    _address: 422
+    _address: 47
   _teste1:
     _name: new_string (2)
     _groupName: global
@@ -652,7 +652,7 @@ MonoBehaviour:
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 37
+    _groupUID: 45
     _address: 0
   _v3:
     _name: 
@@ -869,6 +869,7 @@ GameObject:
   - component: {fileID: 1770459974}
   - component: {fileID: 1770459973}
   - component: {fileID: 1770459975}
+  - component: {fileID: 1770459976}
   m_Layer: 0
   m_Name: CVarSample (1)
   m_TagString: Untagged
@@ -916,7 +917,7 @@ MonoBehaviour:
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 37
+    _groupUID: 45
     _address: 0
   _v3:
     _name: teste
@@ -978,6 +979,53 @@ MonoBehaviour:
     _name: teste
     _groupName: new_group1234
     _groupUID: 12
+    _address: 0
+  _v3:
+    _name: new_vector4
+    _groupName: global
+    _groupUID: 0
+    _address: 0
+--- !u!114 &1770459976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770459972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _varInt:
+    _name: 
+    _groupName: global
+    _groupUID: 0
+    _address: 0
+  _varFloat:
+    _name: 
+    _groupName: global
+    _groupUID: 0
+    _address: 0
+  _varCoins:
+    _name: coins
+    _groupName: global
+    _groupUID: 0
+    _address: 0
+  _coins4:
+    _name: teste
+    _groupName: global
+    _groupUID: 0
+    _address: 47
+  _teste1:
+    _name: teste1
+    _groupName: global
+    _groupUID: 0
+    _address: 0
+  _teste13:
+    _name: teste
+    _groupName: global
+    _groupUID: 0
     _address: 0
   _v3:
     _name: new_vector4

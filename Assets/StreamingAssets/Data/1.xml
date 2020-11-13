@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <os>
-    <o a="20" f="NONE">
+    <o a="2" f="NONE">
       <n>new_string</n>
       <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="14" f="NONE">
+      <n>new_vector3</n>
+      <v xsi:type="Vector3">
+        <x>0</x>
+        <y>0</y>
+        <z>0</z>
+      </v>
     </o>
   </os>
 </cvar_data>

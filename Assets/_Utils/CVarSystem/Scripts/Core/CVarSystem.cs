@@ -150,21 +150,7 @@ public static class CVarSystem
             return ParseStreamingDefaultDataPathWith(filename);
 #endif
         return ParsePersistentDefaultDataPathWith(filename);
-    }
-
-    public static string[] ListAllPersistentFilesNameByGroup(string group)
-    {
-        // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
-        Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
-
-        string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent")).Where(name => name.Contains(group)).ToArray();
-        for (int i = 0; i < files.Length; i++)
-        {
-            files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;
-        }
-
-        return files;
-    }
+    }  
 
     private static int CurrentAddress
     {
@@ -267,18 +253,40 @@ public static class CVarSystem
         }
     }
 
-    public static void ResetToDefault()
+    private static void DeleteDirectoryIfExists(string directory)
     {
-        UnloadGroups();
+        if(System.IO.Directory.Exists(directory))
+            System.IO.Directory.Delete(directory, true);
+    }
+
+    public static void DeleteAll()
+    {
+        UnloadGroups(true);
+
+        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"));
 
         PlayerPrefs.SetInt("FilesCopied", 0);
-        
-        System.IO.Directory.Delete(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
-        System.IO.Directory.Delete(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+        CurrentAddress = 0;
+        CreateGroup("global");
 
-        CopyDefaultFilesToPersistentFolder();
+    }
 
-        LoadGroups();
+    public static void ResetToDefault(bool copyDefaultToPersistentFolder = true)
+    {
+        UnloadGroups(true);
+
+        PlayerPrefs.SetInt("FilesCopied", 0);
+
+        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+
+        if (copyDefaultToPersistentFolder)
+            CopyDefaultFilesToPersistentFolder();
+
+        //LoadGroups();
+        M_XMLFileManager.NewLoad<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
     }
 
     private static void OnApplicationQuitHandler()
@@ -376,9 +384,9 @@ public static class CVarSystem
         else
         {
             // create global group
+            CurrentAddress = 0;
             CreateGroup("global");
             IsReady = true;
-            CurrentAddress = 0;
             //SetPersistent<int>("CurrentAddress", true);
         }
 
@@ -424,8 +432,9 @@ public static class CVarSystem
         // check if group exists
         if (oldGroup == null || overrideIfExist)//  se o grupo não existir
         {
+            CurrentAddress++;
             // Create group with the desired name
-            CVarGroup group = new CVarGroup() { Name = name, UID = (++CurrentAddress).ToString() };
+            CVarGroup group = new CVarGroup() { Name = name, UID = CurrentAddress.ToString() };
 
             if (oldGroup == null)
                 // update group list
