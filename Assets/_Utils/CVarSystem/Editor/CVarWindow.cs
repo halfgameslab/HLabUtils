@@ -32,6 +32,7 @@ public class CVarWindow : EditorWindow
     private bool[] _fouldout = new bool[] { true, true, true, true, true };
     private bool _persistentAux = false;
     private bool _lockedAux = false;
+    private bool _showAddress = false;
     private GUIStyle style;
 
     private CVarWindowAction _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
@@ -209,14 +210,55 @@ public class CVarWindow : EditorWindow
         return GUILayout.Button(new GUIContent(EditorGUIUtility.FindTexture(textureName), hint), GUILayout.Width(w), GUILayout.Height(h));
     }
 
+    private void DrawDefaultFileManagerOptions(CVarGroup currentGroup, string loadedPath, string unloadedPath)
+    {
+        if (System.IO.File.Exists(loadedPath))
+        {
+            if (GUILayout.Button("Overwrite") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite runtime default file?", "Ovewrite", "Cancel"))
+            {
+                currentGroup?.Unload();
+                M_XMLFileManager.Copy
+                (
+                    loadedPath,
+                    unloadedPath,
+                    true
+                );
+                currentGroup?.Load(false);
+            }
+            if (DefaultButton("-", "Delete"))
+            {
+                currentGroup?.Unload();
+                M_XMLFileManager.Delete
+                (
+                    loadedPath
+                );
+
+                M_XMLFileManager.Delete
+                (
+                    string.Concat(loadedPath, ".meta")
+                );
+                currentGroup?.Load(false);
+            }
+        }
+        else
+        {
+            if (GUILayout.Button(new GUIContent("Create File", "Create File")))
+            {
+                currentGroup.Save();
+                currentGroup.Flush();
+            }
+        }
+    }
+
     private void DrawFileManager()
     {
-        EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived);
+        EditorGUI.BeginDisabledGroup(PlayerPrefs.GetInt("FilesCopied", 0) == 0);
+        EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived || _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
 
         EditorGUILayout.BeginHorizontal();
 
         bool boolAux = CVarSystem.CanLoadRuntimeDefault;
-        EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
+        
         GUI.backgroundColor = Color.cyan;
         boolAux = EditorGUILayout.ToggleLeft("Show Runtime Default", CVarSystem.CanLoadRuntimeDefault);
         GUI.backgroundColor = Color.white;
@@ -228,43 +270,81 @@ public class CVarWindow : EditorWindow
             CVarSystem.LoadGroups(false);
         }
         EditorGUI.EndDisabledGroup();
-        EditorGUI.EndDisabledGroup();
+        
         if (CVarSystem.CanLoadRuntimeDefault)
         {
-            if (GUILayout.Button("Overwrite editor default") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
-            {
-                CurrentGroup?.Unload();
-                M_XMLFileManager.Copy
+            //if (GUILayout.Button("Copy to editor") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
+            //{
+            //    CurrentGroup?.Unload();
+            //    M_XMLFileManager.Copy
+            //    (
+            //        CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")),
+            //        CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")),
+            //        /*   //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
+            //           file,
+            //           //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
+            //           CVarSystem.ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),*/
+            //        true
+            //    );
+            //    CurrentGroup?.Load(false);
+            //}
+            //DefaultButton("+", "Create File");
+            //DefaultButton("-", "Delete");
+            
+            DrawDefaultFileManagerOptions
                 (
-                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.Name, ".xml")),
-                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.Name, ".xml")),
-                    /*   //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
-                       file,
-                       //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
-                       CVarSystem.ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),*/
-                    true
+                    CurrentGroup, 
+                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")), 
+                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml"))
                 );
-                CurrentGroup?.Load(false);
-            }
+            
         }
         else 
         {
-            if (GUILayout.Button("Overwrite runtime default") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite default file?", "Ovewrite", "Cancel"))
-            {
-                CurrentGroup?.Unload();
-                M_XMLFileManager.Copy
+            DrawDefaultFileManagerOptions
                 (
-                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.Name, ".xml")),
-                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.Name, ".xml")),
-                    /*   //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
-                       file,
-                       //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
-                       CVarSystem.ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),*/
-                    true
+                    CurrentGroup,
+                    CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")),
+                    CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml"))
                 );
-                CurrentGroup?.Load(false);
+            /*if (System.IO.File.Exists(CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml"))))
+            {
+                if (GUILayout.Button("Copy to runtime") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite runtime default file?", "Ovewrite", "Cancel"))
+                {
+                    CurrentGroup?.Unload();
+                    M_XMLFileManager.Copy
+                    (
+                        CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")),
+                        CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml")),
+                        true
+                    );
+                    CurrentGroup?.Load(false);
+                }
+                if(DefaultButton("-", "Delete"))
+                {
+                    CurrentGroup?.Unload();
+                    M_XMLFileManager.Delete
+                    (
+                        CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml"))
+                    );
+
+                    M_XMLFileManager.Delete
+                    (
+                        CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(CurrentGroup.UID, ".xml.meta"))
+                    );
+                    CurrentGroup?.Load(false);
+                }
             }
+            else
+            {
+                if(GUILayout.Button(new GUIContent("Create File", "Create File")))
+                {
+                    CurrentGroup.Save();
+                    CurrentGroup.Flush();
+                }
+            }*/
         }
+        EditorGUI.EndDisabledGroup();
 
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
@@ -655,6 +735,7 @@ public class CVarWindow : EditorWindow
         {
             CreateMenu();
         }
+
         EditorGUI.EndDisabledGroup();
 
         GUILayout.EndHorizontal();
@@ -703,11 +784,15 @@ public class CVarWindow : EditorWindow
 
     private void DrawAbas()
     {
-        GUILayout.BeginHorizontal();
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES);
+        GUILayout.BeginHorizontal();
+
         _selectedType = EditorGUILayout.Popup(_selectedType, new string[] { "string", "int", "float", "bool", "vector3", "", "all" });
-        EditorGUI.EndDisabledGroup();
         GUILayout.EndHorizontal();
+        EditorGUILayout.Space();
+        _showAddress = EditorGUILayout.ToggleLeft("Show Var Address", _showAddress);
+        EditorGUILayout.Space();
+        EditorGUI.EndDisabledGroup();
     }
     Vector2 _scrollPosition = Vector2.zero;
 
@@ -797,7 +882,7 @@ public class CVarWindow : EditorWindow
 
         DrawAddNewVarInfo<T>();
     }
-
+    
     private void DrawEditableVarValue<T>(string varName)
     {
         T value = CVarSystem.GetValue<T>(varName, default, CurrentGroup.Name);
@@ -826,24 +911,30 @@ public class CVarWindow : EditorWindow
         EditorGUI.EndDisabledGroup();
         
         EditorGUI.BeginDisabledGroup(_currentAction != CVarWindowAction.EDIT_VAR_VALUES || CVarSystem.GetLocked<T>(varName, CurrentGroup.Name));
-        aux = (T)DrawFieldByType(value);
+        if (!_showAddress)
+        {
+            aux = (T)DrawFieldByType(value);
 
-        
-        if (aux != null && !aux.Equals(value))
-        {
-            CVarSystem.SetValue<T>(varName, aux, CurrentGroup.Name);
-            //repaint inspector
+            if (aux != null && !aux.Equals(value))
+            {
+                CVarSystem.SetValue<T>(varName, aux, CurrentGroup.Name);
+                //repaint inspector
+            }
+            if (DefaultButton("E", "Edit Var Name"))
+            {
+                _editableAuxName = _editableName = varName;
+                _editableType = typeof(T).Name;
+                _currentAction = CVarWindowAction.EDIT_VAR_NAME;
+            }
+            if (DefaultButton("-", "Delete Var") && EditorUtility.DisplayDialog("Delete Var", "Want delete var?", "Delete", "Cancel"))
+            {
+                CVarSystem.RemoveVar<T>(varName, CurrentGroup.Name);
+                //repaint inspector
+            }
         }
-        if (DefaultButton("E", "Edit Var Name"))
+        else
         {
-            _editableAuxName = _editableName = varName;
-            _editableType = typeof(T).Name;
-            _currentAction = CVarWindowAction.EDIT_VAR_NAME;
-        }
-        if (DefaultButton("-", "Delete Var") && EditorUtility.DisplayDialog("Delete Var", "Want delete var?", "Delete", "Cancel"))
-        {
-            CVarSystem.RemoveVar<T>(varName, CurrentGroup.Name);
-            //repaint inspector
+            EditorGUILayout.LabelField(" Address: "+CVarSystem.GetAddress<T>(varName, CurrentGroup.Name).ToString(), GUILayout.Height(19));
         }
         
                 

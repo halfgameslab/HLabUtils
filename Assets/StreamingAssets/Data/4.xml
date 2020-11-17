@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <os>
+    <o a="11" f="NONE">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="12" f="NONE">
+      <n>new_string (0)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="13" f="NONE">
+      <n>new_string (1)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="14" f="NONE">
+      <n>new_string (2)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="15" f="NONE">
+      <n>new_string (3)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="16" f="NONE">
+      <n>new_string (4)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+  </os>
+</cvar_data>

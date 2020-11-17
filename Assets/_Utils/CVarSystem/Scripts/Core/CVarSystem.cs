@@ -100,6 +100,9 @@ public static class CVarSystem
             IsEditModeActived = status;
             CanLoadRuntimeDefault = !IsEditModeActived || Application.isPlaying;
             CanLoadRuntimePersistent = !IsEditModeActived;
+            
+            if(!status)
+                CopyDefaultFilesToPersistentFolder();
 
             Init();
         }
@@ -215,10 +218,10 @@ public static class CVarSystem
         Groups.Clear();
 #endif
 
-        if (Application.isPlaying)
+        /*if (Application.isPlaying)
         {
             CopyDefaultFilesToPersistentFolder();
-        }
+        }*/
 
         RunOnStart();
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -332,7 +335,7 @@ public static class CVarSystem
         IsReady = false;
     }
     
-    public static void CopyDefaultFilesToPersistentFolder()
+    public static void CopyDefaultFilesToPersistentFolder(bool overwrite = true)
     {
         if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
         {
@@ -350,7 +353,7 @@ public static class CVarSystem
                     file,
                     //System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(group.Name, ".xml"))
                     ParsePersistentDefaultDataPathWith(System.IO.Path.GetFileName(file)),
-                    true
+                    overwrite
                 );
             }
 
@@ -358,7 +361,7 @@ public static class CVarSystem
             (
                 ParseStreamingDefaultDataPathWith("groups_data.xml"),
                 ParsePersistentDefaultDataPathWith("groups_data.xml"),
-                true
+                overwrite
             );
 
             PlayerPrefs.SetInt("FilesCopied", 1);
