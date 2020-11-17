@@ -96,9 +96,7 @@ public class CVar<T>: ISerializationCallbackReceiver
             }// end if _name != value
         }// end set
     }// end property Name
-
-    
-
+     
     /// <summary>
     /// When you convert the class to the type base you receive direct the value
     /// </summary>

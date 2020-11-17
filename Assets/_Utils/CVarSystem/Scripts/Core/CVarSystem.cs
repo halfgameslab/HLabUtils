@@ -266,6 +266,7 @@ public static class CVarSystem
         DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
         DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
         DeleteDirectoryIfExists(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"));
+        //H_FileManager.Delete(System.IO.Path.Combine(Application.streamingAssetsPath, "Data.meta"));
 
         PlayerPrefs.SetInt("FilesCopied", 0);
         CurrentAddress = 0;

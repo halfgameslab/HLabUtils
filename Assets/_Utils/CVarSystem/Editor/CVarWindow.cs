@@ -37,7 +37,9 @@ public class CVarWindow : EditorWindow
     private CVarWindowAction _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
 
     private CVarGroup _currentGroup;
-    private string _currentGroupName;
+    //private string _currentGroupName;
+    private string _currentGroupUID;
+
     public CVarGroup CurrentGroup 
     {
         get 
@@ -48,8 +50,11 @@ public class CVarWindow : EditorWindow
         {
             _currentGroup = value;
 
-            if(value != null)
-                _currentGroupName = value.Name;
+            if (value != null)
+            {
+                //_currentGroupName = value.Name;
+                _currentGroupUID = value.UID;
+            }
         }
     }
 
@@ -111,7 +116,7 @@ public class CVarWindow : EditorWindow
         if((CurrentGroup != null && CurrentGroup != CVarSystem.GetGroupByUID(CurrentGroup.UID))
         || (CurrentGroup == null && _currentAction != CVarWindowAction.CREATE_GROUP))
         {   
-            CurrentGroup = CVarSystem.GetGroupByName(_currentGroupName);
+            CurrentGroup = CVarSystem.GetGroupByUID(_currentGroupUID);
             if(CurrentGroup == null)
                 CurrentGroup = CVarSystem.GetGroupByName("global");
         }
@@ -351,11 +356,10 @@ public class CVarWindow : EditorWindow
 
                 //EditorGUI.EndDisabledGroup();
             }
-
             else
             {
                 _editableAuxName = EditorGUILayout.TextField(_editableAuxName);
-
+                
                 if (GUILayout.Button("v"))
                 {
                     // check name consistence
@@ -488,8 +492,9 @@ public class CVarWindow : EditorWindow
             if (DefaultButton("V", "Save Changes"))
             {
                 _currentAction = CVarWindowAction.EDIT_VAR_VALUES;
-                if (CVarSystem.TryRenameGroup(CurrentGroup.Name, _editableName))
-                    _currentGroupName = _editableName;
+                CVarSystem.TryRenameGroup(CurrentGroup.Name, _editableName);
+                //if (CVarSystem.TryRenameGroup(CurrentGroup.Name, _editableName))
+                //    _currentGroupName = _editableName;
             }
             if (DefaultButton("X", "Cancel"))
             {

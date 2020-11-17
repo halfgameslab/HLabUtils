@@ -8,16 +8,6 @@
   <CVarGroup>
     <UID>3</UID>
     <Name>new_group</Name>
-    <PersistentType>PER_SCENE</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>6</UID>
-    <Name>new_group (0)</Name>
-    <PersistentType>SHARED</PersistentType>
-  </CVarGroup>
-  <CVarGroup>
-    <UID>10</UID>
-    <Name>new_group (1)</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
 </ArrayOfCVarGroup>

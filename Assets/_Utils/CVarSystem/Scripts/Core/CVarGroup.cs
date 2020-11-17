@@ -373,6 +373,7 @@ public class CVarGroup
 
         // delete default
         M_XMLFileManager.Delete(GetFilePath());
+        M_XMLFileManager.Delete(GetFilePath(UID, ".xml.meta"));
 
         // delete persistent
         M_XMLFileManager.Delete(GetPersistentFilePath());        
@@ -382,13 +383,14 @@ public class CVarGroup
     {
         // positive lookbehind ?<= ignore the \[ and get all between \]_ in a literal way
         Regex pattern = new Regex(@"(?<=\[)(.*?)(?=\]_)");
+        Regex otherPattern = new Regex(@"^[^_]*_(.*)[\d.]");
 
         string[] files;
         string directory = System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent");
 
         if (System.IO.Directory.Exists(directory))
         {
-            files = System.IO.Directory.EnumerateFiles(directory).Where(name => name.Contains(UID)).ToArray();
+            files = System.IO.Directory.EnumerateFiles(directory).Where(name => otherPattern.Match(name).Groups.Count > 1 && otherPattern.Match(name).Groups[1].Value == UID).ToArray();
             for (int i = 0; i < files.Length; i++)
             {
                 files[i] = pattern.Match(System.IO.Path.GetFileNameWithoutExtension(files[i])).Value;
@@ -424,7 +426,7 @@ public class CVarGroup
     /// Return the file path to default data
     /// </summary>
     /// <returns></returns>
-    public static string GetFilePath(string name)
+    public static string GetFilePath(string name, string extension = ".xml")
     {
         /*#if UNITY_EDITOR
                 if(!Application.isPlaying)
@@ -432,7 +434,7 @@ public class CVarGroup
         #endif
 
                 return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));*/
-        return CVarSystem.ParseDataPathWith(string.Concat(name, ".xml"));
+        return CVarSystem.ParseDataPathWith(string.Concat(name, extension));
     }
     /// <summary>
     /// Reeturn the file path to persistent data
