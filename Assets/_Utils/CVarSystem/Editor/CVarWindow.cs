@@ -39,7 +39,7 @@ public class CVarWindow : EditorWindow
 
     private CVarGroup _currentGroup;
     //private string _currentGroupName;
-    private string _currentGroupUID;
+    private string _currentGroupUID = "1";
 
     public CVarGroup CurrentGroup 
     {
@@ -186,16 +186,28 @@ public class CVarWindow : EditorWindow
         else
         {
             //if (GUILayout.Button("Delete Pers Default "))
-            if (DefaultTextureButton("Collab.FolderDeleted", "Delete all data files in persistent folder") && EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel"))
+            if (DefaultTextureButton("Collab.FolderDeleted", CVarSystem.IsEditModeActived?"Delete all data files in default runtime folder": "Revert to default all files in default runtime folder"))
+                //&& EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel"))
             {
-                CVarSystem.ResetToDefault(false);
+                //CVarSystem.ResetToDefault(false);
+
+                GenericMenu menu = new GenericMenu();
+                
+                menu.AddItem(new GUIContent("Delete Runtime Default"), false, () => { if (EditorUtility.DisplayDialog("Delete runtime default data", "Are You sure you want delete runtime default data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteRuntimeDefault(); });
+                menu.AddItem(new GUIContent("Delete Runtime Persistent"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeletePersistent(); } );
+                menu.AddItem(new GUIContent("Delete All Runtime"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete all runtime files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.ResetToDefault(false); });
+                menu.AddItem(new GUIContent("Delete All"), false, () => { if (EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteAll(); });
+                
+                menu.ShowAsContext();
+
+                //CVarSystem.CanLoadRuntimeDefault = false;
             }
         }
         
-        if (DefaultTextureButton("d_Grid.EraserTool@2x", "Delete all files") && EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel"))
+        /*if (DefaultTextureButton("d_Grid.EraserTool@2x", "Delete all files") && EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel"))
         {
             CVarSystem.DeleteAll();
-        }
+        }*/
 
         GUI.backgroundColor = new Color(1, 1, 1, 1);
 
@@ -214,7 +226,19 @@ public class CVarWindow : EditorWindow
     {
         if (System.IO.File.Exists(loadedPath))
         {
-            if (GUILayout.Button("Overwrite") && EditorUtility.DisplayDialog("Overwrite default", "Want ovewrite runtime default file?", "Ovewrite", "Cancel"))
+            if (CVarSystem.CanLoadRuntimeDefault && GUILayout.Button(new GUIContent("Revert", "Revert data to default")) && EditorUtility.DisplayDialog("Revert to default", "Want revert runtime default file with editor default data?", "Revert", "Cancel"))
+            {
+                currentGroup?.Unload();
+                M_XMLFileManager.Copy
+                (
+                    unloadedPath,
+                    loadedPath,
+                    true
+                );
+                currentGroup?.Load(false);
+            }
+            if (GUILayout.Button(new GUIContent(CVarSystem.CanLoadRuntimeDefault?"Overwrite Editor": "Overwrite Runtime", CVarSystem.CanLoadRuntimeDefault ? "Copy and overwrite default data on editor" : "Copy and overwrite default data on persistent folder")) 
+                && EditorUtility.DisplayDialog("Overwrite default", "Want overwrite runtime default file?", "Ovewrite", "Cancel"))
             {
                 currentGroup?.Unload();
                 M_XMLFileManager.Copy
@@ -225,7 +249,7 @@ public class CVarWindow : EditorWindow
                 );
                 currentGroup?.Load(false);
             }
-            if (DefaultButton("-", "Delete"))
+            if (DefaultButton("-", "Delete") && EditorUtility.DisplayDialog("Delete default", "Want delete default file?\nObs.: This process just delete the file and erase the data. If you want delete the whole group try the (-) symbol next to Group name.", "Delete", "Cancel"))
             {
                 currentGroup?.Unload();
                 M_XMLFileManager.Delete
@@ -361,6 +385,7 @@ public class CVarWindow : EditorWindow
             // change state
             CVarSystem.CanLoadRuntimePersistent = boolAux;
             CVarSystem.LoadGroups(false);
+            GUI.FocusControl("");
         }
 
         if (CurrentGroup.PersistentType != CVarGroupPersistentType.SHARED)
@@ -377,7 +402,7 @@ public class CVarWindow : EditorWindow
                 if (files.Length > 0)
                 {
                     int id = Array.IndexOf(files, pattern.Match(CurrentGroup.PersistentPrefix).Value);//string.Format(g.PersistentPrefix.Replace("[", string.Empty).Replace("]", string.Empty).Replace("_", string.Empty)));
-                    int currentId = id;
+                    int currentId;
 
                     if (id >= 0 && id < files.Length)
                     {

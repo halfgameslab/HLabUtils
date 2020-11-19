@@ -9,9 +9,9 @@
       <n>new_string (0)</n>
       <v xsi:type="xsd:string">new_string</v>
     </o>
-    <o a="13" f="NONE">
+    <o a="13" f="PERSISTENT">
       <n>new_string (1)</n>
-      <v xsi:type="xsd:string">new_string</v>
+      <v xsi:type="xsd:string">1111</v>
     </o>
     <o a="14" f="NONE">
       <n>new_string (2)</n>

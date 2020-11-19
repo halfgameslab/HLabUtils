@@ -262,35 +262,78 @@ public static class CVarSystem
             System.IO.Directory.Delete(directory, true);
     }
 
+    /// <summary>
+    /// Delete all files created and restart the system
+    /// If application is playing only runtime data will be deleted
+    /// </summary>
     public static void DeleteAll()
     {
-        UnloadGroups(true);
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+        {
+            UnloadGroups(true);
 
-        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
-        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
-        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"));
-        //H_FileManager.Delete(System.IO.Path.Combine(Application.streamingAssetsPath, "Data.meta"));
+            DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+            DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+            DeleteDirectoryIfExists(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"));
+            //H_FileManager.Delete(System.IO.Path.Combine(Application.streamingAssetsPath, "Data.meta"));
 
-        PlayerPrefs.SetInt("FilesCopied", 0);
-        CurrentAddress = 0;
-        CreateGroup("global");
+            IsEditModeActived = true;
+            CanLoadRuntimePersistent = false;
+            CanLoadRuntimeDefault = false;
 
+            PlayerPrefs.SetInt("FilesCopied", 0);
+            CurrentAddress = 0;
+
+            CreateGroup("global");
+        }
+        else
+        {
+            ResetToDefault(true);
+        }
+#else
+        ResetToDefault(true);
+#endif
+    }
+
+    public static void DeletePersistent()
+    {
+        DeleteRuntime(false, true);
+    }
+
+    public static void DeleteRuntimeDefault()
+    {
+        DeleteRuntime(true, false);
     }
 
     public static void ResetToDefault(bool copyDefaultToPersistentFolder = true)
     {
-        UnloadGroups(true);
+        DeleteRuntime(true, true, copyDefaultToPersistentFolder);
+    }
 
-        PlayerPrefs.SetInt("FilesCopied", 0);
+    private static void DeleteRuntime(bool deleteDefault, bool deletePersistent, bool copyDefaultToPersistentFolder = true)
+    {
+        if(deleteDefault && CanLoadRuntimeDefault)
+            UnloadGroups(true);
+        else if (deletePersistent && CanLoadRuntimePersistent)
+            UnloadGroups(false);
 
-        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
-        DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+        if (deletePersistent)
+            DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
 
-        if (copyDefaultToPersistentFolder)
-            CopyDefaultFilesToPersistentFolder();
+        if (deleteDefault)
+        {
+            DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+            if (copyDefaultToPersistentFolder || CanLoadRuntimeDefault)
+                CopyDefaultFilesToPersistentFolder();
+            else
+                PlayerPrefs.SetInt("FilesCopied", 0);// if the folder wasnt copied mark prefs
+        }
 
-        //LoadGroups();
-        M_XMLFileManager.NewLoad<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
+        if (deleteDefault && CanLoadRuntimeDefault)// if we are working with groups data on runtime default folder and delete the folder
+            M_XMLFileManager.NewLoad<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
+        else if (deletePersistent && CanLoadRuntimePersistent)// if we are in play mode and delete the persistent folder
+            LoadGroups();
     }
 
     private static void OnApplicationQuitHandler()

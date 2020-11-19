@@ -209,7 +209,7 @@ public class CVarGroup
     /// </summary>
     async void DelayToSaveOnEditor()
     {
-        await Task.Delay(3000);
+        await Task.Delay(3000) ;
         Flush();
     }
 
@@ -228,19 +228,9 @@ public class CVarGroup
     /// </summary>
     public void Flush()
     {
-        if (!HasChanged)
+        if (!HasChanged || CVarSystem.CanLoadRuntimePersistent)
             return;
 
-        /*List<CVarDataObject> objects = new List<CVarDataObject>();
-        //para cada entrada do dicionario faça
-        foreach (CVarObject objectData in Vars)
-        {
-            //transforme o valor para string
-            //armazene em um vetor temporário
-            objects.Add(CVarDataObject.ParseToCVarDataObject(objectData));
-        }*/
-
-        //salve o vetor temporário de strings em um arquivo
         M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
 
         HasChanged = false;
@@ -251,19 +241,9 @@ public class CVarGroup
     /// </summary>
     public void FlushPersistent()
     {
-        if (!HasChanged)
+        if (!HasChanged || !CVarSystem.CanLoadRuntimePersistent)
             return;
 
-        /*List<CVarDataObject> objects = new List<CVarDataObject>();
-        //para cada entrada do dicionario faça
-        foreach (CVarObject objectData in _persistentsVars)
-        {
-            //transforme o valor para string
-            //armazene em um vetor temporário
-            objects.Add(CVarDataObject.ParseToCVarDataObject(objectData));
-        }*/
-
-        //salve o vetor temporário de strings em um arquivo
         M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });
 
         HasChanged = false;
