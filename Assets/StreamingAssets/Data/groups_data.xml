@@ -25,4 +25,9 @@
     <Name>new_group (2)</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
+  <CVarGroup>
+    <UID>17</UID>
+    <Name>new_group (3)</Name>
+    <PersistentType>SHARED</PersistentType>
+  </CVarGroup>
 </ArrayOfCVarGroup>

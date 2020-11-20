@@ -226,9 +226,9 @@ public class CVarGroup
     /// Save data to file
     /// System call flush automatically be careful to call flush for your own
     /// </summary>
-    public void Flush()
+    public void Flush(bool force = false)
     {
-        if (!HasChanged || CVarSystem.CanLoadRuntimePersistent)
+        if (!force && (!HasChanged || CVarSystem.CanLoadRuntimePersistent))
             return;
 
         M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
@@ -239,9 +239,9 @@ public class CVarGroup
     /// <summary>
     /// Save persistent objects to file
     /// </summary>
-    public void FlushPersistent()
+    public void FlushPersistent(bool force = false)
     {
-        if (!HasChanged || !CVarSystem.CanLoadRuntimePersistent)
+        if (!force && (!HasChanged || !CVarSystem.CanLoadRuntimePersistent))
             return;
 
         M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });

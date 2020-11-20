@@ -24,6 +24,18 @@ public static class CVarSystem
     /// </summary>
 
 #if UNITY_EDITOR
+    public static bool ClearDefaultOnPlay
+    {
+        get
+        {
+            return UnityEditor.EditorPrefs.GetBool("ClearOnPlay", true);
+        }
+        set
+        {
+            UnityEditor.EditorPrefs.SetBool("ClearOnPlay", value);
+        }
+    }
+
     /// <summary>
     /// If activated all changes will affect the file on Application.persistentDataPath
     /// </summary>
@@ -65,9 +77,14 @@ public static class CVarSystem
             UnityEditor.EditorPrefs.SetBool("IsEditModeActived", value); 
         } 
     }
-    
+
 #else
-/// <summary>
+    public static bool ClearOnPlay 
+    { 
+        get;set;
+    }    
+
+    /// <summary>
     /// If activated all changes will affect the file on Application.persistentDataPath
     /// </summary>
     public static bool CanLoadRuntimeDefault
@@ -87,6 +104,8 @@ public static class CVarSystem
     { 
         get;set;
     }
+    
+
 
 #endif
 
@@ -301,9 +320,9 @@ public static class CVarSystem
         DeleteRuntime(false, true);
     }
 
-    public static void DeleteRuntimeDefault()
+    public static void DeleteRuntimeDefault(bool copyDefaultToPersistentFolder = true)
     {
-        DeleteRuntime(true, false);
+        DeleteRuntime(true, false, copyDefaultToPersistentFolder);
     }
 
     public static void ResetToDefault(bool copyDefaultToPersistentFolder = true)
@@ -324,10 +343,10 @@ public static class CVarSystem
         if (deleteDefault)
         {
             DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
+            PlayerPrefs.SetInt("FilesCopied", 0);
+
             if (copyDefaultToPersistentFolder || CanLoadRuntimeDefault)
                 CopyDefaultFilesToPersistentFolder();
-            else
-                PlayerPrefs.SetInt("FilesCopied", 0);// if the folder wasnt copied mark prefs
         }
 
         if (deleteDefault && CanLoadRuntimeDefault)// if we are working with groups data on runtime default folder and delete the folder
@@ -380,7 +399,15 @@ public static class CVarSystem
     
     public static void CopyDefaultFilesToPersistentFolder(bool overwrite = true)
     {
-        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
+        if (ClearDefaultOnPlay)
+        {
+            bool aux = CanLoadRuntimeDefault;
+            CanLoadRuntimeDefault = false;
+            DeleteRuntimeDefault(false);
+            CanLoadRuntimeDefault = aux;
+        }
+
+        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1 || ClearDefaultOnPlay)
         {
             string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "*.*", System.IO.SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToArray();
