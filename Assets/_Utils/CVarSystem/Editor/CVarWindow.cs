@@ -224,7 +224,38 @@ public class CVarWindow : EditorWindow
     {
         return GUILayout.Button(new GUIContent(EditorGUIUtility.FindTexture(textureName), hint), GUILayout.Width(w), GUILayout.Height(h));
     }
+    private void OverwriteData(CVarGroup currentGroup, string origenPath, string destinationPath, string readGroupsFrom, string saveGroupsTo)
+    {
+        // read all groups from path
+        CVarGroup[] groups = M_XMLFileManager.Load<CVarGroup[]>(readGroupsFrom);
+        // check if group exists
+        CVarGroup group = groups.FirstOrDefault((g) => g.UID == currentGroup.UID);
+        if (group != null)
+        {
+            //change group data
+            currentGroup.Name = group.Name;
+            currentGroup.PersistentType = currentGroup.PersistentType;
 
+            currentGroup?.Unload();
+            M_XMLFileManager.Copy
+            (
+                origenPath,
+                destinationPath,
+                true
+            );
+            currentGroup?.Load(false);
+
+            // save new group list to runtime
+            //M_XMLFileManager.Save(saveGroupsTo, groups.ToArray());
+            CVarSystem.SaveGroupListToFile();
+        }
+        else
+        {
+            // add
+            //groups.Add(currentGroup);
+            Debug.LogWarning(string.Format("Can't revert data to default! There isn't Group with Name ({0}) and UID ({1}) on group list!", currentGroup.Name, currentGroup.UID));
+        }
+    }
     private void DrawDefaultFileManagerOptions(CVarGroup currentGroup, string loadedPath, string unloadedPath)
     {
         if (PlayerPrefs.GetInt("FilesCopied", 0) == 1)
@@ -232,28 +263,32 @@ public class CVarWindow : EditorWindow
             EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived || _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
             if (System.IO.File.Exists(loadedPath))
             {
-                if (CVarSystem.CanLoadRuntimeDefault && GUILayout.Button(new GUIContent("Revert", "Revert data to default")) && EditorUtility.DisplayDialog("Revert to default", "Want revert runtime default file with editor default data?", "Revert", "Cancel"))
+                if (CVarSystem.CanLoadRuntimeDefault && System.IO.File.Exists(unloadedPath))
                 {
-                    currentGroup?.Unload();
-                    M_XMLFileManager.Copy
-                    (
-                        unloadedPath,
-                        loadedPath,
-                        true
-                    );
-                    currentGroup?.Load(false);
+                    // If group there isn't the group in the default (group create at runtime) revert button won't be showed
+                    if (GUILayout.Button(new GUIContent("Revert", "Revert data to default")) && EditorUtility.DisplayDialog("Revert to default", "Want revert runtime default file with editor default data?", "Revert", "Cancel"))
+                    {
+                        OverwriteData(
+                            currentGroup, 
+                            unloadedPath, 
+                            loadedPath, 
+                            CVarSystem.ParseStreamingDefaultDataPathWith("groups_data.xml"),
+                            CVarSystem.ParsePersistentDefaultDataPathWith("groups_data.xml")
+                            );             
+                    }
                 }
                 if (GUILayout.Button(new GUIContent(CVarSystem.CanLoadRuntimeDefault ? "Overwrite Editor" : "Overwrite Runtime", CVarSystem.CanLoadRuntimeDefault ? "Copy and overwrite default data on editor" : "Copy and overwrite default data on persistent folder"))
                     && EditorUtility.DisplayDialog("Overwrite default", "Want overwrite runtime default file?", "Ovewrite", "Cancel"))
                 {
-                    currentGroup?.Unload();
+                    OverwriteData(currentGroup, loadedPath, unloadedPath);
+                    /*currentGroup?.Unload();
                     M_XMLFileManager.Copy
                     (
                         loadedPath,
                         unloadedPath,
                         true
                     );
-                    currentGroup?.Load(false);
+                    currentGroup?.Load(false);*/
                 }
                 if (DefaultButton("-", "Delete") && EditorUtility.DisplayDialog("Delete default", "Want delete default file?\nObs.: This process just delete the file and erase the data. If you want delete the whole group try the (-) symbol next to Group name.", "Delete", "Cancel"))
                 {
@@ -305,9 +340,10 @@ public class CVarWindow : EditorWindow
         GUI.backgroundColor = Color.white;
         if (boolAux != CVarSystem.CanLoadRuntimeDefault)
         {
-            CVarSystem.UnloadGroups();
+            //CVarSystem.UnloadGroups();
             CVarSystem.CanLoadRuntimeDefault = boolAux;
-            CVarSystem.LoadGroups(false);
+            CVarSystem.Reload();
+            //CVarSystem.LoadGroups(false);
         }
         EditorGUI.EndDisabledGroup();
         //EditorGUI.EndDisabledGroup();

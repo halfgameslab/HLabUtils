@@ -16,14 +16,14 @@ using UnityEngine.SceneManagement;
 /// https://github.com/id-Software/DOOM-3/blob/master/neo/framework/CVarSystem.h
 /// </summary>
 public static class CVarSystem
-{
-    /// <summary>
-    /// When playing the game edit mode will be automatically desactivated
-    /// if you want active the edit mode again use ActiveEditMode(true);
-    /// When the edit mode is activated all changes will affect the persistent file
-    /// </summary>
+{   
 
 #if UNITY_EDITOR
+    
+    /// <summary>
+    /// Editor flag that help copy files to runtime folder without complication
+    /// Warning: Only work on editor
+    /// </summary>
     public static bool ClearDefaultOnPlay
     {
         get
@@ -66,6 +66,11 @@ public static class CVarSystem
         }
     }
 
+    /// <summary>
+    /// When playing the game edit mode will be automatically desactivated
+    /// if you want active the edit mode again use ActiveEditMode(true);
+    /// When the edit mode is activated all changes will affect the persistent file
+    /// </summary>
     public static bool IsEditModeActived 
     { 
         get 
@@ -79,10 +84,6 @@ public static class CVarSystem
     }
 
 #else
-    public static bool ClearOnPlay 
-    { 
-        get;set;
-    }    
 
     /// <summary>
     /// If activated all changes will affect the file on Application.persistentDataPath
@@ -399,6 +400,7 @@ public static class CVarSystem
     
     public static void CopyDefaultFilesToPersistentFolder(bool overwrite = true)
     {
+#if UNITY_EDITOR
         if (ClearDefaultOnPlay)
         {
             bool aux = CanLoadRuntimeDefault;
@@ -406,8 +408,10 @@ public static class CVarSystem
             DeleteRuntimeDefault(false);
             CanLoadRuntimeDefault = aux;
         }
-
         if (PlayerPrefs.GetInt("FilesCopied", 0) != 1 || ClearDefaultOnPlay)
+#else
+        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
+#endif
         {
             string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "*.*", System.IO.SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToArray();
