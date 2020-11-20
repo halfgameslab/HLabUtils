@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <os>
-    <o a="8" f="NONE">
-      <n>new_string</n>
-      <v xsi:type="xsd:string">new_string</v>
+    <o a="35" f="PERSISTENT">
+      <n>new_int (0)</n>
+      <v xsi:type="xsd:int">55</v>
     </o>
   </os>
 </cvar_data>

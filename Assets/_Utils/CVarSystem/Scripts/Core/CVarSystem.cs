@@ -199,7 +199,7 @@ public static class CVarSystem
         }
     }
 
-    private const char SLASH = '|';
+    private const char DOT = '.';
 
     // that will get the _adress of some var
     internal static Dictionary<int, CVarObject> Address { get; set; } = new Dictionary<int, CVarObject>();
@@ -505,38 +505,44 @@ public static class CVarSystem
     /// <returns>if not override and already exists will return a reference from current</returns>
     public static CVarGroup CreateGroup(string name, bool overrideIfExist = false)
     {
-        CVarGroup oldGroup = GetGroupByName(name);
-
-        // check if group exists
-        if (oldGroup == null || overrideIfExist)//  se o grupo não existir
+        if (ValidateName(name))
         {
-            CurrentAddress++;
-            // Create group with the desired name
-            CVarGroup group = new CVarGroup() { Name = name, UID = CurrentAddress.ToString() };
+            CVarGroup oldGroup = GetGroupByName(name);
 
-            if (oldGroup == null)
-                // update group list
-                Groups.Add(group.UID, group);
-            else
+            // check if group exists
+            if (oldGroup == null || overrideIfExist)//  se o grupo não existir
             {
-                // Delete old
-                Groups[oldGroup.UID].Clear();
+                CurrentAddress++;
+                // Create group with the desired name
+                CVarGroup group = new CVarGroup() { Name = name, UID = CurrentAddress.ToString() };
 
-                // insert new group
-                Groups[oldGroup.UID] = group;
+                if (oldGroup == null)
+                    // update group list
+                    Groups.Add(group.UID, group);
+                else
+                {
+                    // Delete old
+                    Groups[oldGroup.UID].Clear();
+
+                    // insert new group
+                    Groups[oldGroup.UID] = group;
+                }
+
+                // update group file
+                SaveGroupListToFile();
+
+                return group;
             }
 
-            // update group file
-            SaveGroupListToFile();
+            return oldGroup;
+            //     internamente ao settar uma base o programa deve ler todas as variáveis da base e salvar o arquivo no seu devido lugar
 
-            return group;
+            // se existir 
+            //  ignore
         }
 
-        return oldGroup;
-        //     internamente ao settar uma base o programa deve ler todas as variáveis da base e salvar o arquivo no seu devido lugar
-
-        // se existir 
-        //  ignore
+        Debug.LogWarning("Invalid name");
+        return null;
     }
 
     public static bool TryRenameGroup(string name, string newName)
@@ -553,9 +559,12 @@ public static class CVarSystem
                 //Groups.Add(newName, g);
 
                 // rename group
-                group.Rename(newName);
-                return true;
+                return group.Rename(newName);
                 //SaveGroupListToFile();
+            }
+            else
+            {
+                Debug.LogWarning("There is another group with this name");
             }
         }
 
@@ -794,31 +803,35 @@ public static class CVarSystem
 
     private static CVarObject CreateVar(string fullName, object value)
     {
-        // get new address
-        CVarGroup group = GetGroupByName(GetGroupNameByFullName(fullName));
-
-        // if group exist create the var on new group
-        if (group != null)
+        if (ValidateName(RemoveTypeAndGroup(fullName)))
         {
-            int address = CurrentAddress + 1;
+            // get new address
+            CVarGroup group = GetGroupByName(GetGroupNameByFullName(fullName));
 
-            CVarObject obj = new CVarObject(fullName, value, address, group);// { Value = value, Address = address, Group = group, Name = RemoveTypeAndGroup(fullName) };
+            // if group exist create the var on new group
+            if (group != null)
+            {
+                int address = CurrentAddress + 1;
 
-            // add var
-            CVars.Add(fullName, obj);
-            Address.Add(address, obj);
-            obj.Group.Add(obj);
+                CVarObject obj = new CVarObject(fullName, value, address, group);// { Value = value, Address = address, Group = group, Name = RemoveTypeAndGroup(fullName) };
 
-            // save table
-            obj.Group.Save();
+                // add var
+                CVars.Add(fullName, obj);
+                Address.Add(address, obj);
+                obj.Group.Add(obj);
 
-            CurrentAddress = address;
+                // save table
+                obj.Group.Save();
 
-            return obj;
+                CurrentAddress = address;
+
+                return obj;
+            }
+
+            Debug.LogWarning(string.Format("Trying create CVar <b>{0}</b>. Group <b>{1}</b> not found. Are You missing something?", RemoveTypeAndGroup(fullName), GetGroupNameByFullName(fullName)));
         }
 
-        Debug.LogWarning(string.Format("Trying create CVar <b>{0}</b>. Group <b>{1}</b> not found. Are You missing something?", RemoveTypeAndGroup(fullName),GetGroupNameByFullName(fullName)));
-
+        Debug.LogWarning("Invalid name");
         return null;
     }
 
@@ -976,33 +989,40 @@ public static class CVarSystem
         // only rename if the name was different
         if (name != newName)
         {
-            string fullName = GetFullName<T>(name, group);
-            // there is some var with this name
-            if (CVars.TryGetValue(fullName, out CVarObject varToRename))
+            if (ValidateName(newName))
             {
-                // get full name
-                string fullNewName = GetFullName<T>(newName, group);
-                
-                // there isnt some var with the new name
-                if (!CVars.ContainsKey(fullNewName))
+                string fullName = GetFullName<T>(name, group);
+                // there is some var with this name
+                if (CVars.TryGetValue(fullName, out CVarObject varToRename))
                 {
-                    /////////////varToRename.Name = RemoveTypeAndGroup(newName);
-                    varToRename.FullName = fullNewName;
-                    varToRename.Name = newName;
+                    // get full name
+                    string fullNewName = GetFullName<T>(newName, group);
 
-                    // get the current value at currentName and add to the newName key
-                    CVars.Add(fullNewName, varToRename);
-                    // add the new key to the address
-                    //Address[currentVar.Address] = newName;
-                    // remove the old key
-                    CVars.Remove(fullName);
+                    // there isnt some var with the new name
+                    if (!CVars.ContainsKey(fullNewName))
+                    {
+                        /////////////varToRename.Name = RemoveTypeAndGroup(newName);
+                        varToRename.FullName = fullNewName;
+                        varToRename.Name = newName;
 
-                    OnVarRenamed(varToRename, fullName);
+                        // get the current value at currentName and add to the newName key
+                        CVars.Add(fullNewName, varToRename);
+                        // add the new key to the address
+                        //Address[currentVar.Address] = newName;
+                        // remove the old key
+                        CVars.Remove(fullName);
 
-                    varToRename.Group.Save();
+                        OnVarRenamed(varToRename, fullName);
 
-                    ES_EventManager.SwapInstanceEvents(fullName, fullNewName);
+                        varToRename.Group.Save();
+
+                        ES_EventManager.SwapInstanceEvents(fullName, fullNewName);
+                    }
                 }
+            }
+            else
+            {
+                Debug.LogWarning("Invalid name");
             }
         }
     }
@@ -1229,7 +1249,7 @@ public static class CVarSystem
     /// <returns></returns>
     private static string GetObjectTypeByVarName(string name)
     {
-        return name.Substring(0, name.IndexOf(SLASH));
+        return name.Substring(0, name.IndexOf(DOT));
     }
 
     public static Dictionary<string, CVarObject>.KeyCollection VarNames => CVars.Keys;
@@ -1262,9 +1282,7 @@ public static class CVarSystem
         {
             obj.Group = group;
             obj.FullName = GetFullName(obj.Name, obj.Value.GetType().Name, obj.Group.Name);
-            //if(obj.Value.GetType().Name == "Vector3")
-            //    Debug.Log(obj.Value.GetType());
-
+            
             if(CVars.TryGetValue(obj.FullName, out current))// if the var exists name
             {
                 // just update data
@@ -1299,16 +1317,16 @@ public static class CVarSystem
         }
     }
 
-    public static void FlushPersistent()
+    public static void FlushPersistent(bool force = false)
     {
         foreach (CVarGroup g in Groups.Values)
-            g.FlushPersistent();
+            g.FlushPersistent(force);
     }
 
-    public static void Flush()
+    public static void Flush(bool force = false)
     {
         foreach (CVarGroup g in Groups.Values)
-            g.Flush();
+            g.Flush(force);
     }
 
     /// <summary>
@@ -1362,33 +1380,38 @@ public static class CVarSystem
             g.Clear();
     }
 
+    public static void ClearVars()
+    {
+        Address.Clear();
+        CVars.Clear();
+    }
+
     public static void Reload()
     {
         UnloadGroups(true);
-        Address.Clear();
-        CVars.Clear();
+        ClearVars();
         Init();
     }
 
     public static string GetVarGroupName(string fullName)
     {
-        return fullName.Split(SLASH)[1];
+        return fullName.Split(DOT)[1];
     }
 
     public static string ChangeVarGroupName(string fullName, string group)
     {
-        string[] n = fullName.Split(SLASH);
-        return string.Concat(n[0], SLASH, group, SLASH, n[2]);
+        string[] n = fullName.Split(DOT);
+        return string.Concat(n[0], DOT, group, DOT, n[2]);
     }
 
     public static string GetFullName(string name, Type type, string group = "global")
     {
-        return string.Concat(type.Name, SLASH, group, SLASH, name);
+        return string.Concat(type.Name, DOT, group, DOT, name);
     }
 
     public static string GetFullName(string name, string type, string group = "global")
     {
-        return string.Concat(type, SLASH, group, SLASH, name);
+        return string.Concat(type, DOT, group, DOT, name);
     }
 
     /// <summary>
@@ -1399,29 +1422,43 @@ public static class CVarSystem
     /// <returns></returns>
     public static string GetFullName<T>(string name, string group="global")
     {
-        return string.Concat(GetTypeName<T>(), SLASH, group, SLASH, name);
+        return string.Concat(GetTypeName<T>(), DOT, group, DOT, name);
     }
 
     public static string GetGroupNameByFullName(string fullName)
     {
-        return fullName.Split(SLASH)[1];
+        return fullName.Split(DOT)[1];
     }
     
-    
-
     public static string RemoveType(string n)
     {
-        return string.Concat(n.Split(SLASH)[1], n.Split(SLASH)[2]);
+        return string.Concat(n.Split(DOT)[1], n.Split(DOT)[2]);
     }
 
 
     public static string RemoveTypeAndGroup(string n)
     {
-        return n.Split(SLASH)[2];
+        return n.Split(DOT)[2];
     }
 
     public static string GetTypeName<T>()
     {
         return typeof(T).Name;
+    }
+
+    public static bool ValidateName(string s)
+    {
+        int len = s.Length;
+        int count = 0;
+
+        for (int i = 0; i < len; ++i)
+        {
+            if (s[i] == '.' || s[i] == '[' || s[i] == ']')
+                return false;
+            else if (s[i] == ' ' || s[i] == '\0')// check spaces and voids
+                count++;
+        }
+
+        return count != len;// if count == len there is only spaces on string
     }
 }

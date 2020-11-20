@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <os>
+    <o a="37" f="NONE">
+      <n>new_string</n>
+      <v xsi:type="xsd:string">new_string10</v>
+    </o>
+    <o a="38" f="NONE">
+      <n>new_string (0)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="39" f="PERSISTENT">
+      <n>new_string (1)</n>
+      <v xsi:type="xsd:string">1111</v>
+    </o>
+    <o a="40" f="NONE">
+      <n>new_string (2)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="41" f="NONE">
+      <n>new_string (3)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="42" f="NONE">
+      <n>new_string (4)</n>
+      <v xsi:type="xsd:string">new_string</v>
+    </o>
+    <o a="43" f="NONE">
+      <n>new_int</n>
+      <v xsi:type="xsd:int">0</v>
+    </o>
+    <o a="44" f="NONE">
+      <n>new_float</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+    <o a="45" f="NONE">
+      <n>teste</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+    <o a="46" f="NONE">
+      <n>teste1</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+    <o a="48" f="NONE">
+      <n>teste</n>
+      <v xsi:type="xsd:boolean">false</v>
+    </o>
+  </os>
+</cvar_data>

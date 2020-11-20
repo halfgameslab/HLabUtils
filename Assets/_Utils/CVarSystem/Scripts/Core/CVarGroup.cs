@@ -228,12 +228,12 @@ public class CVarGroup
     /// </summary>
     public void Flush(bool force = false)
     {
-        if (!force && (!HasChanged || CVarSystem.CanLoadRuntimePersistent))
-            return;
+        if (force || (HasChanged && !CVarSystem.CanLoadRuntimePersistent))
+        {
+            M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
 
-        M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
-
-        HasChanged = false;
+            HasChanged = false;
+        }
     }
 
     /// <summary>
@@ -241,86 +241,41 @@ public class CVarGroup
     /// </summary>
     public void FlushPersistent(bool force = false)
     {
-        if (!force && (!HasChanged || !CVarSystem.CanLoadRuntimePersistent))
-            return;
+        if (force || (HasChanged && CVarSystem.CanLoadRuntimePersistent))
+        {
+            M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });
 
-        M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });
-
-        HasChanged = false;
+            HasChanged = false;
+        }
     }
 
     /// <summary>
     /// Rename the group
     /// </summary>
     /// <param name="newName"></param>
-    public void Rename(string newName)
+    public bool Rename(string newName)
     {
-        /*
-         * Verificar este método porque em tempo real não conseguirá alterar o nome do grupo
-         */
-
-        // store the old file path
-        //string oldPath = GetFilePath();
-        //string oldPersistentPath = GetPersistentFilePath();
-
-        Unload();
-
-        // rename
-        Name = newName;
-
-        Load();
-        
-        /*foreach (CVarObject var in Vars)
+        if (Name != newName)
         {
-            var.FullName = CVarSystem.ChangeVarGroupName(var.FullName, newName);
-        }*/
+            if (CVarSystem.ValidateName(newName))
+            {
+                Unload();
 
-        //Save();// update group table
-        // move files
-        //M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
-        //M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());
+                // rename
+                Name = newName;
 
-        //Load();
+                Load();
 
-        CVarSystem.SaveGroupListToFile();// update group list table
-
-        /*// rename all vars
-        foreach(CVarObject c in Vars)
-        {
-            CVarSystem.MoveVarToGroup(c, this);
+                CVarSystem.SaveGroupListToFile();// update group list table
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("Invalid name");
+            }
         }
 
-        if (CVarSystem.CanLoadRuntimePersistent)
-            FlushPersistent();
-        else
-            Flush();
-
-        Unload();
-
-        bool canLoadRuntimeDefault = CVarSystem.CanLoadRuntimeDefault;
-        bool canLoadRuntimePersistent = CVarSystem.CanLoadRuntimePersistent;
-
-        if (!CVarSystem.CanLoadRuntimePersistent)
-        {
-
-        }
-            
-
-        
-
-        CVarSystem.CanLoadRuntimeDefault = true;
-        CVarSystem.CanLoadRuntimePersistent = false;
-        HasChanged = true;
-        Flush();*/
-        
-
-/*#if UNITY_EDITOR
-        // move files
-        M_XMLFileManager.RenameOrMove(oldPath, GetFilePath());
-#endif
-        M_XMLFileManager.RenameOrMove(oldPersistentPath, GetPersistentFilePath());*/
-
-        //Save();
+        return false;
     }
 
     /// <summary>
