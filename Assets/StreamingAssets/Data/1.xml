@@ -1,13 +1,57 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <os>
-    <o a="2" f="NONE">
+    <o a="2" f="PERSISTENT">
       <n>new_vector3</n>
       <v xsi:type="Vector3">
         <x>0</x>
         <y>0</y>
         <z>0</z>
       </v>
+    </o>
+    <o a="54" f="PERSISTENT">
+      <n>new_int (0)</n>
+      <v xsi:type="xsd:int">0</v>
+    </o>
+    <o a="55" f="PERSISTENT">
+      <n>new_float</n>
+      <v xsi:type="xsd:float">0</v>
+    </o>
+    <o a="64" f="PERSISTENT">
+      <n>teste</n>
+      <v xsi:type="Vector3">
+        <x>0</x>
+        <y>0</y>
+        <z>0</z>
+      </v>
+    </o>
+    <o a="67" f="PERSISTENT">
+      <n>string5</n>
+      <v xsi:type="xsd:string">35</v>
+    </o>
+    <o a="68" f="PERSISTENT">
+      <n>222222</n>
+      <v xsi:type="xsd:string" />
+    </o>
+    <o a="70" f="PERSISTENT">
+      <n>new_vector4</n>
+      <v xsi:type="Vector3">
+        <x>0</x>
+        <y>0</y>
+        <z>0</z>
+      </v>
+    </o>
+    <o a="71" f="PERSISTENT">
+      <n>teste</n>
+      <v xsi:type="xsd:string" />
+    </o>
+    <o a="72" f="PERSISTENT">
+      <n>teste1</n>
+      <v xsi:type="xsd:string" />
+    </o>
+    <o a="73" f="PERSISTENT">
+      <n>teste</n>
+      <v xsi:type="xsd:int">0</v>
     </o>
   </os>
 </cvar_data>

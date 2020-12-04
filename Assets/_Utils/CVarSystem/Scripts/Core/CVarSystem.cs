@@ -83,6 +83,12 @@ public static class CVarSystem
         } 
     }
 
+    public static bool FilesHasBeenCopied
+    {
+        get { return PlayerPrefs.GetInt("FilesCopied", 0) == 1; }
+        set { PlayerPrefs.SetInt("FilesCopied", value?1:0); }
+    }
+
 #else
 
     /// <summary>
@@ -120,9 +126,11 @@ public static class CVarSystem
             IsEditModeActived = status;
             CanLoadRuntimeDefault = !IsEditModeActived || Application.isPlaying;
             CanLoadRuntimePersistent = !IsEditModeActived;
-            
-            if(!status)
-                CopyDefaultFilesToPersistentFolder();
+
+            /*if (!status)
+            {
+                LoadGroupsData(CopyDefaultFilesToPersistentFolder(InitData));
+            }*/
 
             Init();
         }
@@ -168,10 +176,9 @@ public static class CVarSystem
 
     public static string ParseDataPathWith(string filename)
     {
-#if UNITY_EDITOR
-        if (!CanLoadRuntimeDefault)
+        if (!FilesHasBeenCopied || !CanLoadRuntimeDefault)
             return ParseStreamingDefaultDataPathWith(filename);
-#endif
+
         return ParsePersistentDefaultDataPathWith(filename);
     }  
 
@@ -193,8 +200,13 @@ public static class CVarSystem
             {
                 _currentAddress = value;
 
+#if UNITY_EDITOR
                 //save
                 H_FileManager.Save(ParseStreamingDefaultDataPathWith("current_address.xml"), _currentAddress.ToString());
+
+#else
+                H_FileManager.Save(ParsePersistentDefaultDataPathWith("current_address.xml"), _currentAddress.ToString());
+#endif
             }
         }
     }
@@ -233,6 +245,8 @@ public static class CVarSystem
     [RuntimeInitializeOnLoadMethod]
     static void InitializeOnLoad()
     {
+        FilesHasBeenCopied = false;
+        //PlayerPrefs.SetInt("FilesCopied", 0);
 #if UNITY_EDITOR
         UnloadGroups();
         Groups.Clear();
@@ -251,7 +265,7 @@ public static class CVarSystem
     {
         Debug.Log("RunOnStart");
 
-        ActiveEditMode(false);
+        ActiveEditMode(false, true);
 
         /*IsEditModeActived = false;
         CanLoadRuntimeDefault = true;
@@ -295,14 +309,18 @@ public static class CVarSystem
 
             DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
             DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Persistent"));
+
+#if UNITY_EDITOR
             DeleteDirectoryIfExists(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"));
+#endif
             //H_FileManager.Delete(System.IO.Path.Combine(Application.streamingAssetsPath, "Data.meta"));
 
             IsEditModeActived = true;
             CanLoadRuntimePersistent = false;
             CanLoadRuntimeDefault = false;
 
-            PlayerPrefs.SetInt("FilesCopied", 0);
+            //FilesHasBeenCopied = false;
+            //PlayerPrefs.SetInt("FilesCopied", 0);
             CurrentAddress = 0;
 
             CreateGroup("global");
@@ -344,10 +362,11 @@ public static class CVarSystem
         if (deleteDefault)
         {
             DeleteDirectoryIfExists(System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default"));
-            PlayerPrefs.SetInt("FilesCopied", 0);
+            //PlayerPrefs.SetInt("FilesCopied", 0);
+            FilesHasBeenCopied = false;
 
-            if (copyDefaultToPersistentFolder || CanLoadRuntimeDefault)
-                CopyDefaultFilesToPersistentFolder();
+            /*if (copyDefaultToPersistentFolder || CanLoadRuntimeDefault)
+                CopyDefaultFilesToPersistentFolder(() => Debug.Log("Complete"));*/
         }
 
         if (deleteDefault && CanLoadRuntimeDefault)// if we are working with groups data on runtime default folder and delete the folder
@@ -371,20 +390,18 @@ public static class CVarSystem
 
     public static void Init()
     {
-        // load groups file
-        // on groups file loaded load global group
-        
+        // if 
         if (Groups != null)
+        {
             if (Groups.Count == 0)
             {
+                // load groups file        
                 M_XMLFileManager.NewLoad<CVarGroup[]>(ParseDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
-                //if(!Application.isPlaying)
-                //    M_XMLFileManager.NewLoad<CVarGroup[]>(ParseStreamingDefaultDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
-                //else
-                //    M_XMLFileManager.NewLoad<CVarGroup[]>(ParsePersistentDefaultDataPathWith("groups_data.xml"), OnLoadGroupDataHandler);
+
             }
             else
                 LoadGroups();
+        }
     }
 
     public static void UnloadGroups(bool removeGroupsAfterUnload = false)
@@ -397,21 +414,16 @@ public static class CVarSystem
 
         IsReady = false;
     }
-    
+
+#if UNITY_EDITOR
     public static void CopyDefaultFilesToPersistentFolder(bool overwrite = true)
     {
-#if UNITY_EDITOR
-        if (ClearDefaultOnPlay)
-        {
-            bool aux = CanLoadRuntimeDefault;
-            CanLoadRuntimeDefault = false;
-            DeleteRuntimeDefault(false);
-            CanLoadRuntimeDefault = aux;
-        }
-        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1 || ClearDefaultOnPlay)
-#else
-        if (PlayerPrefs.GetInt("FilesCopied", 0) != 1)
-#endif
+        bool aux = CanLoadRuntimeDefault;
+        CanLoadRuntimeDefault = false;
+        DeleteRuntimeDefault(false);
+        CanLoadRuntimeDefault = aux;
+
+        if (!FilesHasBeenCopied)
         {
             string[] files = System.IO.Directory.EnumerateFiles(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "*.*", System.IO.SearchOption.TopDirectoryOnly)
                 .Where(s => s.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)).ToArray();
@@ -420,7 +432,7 @@ public static class CVarSystem
             foreach (string file in files)
             {
                 //Debug.Log("File copied " + file);
-            
+
                 M_XMLFileManager.Copy
                 (
                     //System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(group.Name, ".xml")),
@@ -438,9 +450,10 @@ public static class CVarSystem
                 overwrite
             );
 
-            PlayerPrefs.SetInt("FilesCopied", 1);
+            FilesHasBeenCopied = true;
         }
     }
+#endif
 
     private static void OnLoadGroupDataHandler(CVarGroup[] data)
     {
@@ -456,8 +469,18 @@ public static class CVarSystem
 #else
             H_FileManager.Load(ParsePersistentDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
 #endif
+
+            if (!FilesHasBeenCopied || ClearDefaultOnPlay)
+            {
+                M_XMLFileManager.Save(ParsePersistentDefaultDataPathWith("groups_data.xml"), data);
+                H_FileManager.Save(ParsePersistentDefaultDataPathWith("current_address.xml"), _currentAddress.ToString());
+            }
+
             //GetGroup("global")?.Load();
             //SetPersistent<int>("CurrentAddress", true);
+
+            //PlayerPrefs.SetInt("FilesCopied", 1);
+            FilesHasBeenCopied = true;
         }
         else
         {
@@ -466,8 +489,10 @@ public static class CVarSystem
             CreateGroup("global");
             IsReady = true;
             //SetPersistent<int>("CurrentAddress", true);
-        }
 
+            // save groups to runtime
+            //CopyDefaultFilesToPersistentFolder();
+        }
         
     }
 

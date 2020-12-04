@@ -385,6 +385,9 @@ public class CVarWindow : EditorWindow
             CVarSystem.ClearVars();
 
             CVarSystem.CanLoadRuntimeDefault = boolAux;
+
+            if (CVarSystem.ClearDefaultOnPlay)
+                CVarSystem.FilesHasBeenCopied = false;
             
             CVarSystem.Init();
 

@@ -17,6 +17,7 @@ internal static class CVarSystemInitializer
     // register an event handler when the class is initialized
     static CVarSystemInitializer()
     {
+        //CVarSystem.FilesHasBeenCopied = false;
         //PlayerPrefs.SetInt("FilesCopied", 0);
         CVarSystem.ActiveEditMode(true, true);
         //CVarSystem.Init();

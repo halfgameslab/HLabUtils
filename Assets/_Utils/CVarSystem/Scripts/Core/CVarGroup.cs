@@ -17,6 +17,7 @@ public enum CVarGroupPersistentType
 
 public class CVarGroup
 {
+    public const string DEFAULT_EXTENSION = ".xml";
     public string UID { get; set; }
     public string Name { get; set; }
 
@@ -136,6 +137,9 @@ public class CVarGroup
     {
         if (obj != null)
         {
+            if(!CVarSystem.FilesHasBeenCopied || CVarSystem.ClearDefaultOnPlay)// if we need copy default to runtime
+                M_XMLFileManager.Save(CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), obj);// save to runtime
+
             //IsLoaded = true;
             CVarSystem.AddData(obj, this);
             ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD);
@@ -308,7 +312,7 @@ public class CVarGroup
 
         // delete default
         M_XMLFileManager.Delete(GetFilePath());
-        M_XMLFileManager.Delete(GetFilePath(UID, ".xml.meta"));
+        M_XMLFileManager.Delete(GetFilePath(UID, string.Concat(DEFAULT_EXTENSION, ".meta")));
 
         // delete persistent
         M_XMLFileManager.Delete(GetPersistentFilePath());        
@@ -361,14 +365,8 @@ public class CVarGroup
     /// Return the file path to default data
     /// </summary>
     /// <returns></returns>
-    public static string GetFilePath(string name, string extension = ".xml")
+    public static string GetFilePath(string name, string extension = DEFAULT_EXTENSION)
     {
-        /*#if UNITY_EDITOR
-                if(!Application.isPlaying)
-                    return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", string.Concat(name, ".xml"));
-        #endif
-
-                return System.IO.Path.Combine(Application.persistentDataPath, "Data", "Default", string.Concat(name, ".xml"));*/
         return CVarSystem.ParseDataPathWith(string.Concat(name, extension));
     }
     /// <summary>
@@ -377,8 +375,7 @@ public class CVarGroup
     /// <returns></returns>
     public static string GetPersistentFilePath(string name, string persistentPrefix)
     {
-        return CVarSystem.ParsePersistentDataPathWith(string.Format("{0}{1}.xml", persistentPrefix, name));
-        //return System.IO.Path.Combine(Application.persistentDataPath, "Data","Persistent", string.Format("{0}{1}.xml", persistentPrefix, name));
+        return CVarSystem.ParsePersistentDataPathWith(string.Format("{0}{1}{2}", persistentPrefix, name, DEFAULT_EXTENSION));
     }
 
     /// <summary>

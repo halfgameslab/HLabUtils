@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using System.Net;
 
 public static class H_FileManager
 {
