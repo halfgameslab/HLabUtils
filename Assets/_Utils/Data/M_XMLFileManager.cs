@@ -67,6 +67,7 @@ public static class M_XMLFileManager
         else
         {
             Debug.Log("Download error: "+data.error+" "+path);
+            OnLoadComplete?.Invoke(default);
         }
     }
 

@@ -83,11 +83,7 @@ public static class CVarSystem
         } 
     }
 
-    public static bool FilesHasBeenCopied
-    {
-        get { return PlayerPrefs.GetInt("FilesCopied", 0) == 1; }
-        set { PlayerPrefs.SetInt("FilesCopied", value?1:0); }
-    }
+    
 
 #else
 
@@ -136,7 +132,11 @@ public static class CVarSystem
         }
     }
 
-    
+    public static bool FilesHasBeenCopied
+    {
+        get { return PlayerPrefs.GetInt("FilesCopied", 0) == 1; }
+        set { PlayerPrefs.SetInt("FilesCopied", value ? 1 : 0); }
+    }
 
     private static int _currentAddress = -1;
     //private static int CurrentAddress { 
@@ -176,6 +176,7 @@ public static class CVarSystem
 
     public static string ParseDataPathWith(string filename)
     {
+        //Debug.Log("FilesHasBeenCopied "+FilesHasBeenCopied);
         if (!FilesHasBeenCopied || !CanLoadRuntimeDefault)
             return ParseStreamingDefaultDataPathWith(filename);
 
@@ -466,12 +467,15 @@ public static class CVarSystem
 
 #if UNITY_EDITOR
             H_FileManager.Load(ParseStreamingDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
-#else
-            H_FileManager.Load(ParsePersistentDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
-#endif
-
             if (!FilesHasBeenCopied || ClearDefaultOnPlay)
             {
+#else
+            if(FilesHasBeenCopied)
+                H_FileManager.Load(ParsePersistentDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
+            else
+            {
+                H_FileManager.Load(ParseStreamingDefaultDataPathWith("current_address.xml"), (d) => { _currentAddress = int.Parse(d); LoadGroups(); });
+#endif
                 M_XMLFileManager.Save(ParsePersistentDefaultDataPathWith("groups_data.xml"), data);
                 H_FileManager.Save(ParsePersistentDefaultDataPathWith("current_address.xml"), _currentAddress.ToString());
             }
@@ -480,7 +484,6 @@ public static class CVarSystem
             //SetPersistent<int>("CurrentAddress", true);
 
             //PlayerPrefs.SetInt("FilesCopied", 1);
-            FilesHasBeenCopied = true;
         }
         else
         {
@@ -500,10 +503,24 @@ public static class CVarSystem
     {
         _loadedGroups = Groups.Values.Count;
         foreach (CVarGroup group in Groups.Values)
-        {            
-            group.Load(canChangePrefix);
-            if(!ES_EventManager.HasEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler))
-                ES_EventManager.AddEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler);
+        {
+            if (group.CanLoadAtStart)
+            {
+                group.Load(canChangePrefix);
+                if (!ES_EventManager.HasEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler))
+                    ES_EventManager.AddEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler);
+            }
+            else
+            {
+                _loadedGroups--;
+
+                if (_loadedGroups == 0)
+                {
+                    IsReady = true;
+                    FilesHasBeenCopied = true;
+                    ES_EventManager.DispatchEvent("CVarSystem", "OnLoadComplete");
+                }
+            }
         }
     }
     private static int _loadedGroups = 0;
@@ -516,6 +533,7 @@ public static class CVarSystem
         if (_loadedGroups == 0)
         {
             IsReady = true;
+            FilesHasBeenCopied = true;
             ES_EventManager.DispatchEvent("CVarSystem", "OnLoadComplete");
         }
 

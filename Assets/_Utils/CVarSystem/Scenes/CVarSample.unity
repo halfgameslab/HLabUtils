@@ -638,12 +638,12 @@ MonoBehaviour:
     _name: new_int (0)
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 54
   _coins4:
     _name: teste
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 71
   _teste1:
     _name: new_string (2)
     _groupName: global
@@ -652,8 +652,8 @@ MonoBehaviour:
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 45
-    _address: 0
+    _groupUID: 62
+    _address: 63
   _v3:
     _name: 
     _groupName: global
@@ -893,7 +893,7 @@ MonoBehaviour:
     _name: new_int (0)
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 54
   _varFloat:
     _name: 
     _groupName: new_group
@@ -902,28 +902,28 @@ MonoBehaviour:
   _varCoins:
     _name: coins
     _groupName: new_group333
-    _groupUID: 7
-    _address: 0
+    _groupUID: 57
+    _address: 58
   _coins4:
     _name: string5
     _groupName: new_group
     _groupUID: 3
-    _address: 0
+    _address: 59
   _teste1:
     _name: teste6
     _groupName: new_group1234
-    _groupUID: 12
-    _address: 0
+    _groupUID: 60
+    _address: 61
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 45
-    _address: 0
+    _groupUID: 62
+    _address: 63
   _v3:
     _name: teste
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 64
 --- !u!4 &1770459974
 Transform:
   m_ObjectHideFlags: 0
@@ -945,7 +945,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770459972}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
   m_Name: 
@@ -963,28 +963,28 @@ MonoBehaviour:
   _varCoins:
     _name: coins
     _groupName: new_group1234
-    _groupUID: 12
-    _address: 0
+    _groupUID: 60
+    _address: 66
   _coins4:
     _name: string5
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 67
   _teste1:
     _name: 222222
     _groupName: global
     _groupUID: 1
-    _address: 424
+    _address: 68
   _teste13:
     _name: teste
     _groupName: new_group1234
-    _groupUID: 12
-    _address: 0
+    _groupUID: 60
+    _address: 69
   _v3:
     _name: new_vector4
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 70
 --- !u!114 &1770459976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -992,7 +992,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770459972}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 572c9a8d419311443be0f3dc839d3f94, type: 3}
   m_Name: 
@@ -1016,22 +1016,22 @@ MonoBehaviour:
     _name: teste
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 71
   _teste1:
     _name: teste1
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 72
   _teste13:
     _name: teste
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 73
   _v3:
     _name: new_vector4
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 70
 --- !u!1 &2125729517
 GameObject:
   m_ObjectHideFlags: 0

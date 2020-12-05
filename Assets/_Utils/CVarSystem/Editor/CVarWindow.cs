@@ -116,13 +116,21 @@ public class CVarWindow : EditorWindow
 
     void OnGUI()
     {
+        // check if the current group has changed or deleted to avoid null group or destroyed reference
         if((CurrentGroup != null && CurrentGroup != CVarSystem.GetGroupByUID(CurrentGroup.UID))
         || (CurrentGroup == null && _currentAction != CVarWindowAction.CREATE_GROUP))
         {   
             CurrentGroup = CVarSystem.GetGroupByUID(_currentGroupUID);
             if(CurrentGroup == null)
                 CurrentGroup = CVarSystem.GetGroupByName("global");
-        }  
+        }
+
+        // load group if current group wasnt loaded 
+        // (it happens when current group cant load at start so we need force the load to show group at CVarWindow)
+        if(CurrentGroup != null && !CurrentGroup.IsLoaded)
+        {
+            CurrentGroup.Load(false);
+        }
 
         DrawTopBar();
         if (_currentAction != CVarWindowAction.CREATE_GROUP)
@@ -190,23 +198,8 @@ public class CVarWindow : EditorWindow
             Application.OpenURL(Application.persistentDataPath);
         }
 
-        //if (PlayerPrefs.GetInt("FilesCopied", 0) == 0)
-        //{
-        //    //if (GUILayout.Button("Copy Default to Pers"))
-        //    if (DefaultTextureButton("d_Collab.FolderMoved", "Copy default files to persistent folder"))
-        //    {
-        //        CVarSystem.CopyDefaultFilesToPersistentFolder();
-        //        EditorUtility.DisplayDialog("Copy files", "Files coppied with successed!", "Continue");
-        //    }
-        //}
-        //else
-        //{
-            //if (GUILayout.Button("Delete Pers Default "))
             if (DefaultTextureButton("Collab.FolderDeleted", CVarSystem.IsEditModeActived?"Delete all data files in default runtime folder": "Revert to default all files in default runtime folder"))
-                //&& EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel"))
             {
-                //CVarSystem.ResetToDefault(false);
-
                 GenericMenu menu = new GenericMenu();
                 
                 menu.AddItem(new GUIContent("Delete Runtime Default"), false, () => { if (EditorUtility.DisplayDialog("Reset runtime default data", "Are You sure you want reset runtime default data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteRuntimeDefault(false); });
@@ -214,23 +207,14 @@ public class CVarWindow : EditorWindow
                 menu.AddItem(new GUIContent("Delete All Runtime"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete all runtime files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.ResetToDefault(false); });
                 menu.AddItem(new GUIContent("Delete All"), false, () => { if (EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteAll(); });
                 
-                menu.ShowAsContext();
-
-                //CVarSystem.CanLoadRuntimeDefault = false;
+                menu.ShowAsContext();    
             }
-        //}
         
-        /*if (DefaultTextureButton("d_Grid.EraserTool@2x", "Delete all files") && EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel"))
-        {
-            CVarSystem.DeleteAll();
-        }*/
-
         GUI.backgroundColor = new Color(1, 1, 1, 1);
 
         EditorGUILayout.EndHorizontal();
 
         EditorGUI.EndDisabledGroup();
-
     }
 
     private bool DefaultTextureButton(string textureName, string hint, float w = 50, float h = 40)
@@ -259,7 +243,6 @@ public class CVarWindow : EditorWindow
             currentGroup?.Load(false);
 
             // save new group list to runtime
-            //M_XMLFileManager.Save(saveGroupsTo, groups.ToArray());
             CVarSystem.SaveGroupListToFile();
         }
         else
@@ -633,8 +616,11 @@ public class CVarWindow : EditorWindow
                 CurrentGroup = CVarSystem.GetGroupByName("global");
             }
             EditorGUILayout.EndHorizontal();
-            CurrentGroup.SetPersistentTypeAndSave((CVarGroupPersistentType)EditorGUILayout.EnumPopup(new GUIContent("Persistent Type"), CurrentGroup.PersistentType));
 
+            EditorGUILayout.BeginHorizontal();
+            CurrentGroup.SetPersistentTypeAndSave((CVarGroupPersistentType)EditorGUILayout.EnumPopup(new GUIContent("Persistent Type"), CurrentGroup.PersistentType));
+            CurrentGroup.SetCanLoadAtStartAndSave(EditorGUILayout.ToggleLeft("Load group at Start", CurrentGroup.CanLoadAtStart, GUILayout.Width(EditorGUIUtility.currentViewWidth/3f)));
+            EditorGUILayout.EndHorizontal();
 
             EditorGUI.EndDisabledGroup();
 

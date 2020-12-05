@@ -23,6 +23,9 @@ public class CVarGroup
 
     public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
+    [XmlAttribute("las")]
+    public bool CanLoadAtStart { get; set; } = true;
+
     [XmlIgnore]
     public string PersistentPrefix { get; set; } = string.Empty;
 
@@ -46,6 +49,14 @@ public class CVarGroup
         }
     }
 
+    public void SetCanLoadAtStartAndSave(bool canLoadAtStart)
+    {
+        if (CanLoadAtStart != canLoadAtStart)
+        {
+            CanLoadAtStart = canLoadAtStart;
+            CVarSystem.SaveGroupListToFile();
+        }
+    }
     /// <summary>
     /// Change the group save prefix given the group a new persistent file
     /// the PersistentType was automatically changed for CUSTOM
@@ -137,8 +148,12 @@ public class CVarGroup
     {
         if (obj != null)
         {
+#if UNITY_EDITOR
             if(!CVarSystem.FilesHasBeenCopied || CVarSystem.ClearDefaultOnPlay)// if we need copy default to runtime
-                M_XMLFileManager.Save(CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), obj);// save to runtime
+#else
+            if (!CVarSystem.FilesHasBeenCopied)
+#endif
+            M_XMLFileManager.Save(CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), obj);// save to runtime
 
             //IsLoaded = true;
             CVarSystem.AddData(obj, this);
@@ -146,7 +161,7 @@ public class CVarGroup
         }
 
         //if(!CVarSystem.IsEditModeActived)
-        if(CVarSystem.CanLoadRuntimePersistent)
+        if (CVarSystem.CanLoadRuntimePersistent)
             LoadPersistent();
     }
 
@@ -156,7 +171,6 @@ public class CVarGroup
     private void LoadPersistent()
     {
         CVarData data = M_XMLFileManager.Load<CVarData>(GetPersistentFilePath());
-
         if (data != null)
         {
             //IsLoaded = true;
