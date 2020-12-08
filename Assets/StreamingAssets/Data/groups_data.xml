@@ -5,7 +5,7 @@
     <Name>global</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
-  <CVarGroup las="true">
+  <CVarGroup las="false">
     <UID>3</UID>
     <Name>new_group</Name>
     <PersistentType>SHARED</PersistentType>
@@ -46,7 +46,12 @@
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup las="true">
-    <UID>62</UID>
+    <UID>74</UID>
+    <Name>new_group (5)</Name>
+    <PersistentType>SHARED</PersistentType>
+  </CVarGroup>
+  <CVarGroup las="true">
+    <UID>83</UID>
     <Name>group_01</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>

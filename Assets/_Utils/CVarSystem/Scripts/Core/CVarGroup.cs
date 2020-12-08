@@ -140,25 +140,35 @@ public class CVarGroup
     /// </summary>
     private void LoadDefault()
     {
-        M_XMLFileManager.NewLoad<CVarData>(GetFilePath(), OnLoadDefaultCompleteHandler);
-    }
+        string fileName = CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION));
 
+        if (!CVarSystem.CanLoadRuntimeDefault || !System.IO.File.Exists(fileName)
+#if UNITY_EDITOR
+            || CVarSystem.ClearDefaultOnPlay)
+#else
+)
+#endif
+            M_XMLFileManager.NewLoad<CVarData>(CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), OnLoadDefaultCompleteHandler);
+        else
+            M_XMLFileManager.NewLoad<CVarData>(fileName, OnLoadDefaultCompleteHandler);
+    }
 
     private void OnLoadDefaultCompleteHandler(CVarData obj)
     {
         if (obj != null)
         {
-#if UNITY_EDITOR
-            if(!CVarSystem.FilesHasBeenCopied || CVarSystem.ClearDefaultOnPlay)// if we need copy default to runtime
-#else
-            if (!CVarSystem.FilesHasBeenCopied)
-#endif
-            M_XMLFileManager.Save(CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), obj);// save to runtime
+//            string fileName = CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION));
+//#if UNITY_EDITOR
+//            if (!System.IO.File.Exists(fileName) || CVarSystem.ClearDefaultOnPlay)// if we need copy default to runtime
+//#else
+//            if (!System.IO.File.Exists(fileName))
+//#endif
+//                M_XMLFileManager.Save(fileName, obj);// save to runtime
 
             //IsLoaded = true;
             CVarSystem.AddData(obj, this);
-            ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD);
         }
+        ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
 
         //if(!CVarSystem.IsEditModeActived)
         if (CVarSystem.CanLoadRuntimePersistent)

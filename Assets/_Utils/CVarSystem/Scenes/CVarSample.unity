@@ -652,8 +652,8 @@ MonoBehaviour:
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 62
-    _address: 63
+    _groupUID: 83
+    _address: 84
   _v3:
     _name: 
     _groupName: global
@@ -895,7 +895,7 @@ MonoBehaviour:
     _groupUID: 1
     _address: 54
   _varFloat:
-    _name: 
+    _name: new_float
     _groupName: new_group
     _groupUID: 3
     _address: 0
@@ -908,7 +908,7 @@ MonoBehaviour:
     _name: string5
     _groupName: new_group
     _groupUID: 3
-    _address: 59
+    _address: 0
   _teste1:
     _name: teste6
     _groupName: new_group1234
@@ -917,8 +917,8 @@ MonoBehaviour:
   _teste13:
     _name: teste
     _groupName: group_01
-    _groupUID: 62
-    _address: 63
+    _groupUID: 83
+    _address: 84
   _v3:
     _name: teste
     _groupName: global
@@ -954,12 +954,12 @@ MonoBehaviour:
     _name: new_int
     _groupName: new_group
     _groupUID: 3
-    _address: 5
+    _address: 0
   _varFloat:
-    _name: 
+    _name: new_float
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 55
   _varCoins:
     _name: coins
     _groupName: new_group1234
@@ -998,15 +998,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varInt:
-    _name: 
+    _name: new_int (0)
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 54
   _varFloat:
-    _name: 
+    _name: new_float
     _groupName: global
     _groupUID: 1
-    _address: 0
+    _address: 55
   _varCoins:
     _name: new_int
     _groupName: new_group (4)

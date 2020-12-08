@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <cvar_data xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <os>
-    <o a="79" f="NONE">
+    <o a="75" f="NONE">
       <n>new_float</n>
       <v xsi:type="xsd:float">0</v>
     </o>
-    <o a="80" f="NONE">
+    <o a="76" f="NONE">
       <n>string5</n>
       <v xsi:type="xsd:string" />
     </o>
-    <o a="81" f="NONE">
+    <o a="77" f="NONE">
       <n>new_int</n>
       <v xsi:type="xsd:int">0</v>
     </o>

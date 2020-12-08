@@ -64,7 +64,7 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             groups[groups.Length-1] = string.Concat("<missing>.", groupName);
             indexOfCurrentGroup = groups.Length-1;
         }
-            
+        
         selectedGroup = EditorGUI.Popup(new Rect(position.x + position.width * 0.12f, position.y, position.width * 0.18f, position.height), indexOfCurrentGroup, groups);
         
         if (selectedGroup != indexOfCurrentGroup)
@@ -76,7 +76,9 @@ public class CVarPropertyDrawerBase : PropertyDrawer
             property.serializedObject.ApplyModifiedProperties();
         }
 
+        EditorGUI.BeginDisabledGroup(group == null || !group.IsLoaded);
         DrawNamePopup<T>(new Rect(position.x + position.width * 0.3f, position.y, position.width * 0.3f, position.height), key, address, groupName, property);
+        EditorGUI.EndDisabledGroup();
 
         T value;
 
@@ -120,17 +122,22 @@ public class CVarPropertyDrawerBase : PropertyDrawer
         }
         else if (key != null && key.Length > 0)
         {
-            if (GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Fix", "Click to create var at selected group.")))
-            {
-                if (CVarSystem.GetGroupByName(groupName) == null)
-                {
-                    property.FindPropertyRelative("_groupUID").stringValue = CVarSystem.CreateGroup(groupName).UID;
-                    property.serializedObject.ApplyModifiedProperties();
-                }
+            CVarGroup currentGroup = CVarSystem.GetGroupByName(groupName);
 
-                CVarSystem.SetValue<T>(key, (T)GetDefault<T>(), groupName);
+            if (currentGroup != null)
+            {
+                if (currentGroup.IsLoaded && GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Create Var", "Click to create var at selected group.")))
+                    CVarSystem.SetValue<T>(key, (T)GetDefault<T>(), groupName);
+                else if (!currentGroup.IsLoaded && GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Load group", "Click to load selected group.")))
+                {
+                    currentGroup.Load(false);
+                }
             }
-            
+            else if (currentGroup == null && GUI.Button(new Rect(position.x + position.width * 0.60f, position.y, position.width * 0.4f, position.height), new GUIContent("Create group", "Click to create group.")))
+            {
+                property.FindPropertyRelative("_groupUID").stringValue = CVarSystem.CreateGroup(groupName).UID;
+                property.serializedObject.ApplyModifiedProperties();
+            }
         }        
 
         // Set indent back to what it was

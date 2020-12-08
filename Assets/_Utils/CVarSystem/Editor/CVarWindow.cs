@@ -65,7 +65,16 @@ public class CVarWindow : EditorWindow
     [MenuItem("HLab/CVar")]
     public static void ShowWindow()
     {
+        CVarWindow ow = null;
+
+        if (HasOpenInstances<CVarWindow>())
+            ow = GetWindow<CVarWindow>(false, "CVar", true);
+
         CVarWindow editorWindow = CreateWindow<CVarWindow>("CVar");//GetWindow(typeof(CVarWindow), false, "CVar");
+
+        if (ow != null)
+            editorWindow.position = new Rect(ow.position.x+20f, ow.position.y+20f, ow.position.width, ow.position.height);
+
         ConfigureWindow(editorWindow);
     }
 
@@ -75,7 +84,6 @@ public class CVarWindow : EditorWindow
         editorWindow.CurrentGroup = CVarSystem.GetGroupByName(currentGroupName);
         ConfigureWindow(editorWindow);
     }
-
 
     public static void ConfigureWindow(CVarWindow window)
     {
@@ -202,9 +210,9 @@ public class CVarWindow : EditorWindow
             {
                 GenericMenu menu = new GenericMenu();
                 
-                menu.AddItem(new GUIContent("Delete Runtime Default"), false, () => { if (EditorUtility.DisplayDialog("Reset runtime default data", "Are You sure you want reset runtime default data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteRuntimeDefault(false); });
+                menu.AddItem(new GUIContent("Delete Runtime Default"), false, () => { if (EditorUtility.DisplayDialog("Reset runtime default data", "Are You sure you want reset runtime default data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteRuntimeDefault(); });
                 menu.AddItem(new GUIContent("Delete Runtime Persistent"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete persistent data?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeletePersistent(); } );
-                menu.AddItem(new GUIContent("Delete All Runtime"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete all runtime files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.ResetToDefault(false); });
+                menu.AddItem(new GUIContent("Delete All Runtime"), false, () => { if (EditorUtility.DisplayDialog("Delete persistent data", "Are You sure you want delete all runtime files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.ResetToDefault(); });
                 menu.AddItem(new GUIContent("Delete All"), false, () => { if (EditorUtility.DisplayDialog("Delete all files", "Are You sure you want delete all created files?\nThis can be undone.", "Delete", "Cancel")) CVarSystem.DeleteAll(); });
                 
                 menu.ShowAsContext();    
@@ -284,11 +292,11 @@ public class CVarWindow : EditorWindow
     }
     private void DrawDefaultFileManagerOptions(CVarGroup currentGroup, string loadedPath, string unloadedPath, string readGroupsFrom)
     {
-        if (PlayerPrefs.GetInt("FilesCopied", 0) == 1)
-        {
+        //if (CVarSystem.FilesHasBeenCopied)
+        //{
             EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived || _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
 
-            if (CVarSystem.CanLoadRuntimeDefault && System.IO.File.Exists(unloadedPath))
+            if (CVarSystem.CanLoadRuntimeDefault && System.IO.File.Exists(loadedPath))
             {
                 // If group there isn't the group in the default (group create at runtime) revert button won't be showed
                 if (GUILayout.Button(new GUIContent("Revert", "Revert data to default")) && EditorUtility.DisplayDialog("Revert to default", "Want revert runtime default file with editor default data?", "Revert", "Cancel"))
@@ -337,7 +345,7 @@ public class CVarWindow : EditorWindow
             }
 
             EditorGUI.EndDisabledGroup();
-        }
+        /*}
         else
         {
             if (GUILayout.Button(new GUIContent("Copy default to runtime", "Copy default to runtime folder")))
@@ -345,13 +353,13 @@ public class CVarWindow : EditorWindow
                 CVarSystem.CopyDefaultFilesToPersistentFolder();
                 EditorUtility.DisplayDialog("Copy files", "Files coppied with successed!", "Continue");
             }
-        }
+        }*/
     }
 
     private void DrawFileManager()
     {
         //EditorGUI.BeginDisabledGroup(PlayerPrefs.GetInt("FilesCopied", 0) == 0);
-        EditorGUI.BeginDisabledGroup(PlayerPrefs.GetInt("FilesCopied", 0) == 0 || Application.isPlaying || !CVarSystem.IsEditModeActived || _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
+        EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived || _currentAction != CVarWindowAction.EDIT_VAR_VALUES);
 
         EditorGUILayout.BeginHorizontal();
 
@@ -362,16 +370,16 @@ public class CVarWindow : EditorWindow
         GUI.backgroundColor = Color.white;
         if (boolAux != CVarSystem.CanLoadRuntimeDefault)
         {
-            //CVarSystem.UnloadGroups();
+            if(boolAux && CVarSystem.ClearDefaultOnPlay)
+            {
+                CVarSystem.DeleteRuntimeDefault(false);
+            }
+
             CVarSystem.UnloadGroups(true);
-            
+
             CVarSystem.ClearVars();
 
             CVarSystem.CanLoadRuntimeDefault = boolAux;
-
-            if (CVarSystem.ClearDefaultOnPlay)
-                CVarSystem.FilesHasBeenCopied = false;
-            
             CVarSystem.Init();
 
             //CVarSystem.Reload();
