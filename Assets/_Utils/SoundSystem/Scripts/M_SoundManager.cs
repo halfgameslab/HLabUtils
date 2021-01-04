@@ -1,4 +1,5 @@
 ﻿using Mup.EventSystem.Events;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -85,10 +86,26 @@ namespace Mup.SoundSystem
             Play2DFX(AudioClips[index]);
         }
 
+        public void Play2DFXByName(string name)
+        {
+            Play2DFX(Array.Find(AudioClips, e => e.name == name));
+        }
+
         public void Play2DFX(AudioClip clip)
         {
             if (IsSoundActive && _2dSoundFX && clip)
                 _2dSoundFX.PlayOneShot(clip);
+        }
+
+        public void PlayClipAt(int index, Vector3 position, float volume = 1f)
+        {
+            AudioSource.PlayClipAtPoint(AudioClips[index], position);
+        }
+
+        public void Stop2DClip()
+        {
+            if (_2dSoundFX.isPlaying && IsSoundActive && _2dSoundFX)
+                _2dSoundFX.Stop();
         }
     }
 }

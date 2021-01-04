@@ -168,11 +168,12 @@ public class CVarGroup
             //IsLoaded = true;
             CVarSystem.AddData(obj, this);
         }
-        ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
-
+        
         //if(!CVarSystem.IsEditModeActived)
         if (CVarSystem.CanLoadRuntimePersistent)
             LoadPersistent();
+        else
+            ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
     }
 
     /// <summary>
