@@ -5,10 +5,22 @@
     <!--Será respeitado o numero de quests requeridas e o numero de quests não opcionais ou seja se for requerido apenas 1 quest para passar o grupo e houver duas quests não opcionais-->
     <!--o grupo só será completo quando as não opcionais forem completas-->
     <group id="group_01" require_complete_quests="1" time_limit="">
-      <start>
-        <var name="" value="" type=""/>
-        <event target="" event_name=""/>
-      </start>
+      <start_when conditions="3">
+        <vars>
+          <var name="global.int.VarX" compare="EQUAL|GREATER" value="5" count_after_start="true" optional="false"/>
+        </vars>
+        <events>
+          <event target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+        </events>
+        <links>
+          <link require="" optional="false"/>
+        </links>
+      </start_when>
+      <fail>
+        <var name="global.single.Health" compare="EQUAL|SMALLER" value="0"/>
+        <timer mode="asc" start="0" limit="500"/>
+        <timer mode="desc" start="500" limit="0"/>
+      </fail>
       <quests>
         <!--id identificador da quest-->
         <!--optional se esta quest precisa ser resolvida para que o grupo seja completo-->
@@ -16,10 +28,35 @@
         <!--se no quest_id for colocado o identificador de um outro grupo este grupo será iniciado e só após todas as quests deste grupo serem concluídas que será liberado será dado como concluído-->
         <!--neste caso o campo override_goal será ignorado-->
         <!--se o identificador do mesmo grupo for adicionado ao campo quest_id esta tag será ignorada-->
-        <quest id="01" quest_id="group_02" optional="false" override_goal="" override_time_limit="" link=""/>
-        <quest id="02" quest_id="quest_01" optional="false" override_goal="" override_time_limit="" link="group01.01"/>
-        <quest id="03" quest_id="quest_02" optional="false" override_goal="" override_time_limit="" link="group01.02"/>
-        <quest id="04" quest_id="quest_03" optional="false" override_goal="" override_time_limit="" link="manual"/>
+        <!--override_goal_value alterará apenas o valor da váriavel ou o numero de vezes que um evento deverá ocorrer-->
+        <quest id="01" quest_id="group_02" optional="false" override_goal_value="" override_time_limit="">
+          <start_when conditions="1">
+            <vars>
+              <var name="global.int.VarX" compare="EQUAL|GREATER" value="5" optional="false"/>
+            </vars>
+            <events>
+              <event target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+            </events>
+            <links>
+              <link require="" optional="false"/>
+            </links>
+          </start_when>
+        </quest>
+        <quest id="02" quest_id="quest_01" optional="false" override_goal_value="" override_time_limit="">
+          <start_when conditions="1">
+            <link require="group01.01" optional="false"/>
+          </start_when>
+        </quest>
+        <quest id="03" quest_id="quest_02" optional="false" override_goal_value="" override_time_limit="">
+          <start_when conditions="1">
+            <link require="manual" optional="false"/>
+          </start_when>
+        </quest>
+        <quest id="04" quest_id="quest_03" optional="false" override_goal_value="" override_time_limit="">
+          <start_when conditions="1">
+            <var name="global.int.VarX" compare="EQUAL|GREATER" value="5" optional="false"/>
+          </start_when>
+        </quest>
       </quests>
       <name><![CDATA[@group_name_d_02]]></name>
       <desc><![CDATA[@group_desc_d_02]]></desc>

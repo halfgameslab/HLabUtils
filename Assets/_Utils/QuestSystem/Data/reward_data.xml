@@ -1,0 +1,19 @@
+<reward_data>
+  <rewards>
+    <reward id="reward_identifier">
+      <!--Nome e descrição são opcionais para prêmios-->
+      <name><![CDATA[@reward_name_d_01]]></name>
+      <desc><![CDATA[@reward_desc_d_01]]></desc>
+      <!--Tudo que estiver dentro do on_collect será executado quando o método collect for chamado-->
+      <!--A variável amount pode ser usada para dar um valor para o prêmio que será lido quando o prêmio for coletado-->
+      <on_collect amount="10">
+        <!--O prêmio poderá ser fixo, randomizado dentro de uma faixa de valores ou randomizado entre valores pré definidos-->
+        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="10"/>
+        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="[10|100]"/>
+        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="[10,20,30]"/>
+        <event target="Tutorial" event_name="ON_COMPLETE" optional="false"/>
+      </on_collect>
+    </reward>
+  </rewards>
+</reward_data>
+

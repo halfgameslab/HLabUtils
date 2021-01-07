@@ -735,16 +735,29 @@ public static class CVarSystem
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
-    /// <param name="defautValue"></param>
+    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static T GetValue<T>(string name, T defautValue = default, string group = "global")
+    public static T GetValue<T>(string name, T defaultValue = default, string group = "global")
     {
-        if (CVars.TryGetValue(GetFullName<T>(name, group), out CVarObject value))
-        {
-            return (T)value.Value;
-        }
+        return (T)GetValueByFullName(GetFullName<T>(name, group), defaultValue);
         
-        return defautValue;
+        
+    }
+
+    /// <summary>
+    /// Get var value from table using full name
+    /// </summary>
+    /// <param name="fullname"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public static object GetValueByFullName(string fullname, object defaultValue)
+    {
+        if (CVars.TryGetValue(fullname, out CVarObject var))
+        {
+            return var.Value;
+        }
+
+        return defaultValue;
     }
 
     /// <summary>

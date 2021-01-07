@@ -313,6 +313,16 @@ public static class IS_InstanceManager
         return ignoreOrigenExtension ? RemoveOrigenPrefix(obj.SetInstanceName(DEFAULT_INSTANCE_NAME)) : obj.SetInstanceName(DEFAULT_INSTANCE_NAME);
     }
 
+    /// <summary>
+    /// Check if the instance has been add to the Instance table
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static bool HasInstanceName(this System.Object obj)
+    {
+        return Instances.ContainsKey(obj);
+    }
+
     public static string GetPrefixByScene(Scene scene)
     {
         //return scene.IsValid() ? scene.name : PREFAB_PREFIX;

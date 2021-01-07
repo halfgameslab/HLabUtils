@@ -37,7 +37,7 @@ public class CVarSample : MonoBehaviour
 
     public int Coins { get => _varCoins.Value; set => _varCoins.Value = value; }
 
-    CVarCommand _command = new CVarCommand();
+    //CVarCommand _command = new CVarCommand();
 
     private void OnEnable()
     {

@@ -7,16 +7,16 @@ public enum CVarCommands
 { 
     EQUAL = 0,
     GREATER = 1,
-    LESS = 2,
+    SMALLER = 2,
     GREATER_EQUAL = 3,
-    LESS_EQUAL = 4
+    SMALLER_EQUAL = 4
 }
 
-public class CVarCommand
+public static class CVarCommand
 {
-    private Func<IComparable, IComparable, bool>[] Actions { get; set; } = new Func<IComparable, IComparable, bool>[] { CEqual, Greater, Less, GreaterEqual, LessEqual };
+    private static Func<object, object, bool>[] Actions { get; set; } = new Func<object, object, bool>[] { CEqual, Greater, Less, GreaterEqual, LessEqual };
 
-    private Dictionary<string, Func<object[], object>> ActionsTable = new Dictionary<string, Func<object[], object>>();// { { "",CEqual }, { "", Greater }, { "", Less }, { "", GreaterEqual }, { "", LessEqual } };
+    private static Dictionary<string, Func<object[], object>> ActionsTable { get; set; } = new Dictionary<string, Func<object[], object>>() { { "ADD", Add }, { "SUBTRACT", Subtract }, { "OVERWRITE", Overwrite } };// { { "",CEqual }, { "", Greater }, { "", Less }, { "", GreaterEqual }, { "", LessEqual } };
 
     /*
      * Default Actions
@@ -26,45 +26,85 @@ public class CVarCommand
         return a.CompareTo(b);
     }
 
-    private static bool Greater(IComparable a, IComparable b)
+    private static bool Greater(object a, object b)
     {
-        return CompareTo(a, b) > 0;
+        return CompareTo((IComparable)a, (IComparable)b) > 0;
     }
 
-    private static bool Less(IComparable a, IComparable b)
+    private static bool Less(object a, object b)
     {
-        return CompareTo(a, b) < 0;
+        return CompareTo((IComparable)a, (IComparable)b) < 0;
     }
 
-    private static bool CEqual(IComparable a, IComparable b)
+    /*private static bool CEqual(IComparable a, IComparable b)
     {
         return a.Equals(b);
+    }*/
+
+    private static bool GreaterEqual(object a, object b)
+    {
+        return CompareTo((IComparable)a, (IComparable)b) >= 0;
     }
 
-    private static bool GreaterEqual(IComparable a, IComparable b)
+    private static bool LessEqual(object a, object b)
     {
-        return CompareTo(a, b) >= 0;
+        return CompareTo((IComparable)a, (IComparable)b) <= 0;
     }
 
-    private static bool LessEqual(IComparable a, IComparable b)
+    private static bool CEqual(object a, object b)
     {
-        return CompareTo(a, b) <= 0;
+        if (a is IComparable)
+            return a.Equals(b);
+        else if(a is Vector3)
+            return (Vector3)a == (Vector3)b;
+
+        return a == b;
     }
+
+    private static object Add(params object[] values)
+    {
+        if (values[0] is int)
+            return (int)values[0] + (int)values[1];
+        else if (values[0] is float)
+            return (float)values[0] + (float)values[1];
+        else if (values[0] is Vector3)
+            return (Vector3)values[0] + (Vector3)values[1];
+
+        return null;
+    }
+
+    private static object Subtract(params object[] values)
+    {
+        if (values[0] is int)
+            return (int)values[0] - (int)values[1];
+        else if (values[0] is float)
+            return (float)values[0] - (float)values[1];
+        else if (values[0] is Vector3)
+            return (Vector3)values[0] - (Vector3)values[1];
+
+        return null;
+    }
+
+    private static object Overwrite(params object[] values)
+    {
+        return values[1];
+    }
+
     /*
      * End Default actions 
      */
 
-    public bool ExecuteAction(CVarCommands command, IComparable a, IComparable b)
+    public static bool ExecuteAction(CVarCommands command, object a, object b)
     {
         return Actions[(int)command](a, b);
     }
 
-    public bool ExecuteAction(string command, IComparable a, IComparable b)
+    public static bool ExecuteAction(string command, object a, object b)
     {
         return Actions[(int)Enum.Parse(typeof(CVarCommands), command)](a, b);
     }
 
-    public bool ExecuteAction(string action, out object result, params object[] args)
+    public static bool TryExecuteAction(string action, out object result, params object[] args)
     {
         if (ActionsTable.TryGetValue(action, out Func<object[], object> act))
         {
@@ -84,18 +124,18 @@ public class CVarCommand
     /// <param name="action"></param>
     /// <param name="vars"></param>
     /// <returns></returns>
-    public bool ExecuteWithCVarSystemParam(string action, string[] vars)
+    public static bool ExecuteWithCVarSystemParam(string action, string[] vars)
     {
         return false;
     }
 
-    public void RegisterAction(string actionName, Func<object[], object> action)
+    public static void RegisterAction(string actionName, Func<object[], object> action)
     {
         if(!ActionsTable.ContainsKey(actionName))
             ActionsTable.Add(actionName, action);
     }
 
-    public void RemoveAction(string actionName)
+    public static void RemoveAction(string actionName)
     {
         if (!ActionsTable.ContainsKey(actionName))
             ActionsTable.Remove(actionName);
