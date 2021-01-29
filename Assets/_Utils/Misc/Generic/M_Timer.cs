@@ -9,6 +9,7 @@ namespace Mup.Misc.Generic
     {
         [SerializeField] private float _duration = 2f;
         [SerializeField] private bool _playOnEnable = false;
+        [SerializeField] private bool _killOnComplete = false;
 
         [SerializeField] private UnityEvent _onPlay;
         [SerializeField] private UnityEvent _onStop;
@@ -53,6 +54,20 @@ namespace Mup.Misc.Generic
         {
             get { return _updateCoroutine != null; }
         }
+
+        public bool KillOnComplete
+        {
+            get
+            {
+                return _killOnComplete;
+            }
+
+            set
+            {
+                _killOnComplete = value;
+            }
+        }
+
         private void Awake()
         {
             _originalDuration = _duration;
@@ -109,6 +124,14 @@ namespace Mup.Misc.Generic
             _startTime = -1;
             _updateCoroutine = null;
             this.DispatchEvent(ES_Event.ON_COMPLETE, this);
+
+            if(KillOnComplete)
+            {
+                if (M_ObjectPool.Instance)
+                    M_ObjectPool.Instance.Store(this.gameObject);
+                else
+                    Destroy(this.gameObject);
+            }
         }
     }
 }

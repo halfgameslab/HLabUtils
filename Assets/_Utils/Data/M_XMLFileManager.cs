@@ -16,6 +16,8 @@ public static class M_XMLFileManager
     //ios error use this 
     //System.Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER","yes");
 
+    //https://blog.aspose.com/2020/04/22/create-zip-archives-add-files-or-folders-to-zip-in-csharp-asp.net/
+
 
     public static void Save<T>(string path, T data, bool checkDirectory = true)
     {

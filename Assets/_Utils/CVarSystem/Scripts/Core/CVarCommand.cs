@@ -9,12 +9,13 @@ public enum CVarCommands
     GREATER = 1,
     SMALLER = 2,
     GREATER_EQUAL = 3,
-    SMALLER_EQUAL = 4
+    SMALLER_EQUAL = 4,
+    NOT_EQUAL = 5
 }
 
 public static class CVarCommand
 {
-    private static Func<object, object, bool>[] Actions { get; set; } = new Func<object, object, bool>[] { CEqual, Greater, Less, GreaterEqual, LessEqual };
+    private static Func<object, object, bool>[] Actions { get; set; } = new Func<object, object, bool>[] { CEqual, Greater, Less, GreaterEqual, LessEqual, NotEqual };
 
     private static Dictionary<string, Func<object[], object>> ActionsTable { get; set; } = new Dictionary<string, Func<object[], object>>() { { "ADD", Add }, { "SUBTRACT", Subtract }, { "OVERWRITE", Overwrite } };// { { "",CEqual }, { "", Greater }, { "", Less }, { "", GreaterEqual }, { "", LessEqual } };
 
@@ -53,34 +54,44 @@ public static class CVarCommand
 
     private static bool CEqual(object a, object b)
     {
-        if (a is IComparable)
-            return a.Equals(b);
-        else if(a is Vector3)
-            return (Vector3)a == (Vector3)b;
+        if (a is IComparable comp)
+            return comp.Equals(b);
+        else if(a is Vector3 vector)
+            return vector == (Vector3)b;
 
         return a == b;
     }
 
+    private static bool NotEqual(object a, object b)
+    {
+        if (a is IComparable comp)
+            return !comp.Equals(b);
+        else if (a is Vector3 vector)
+            return vector != (Vector3)b;
+
+        return a != b;
+    }
+
     private static object Add(params object[] values)
     {
-        if (values[0] is int)
-            return (int)values[0] + (int)values[1];
-        else if (values[0] is float)
-            return (float)values[0] + (float)values[1];
-        else if (values[0] is Vector3)
-            return (Vector3)values[0] + (Vector3)values[1];
+        if (values[0] is int i0)
+            return i0 + (int)values[1];
+        else if (values[0] is float f0)
+            return f0 + (float)values[1];
+        else if (values[0] is Vector3 v0)
+            return v0 + (Vector3)values[1];
 
         return null;
     }
 
     private static object Subtract(params object[] values)
     {
-        if (values[0] is int)
-            return (int)values[0] - (int)values[1];
-        else if (values[0] is float)
-            return (float)values[0] - (float)values[1];
-        else if (values[0] is Vector3)
-            return (Vector3)values[0] - (Vector3)values[1];
+        if (values[0] is int i0)
+            return i0 - (int)values[1];
+        else if (values[0] is float f0)
+            return f0 - (float)values[1];
+        else if (values[0] is Vector3 v0)
+            return v0 - (Vector3)values[1];
 
         return null;
     }

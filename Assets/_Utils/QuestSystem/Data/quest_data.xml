@@ -1,71 +1,195 @@
 <quest_data>
   <quests>
-    <quest id="q01" type="">
-      <!--A variável require define quantas das condições abaixo precisam ser preenchidas para que a quest inicie-->
-      <start_when conditions="3">
-        <vars>
-          <var id="s01" name="global.int.VarX" address="5" compare="EQUAL|GREATER" value="5" count_after_start="true" optional="false"/>
-        </vars>
-        <events>
-          <event id="s02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
-          <event id="s03" target="q01.g01" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
-        </events>
-        <timer id="s04" mode="asc" start="0" limit="500"/>
-        <timer id="s05" mode="desc" start="500" limit="0"/>
-      </start_when>
-      <!--A variável require determina quantos objetivos devem ser cumpridos para que a quest seja completa-->
-      <goals require="2">
-        <!--Timer no goal determina que é necessário permanecer x tempos nesta quest-->
-        <!--Apenas um timer pode ser adicionado por quest-->
-        <!--Variável no goal determina que se a condição for atendida a meta foi cumprida-->
-        <vars>
-          <var id="g01" name="global.int.VarX" address="5" compare="EQUAL|GREATER" value="5" optional="false"/>
-        </vars>
-        <events>
-          <event id="g02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
-        </events>
-        <timer id="g03" mode="asc" start="0" limit="500"/>
-        <timer id="g04" mode="desc" start="500" limit="0"/>
-        <!--Um quest que é goal para outra quest não será iniciada automaticamente caso a tag start_when for preenchida-->
-        <quest id="g05" quest_id="q02" optional="false" override_goal_value="" override_time_limit="">
-          <!--A variável require define quantas das condições abaixo precisam ser preenchidas para que a quest inicie-->
-          <!--Quando a tag start_when é implementada ela sobreescreverá o pré requisito da quest requisitada-->
-          <start_when require="1">
-            <vars>
-              <!--Os valores podem ser fixos, randomizados dentro de uma faixa de valores ou randomizados baseado em um grudo de valores-->
-              <var name="global.int.VarX" compare="EQUAL|GREATER" value="5" optional="false"/>
-              <var name="global.int.VarX" compare="EQUAL|GREATER" value="[10|100]" optional="false"/>
-              <var name="global.int.VarX" compare="EQUAL|GREATER" value="[10,20,30]" optional="false"/>
-            </vars>
-            <events>
-              <event target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
-            </events>
-          </start_when>
-        </quest>
-      </goals>
-      <!--A variável require determina quantas condições precisão ser verdadeiras para que a quest falhe-->
-      <fail require="1">
-        <!--Timer no fail determina que é necessário terminar a quest em x tempos-->
-        <!--Variável no goal determina que se a condição for atendida a missão falhou-->
-        <vars>
-          <var id="f01" name="global.single.Health" optional="false" compare="EQUAL|SMALLER" value="0"/>
-        </vars>
-        <events>
-          <event id="f02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
-        </events>
-        <timer id="f03" mode="asc" start="0" limit="500"/>
-        <timer mode="desc" start="500" limit="0"/>
-      </fail>
+    <quest id="q01" type="" persistent="TRUE">
       <name><![CDATA[@quest_name_d_01]]></name>
       <desc><![CDATA[@quest_desc_d_01]]></desc>
+      <conditional_action><!--Start condition-->
+        <!--Mesma tag da variavel só que aqui será chamada de condition para fazer a diferenciação-->>
+        <conditions mode="or">
+          <conditions mode="and">
+            <actions>
+              <action type="check_var">
+                <!--name-->
+                <param>global.int.VarX</param>
+                <!--comparation-->
+                <param>NOT_EQUAL</param>
+                <!--address-->
+                <param>5</param>
+                <!--value-->
+                <param>10</param>
+              </action>
+              <action type="check_var">
+                <param>global.int.VarY</param>
+                <!--name-->
+                <param>EQUAL</param>
+                <!--address-->
+                <param>5</param>
+                <!--value-->
+                <param>10</param>
+              </action>
+              <action type="on_event_dispath">
+                <param>Tutorial</param>
+                <!--target-->
+                <param>ON_COMPLETE</param>
+                <!--event-->
+                <param>false</param>
+                <!--optional-->
+                <param>1</param>
+                <!--count execution-->
+              </action>
+            </actions>
+          </conditions>
+          <conditions mode="and">
+            <action type="check_var">
+              <param>global.int.VarX</param>
+              <!--name-->
+              <param>NOT_EQUAL</param>
+              <!--address-->
+              <param>5</param>
+              <!--value-->
+              <param>s[10|50|100]</param>
+            </action>
+            <action type="listen_quest">
+              <!--local id-->
+              <param>s01</param>
+              <!--id-->
+              <param>q01</param>
+              <!--start mode 0 = not start, 1 = force start-->
+              <param>0</param>
+              <!--override goal values-->
+              <param>[array with new values]</param>
+              <!--override start quest-->
+              <param>conditions</param>
+            </action>
+          </conditions>
+        </conditions>
+        <actions>
+          <!--type define o que a action é-->
+          <!--param define os parametros necessários para que esta action aconteça-->
+          <action type="start_quest">
+            <param>questID</param>
+          </action>
+        </actions>
+      </conditional_action>
+
+      <conditional_action><!--goals condition-->
+        <!--Timer no fail determina que é necessário terminar a quest em x tempos-->
+        <!--Variável no goal determina que se a condição for atendida a missão falhou-->
+        <conditions mode="and">
+          <conditions mode="or">
+            <action type="on_var_change">
+              <!--name-->
+              <param>global.int.VarX</param>
+              <!--condition-->
+              <param>NOT_EQUAL</param>
+              <!--address-->
+              <param>5</param>
+              <!--value-->
+              <!--| representa uma quest com multiplos niveis-->
+              <param>10|50|100</param>
+              <!--| representa uma quest onde o valor deve ser sorteado entre os valores apresentados-->
+              <param>10,50,100</param>
+              <!--; representa uma quest onde o valor deve ser sorteado entre os dois valores escolhidos-->
+              <param>10;100</param>
+              <!--apenas o valor representa o goal fixo da quest-->
+              <param>10</param>
+            </action>
+            <action type="on_event_dispath">
+              <!--target-->
+              <param>Tutorial</param>
+              <!--event-->
+              <param>ON_COMPLETE</param>
+              <!--optional-->
+              <param>false</param>
+              <!--count execution-->
+              <param>1</param>
+            </action>
+            <action type="on_timer_complete">
+              <!--id-->
+              <param>f03</param>
+              <!--mode asc|desc-->
+              <param>asc</param>
+              <!--time-->
+              <param>500</param>
+              <!--Iniciar caso não tenha iniciado-->
+              <param>true</param>
+              <!--local-->
+              <param>false</param>
+            </action>
+            <action type="listen_quest">
+              <!--id-->
+              <param>q03</param>
+              <!--start mode 0 = not start, 1 = force start-->
+              <param>1</param>
+              <!--local id-->
+              <param>lq01</param>
+              <!--override goal values-->
+              <param>[array with new values]</param>
+              <!--override start quest-->
+              <param>conditions</param>
+            </action>
+          </conditions>
+        </conditions>
+        <actions>
+          <!--type define o que a action é-->
+          <!--param define os parametros necessários para que esta action aconteça-->
+          <action type="dispatch_event">
+            <param>questID</param>
+            <param>ON_COMPLETE</param>
+          </action>
+          <action type="collect_reward">
+            <param>reward_id</param>
+          </action>
+        </actions>
+      </conditional_action>
+      
+      <conditional_action><!--Fail condition-->
+        <!--Timer no fail determina que é necessário terminar a quest em x tempos-->
+        <!--Variável no goal determina que se a condição for atendida a missão falhou-->
+        <conditions>
+          <conditions mode="or">
+            <action type="on_var_change">
+              <param>global.int.VarX</param>
+              <!--name-->
+              <param>NOT_EQUAL</param>
+              <!--address-->
+              <param>5</param>
+              <!--value-->
+              <param>10</param>
+            </action>
+            <action type="on_event_dispath">
+              <param>Tutorial</param><!--target-->
+              <param>ON_COMPLETE</param><!--event-->
+              <param>false</param><!--optional-->
+              <param>1</param><!--count execution-->
+            </action>
+            <action type="on_timer_complete">
+              <param>f03</param><!--id-->
+              <param>asc</param><!--mode asc|desc-->
+              <param>500</param><!--time-->
+              <param>false</param><!--local-->
+            </action>
+          </conditions>
+        </conditions>
+        <actions>
+          <!--type define o que a action é-->
+          <!--param define os parametros necessários para que esta action aconteça-->
+          <action type="dispatch_event">
+            <param>questID</param>
+            <param>ON_FAIL</param>
+          </action>
+        </actions>
+        </conditional_action>
+      
       <!--A variável collect determina quantos prêmios serão recebidos quando a quest for coletada-->
       <!--se o valor for menor que o número de prêmios será feito um sorteio para determinar qual prêmio será oferecido-->
-      <rewards collect="1">
+      <rewards avaliable="1">
         <!--A variável auto_collect determina se o prêmio será adicionado logo após o on complete ou se será necessário uma ação manual-->
         <!--A variável weight determina a chance que este prêmio tem de ser sorteado caso seja necessário-->
-        <reward id="r01" weight="1" value="100" auto_collect="false"/>
-        <reward id="r02" weight="1" value="[10|100]" auto_collect="false"/>
-        <reward id="r03" weight="1" value="[10,20,30]" auto_collect="false"/>
+        <reward id="r01" weight="1" override_value="100"/>
+        <reward id="r02" weight="1" override_value="10|100"/>
+        <reward id="r03" weight="1" override_value="10,20,30"/>
+        <reward id="r04" weight="1" override_value="10;20"/>
       </rewards>
     </quest>
   </quests>

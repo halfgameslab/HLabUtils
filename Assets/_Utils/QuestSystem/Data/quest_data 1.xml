@@ -1,0 +1,74 @@
+<quest_data>
+  <quests>
+    <quest id="q01" type="" persistent="TRUE">
+      <!--A variável require define quantas das condições abaixo precisam ser preenchidas para que a quest inicie-->
+      <start_when require="3">
+        <vars>
+          <var id="s01" name="global.int.VarX" address="5" action="EQUAL|GREATER" value="5" count_after_start="true" optional="false"/>
+        </vars>
+        <events>
+          <event id="s02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+          <event id="s03" target="q01.g01" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+        </events>
+        <!--Local false require internet-->
+        <timer id="s04" mode="asc" time="500" local="FALSE"/>
+        <timer id="s05" mode="desc" time="500" local="FALSE"/>
+      </start_when>
+      <!--A variável require determina quantos objetivos devem ser cumpridos para que a quest seja completa-->
+      <goals require="2">
+        <!--Timer no goal determina que é necessário permanecer x tempos nesta quest-->
+        <!--Apenas um timer pode ser adicionado por quest-->
+        <!--Variável no goal determina que se a condição for atendida a meta foi cumprida-->
+        <vars>
+          <var id="g01" name="global.int.VarX" address="5" action="EQUAL|GREATER" value="5" optional="false"/>
+        </vars>
+        <events>
+          <event id="g02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+        </events>
+        <timer id="g03" mode="asc" time="500" local="FALSE"/>
+        <timer id="g04" mode="desc" time="500" local="FALSE"/>
+        <!--Um quest que é goal para outra quest não será iniciada automaticamente caso a tag start_when for preenchida-->
+        <quest id="g05" quest_id="q02" optional="false" override_goal_value="" override_time_limit="">
+          <!--A variável require define quantas das condições abaixo precisam ser preenchidas para que a quest inicie-->
+          <!--Quando a tag start_when é implementada ela sobreescreverá o pré requisito da quest requisitada-->
+          <start_when require="1">
+            <vars>
+              <!--Os valores podem ser fixos, randomizados dentro de uma faixa de valores ou randomizados baseado em um grudo de valores-->
+              <var name="global.int.VarX" action="EQUAL|GREATER" value="5" optional="false"/>
+              <var name="global.int.VarX" action="EQUAL|GREATER" value="[10|100]" optional="false"/>
+              <var name="global.int.VarX" action="EQUAL|GREATER" value="[10,20,30]" optional="false"/>
+            </vars>
+            <events>
+              <event target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+            </events>
+          </start_when>
+        </quest>
+      </goals>
+      <!--A variável require determina quantas condições precisão ser verdadeiras para que a quest falhe-->
+      <fail require="1">
+        <!--Timer no fail determina que é necessário terminar a quest em x tempos-->
+        <!--Variável no goal determina que se a condição for atendida a missão falhou-->
+        <vars>
+          <var id="f01" name="global.single.Health" optional="false" action="EQUAL|SMALLER" value="0"/>
+        </vars>
+        <events>
+          <event id="f02" target="Tutorial" event_name="ON_COMPLETE" optional="false" count_executions="1"/>
+        </events>
+        <timer id="f03" mode="asc" time="500" local="FALSE"/>
+        <timer id="f04" mode="desc" time="500" local="FALSE"/>
+      </fail>
+      <name><![CDATA[@quest_name_d_01]]></name>
+      <desc><![CDATA[@quest_desc_d_01]]></desc>
+      <!--A variável collect determina quantos prêmios serão recebidos quando a quest for coletada-->
+      <!--se o valor for menor que o número de prêmios será feito um sorteio para determinar qual prêmio será oferecido-->
+      <rewards avaliable="1">
+        <!--A variável auto_collect determina se o prêmio será adicionado logo após o on complete ou se será necessário uma ação manual-->
+        <!--A variável weight determina a chance que este prêmio tem de ser sorteado caso seja necessário-->
+        <reward id="r01" weight="1" value="100" auto_collect="false"/>
+        <reward id="r02" weight="1" value="[10|100]" auto_collect="false"/>
+        <reward id="r03" weight="1" value="[10,20,30]" auto_collect="false"/>
+      </rewards>
+    </quest>
+  </quests>
+</quest_data>
+

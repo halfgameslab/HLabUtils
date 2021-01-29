@@ -119,7 +119,7 @@ namespace Mup.Misc.Generic
         /// <param name="e"></param>
         private void OnTimedEvent(System.Object source, ElapsedEventArgs e)
         {
-            ES_EventManager.DispatchEvent(this.GetInstanceName(), ES_Event.ON_COMPLETE, null, _totalTime);
+            this.DispatchEvent(ES_Event.ON_COMPLETE, _totalTime);
 
             Stop();
         }

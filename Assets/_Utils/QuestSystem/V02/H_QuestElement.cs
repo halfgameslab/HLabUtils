@@ -14,7 +14,7 @@ namespace H_QuestSystem
 
         H_Quest[] Quests { get; set; }
 
-        public bool WasCompleted 
+        public bool WasCompleted
         { 
             get
             {
@@ -51,13 +51,15 @@ namespace H_QuestSystem
             {
                 if (!v.WasCompleted)
                 {
-                    v.Start(OnCompleteHandler);
+                    v.AddEventListener(ES_Event.ON_COMPLETE, OnElementCompleteHandler);
+                    v.Start();
                 }
             }
             foreach (H_QuestEvent ev in Events)
             {
                 if (!ev.WasCompleted)
                 {
+                    ev.AddEventListener(ES_Event.ON_COMPLETE, OnElementCompleteHandler);
                     ev.Start();
                 }
             }
@@ -71,19 +73,42 @@ namespace H_QuestSystem
             }
         }
 
-        private void OnCompleteHandler(ES_Event ev)
+        private void OnElementCompleteHandler(ES_Event ev)
         {
-            
+            this.DispatchEvent(ES_Event.ON_COMPLETE);
         }
 
-        public void Cancel()
+        public void RemoveListeners()
         {
+            foreach (H_QuestVar v in Vars)
+            {
+                v.RemoveEventListener(ES_Event.ON_COMPLETE, OnElementCompleteHandler);       
+            }
+            foreach (H_QuestEvent ev in Events)
+            {
+                ev.RemoveEventListener(ES_Event.ON_COMPLETE, OnElementCompleteHandler);
+            }
 
+            foreach (H_Quest q in Quests)
+            {
+                if (!q.WasCompleted)
+                {
+
+                }
+            }
         }
 
         public void Invoke()
         {
-
+            foreach (H_QuestVar v in Vars)
+            {
+                // verificar a probabilidade caso necessário sorteio
+                v.Invoke();
+            }
+            foreach (H_QuestEvent ev in Events)
+            {
+                ev.Invoke();
+            }
         }
     }
 
@@ -92,7 +117,11 @@ namespace H_QuestSystem
         public string ID { get; set; }
         public bool Optional { get; set; }
 
-        public bool WasCompleted { get; set; }
+        public bool WasCompleted 
+        {
+            get { return CVarSystem.GetValue(string.Format("q_o_c_{0}", ID), false); }
+            set { CVarSystem.SetValue(string.Format("q_o_c_{0}", ID), value); } 
+        }
 
         //public void Start(string targetIdentifier, string ev, ES_MupAction onEventExecutedHandler)
         //{
@@ -117,7 +146,7 @@ namespace H_QuestSystem
             }
         }
 
-        public void Start(ES_MupAction onCompleteHandler)
+        public void Start()
         {
             if (!ReachedTheEnd)
                 ES_EventManager.AddEventListener(Fullname, ES_Event.ON_VALUE_CHANGE, OnValueChangerHandler);
@@ -125,7 +154,7 @@ namespace H_QuestSystem
                 Debug.Log("Complete");
         }
 
-        public void Cancel()
+        public void StopListeners()
         {
             ES_EventManager.RemoveEventListener(Fullname, ES_Event.ON_VALUE_CHANGE, OnValueChangerHandler);
         }
@@ -151,6 +180,8 @@ namespace H_QuestSystem
             if (Check(Command, ev.Data, Value))
             {
                 ES_EventManager.RemoveEventListener(Fullname, ES_Event.ON_VALUE_CHANGE, OnValueChangerHandler);
+
+                WasCompleted = true;
                 this.DispatchEvent(ES_Event.ON_COMPLETE);
             }
         }
@@ -169,19 +200,22 @@ namespace H_QuestSystem
 
         public int CountExecutions { get; set; }
 
+        public bool ReachedTheEnd
+        {
+            get
+            {
+                return CountExecutions == 0;
+            }
+        }
+
         public void Start()
         {
             ES_EventManager.AddEventListener(Target, Event, OnExecuteHandler);
         }
 
-        public void Cancel()
+        public void StopListeners()
         {
             ES_EventManager.RemoveEventListener(Target, Event, OnExecuteHandler);
-        }
-
-        public bool Check()
-        {
-            return true;
         }
 
         public void Invoke()
@@ -195,8 +229,10 @@ namespace H_QuestSystem
 
             if(CountExecutions == 0)
             {
-                this.DispatchEvent(ES_Event.ON_COMPLETE);
                 ES_EventManager.RemoveEventListener(Target, Event, OnExecuteHandler);
+                
+                WasCompleted = true;
+                this.DispatchEvent(ES_Event.ON_COMPLETE);
             }
         }
     }

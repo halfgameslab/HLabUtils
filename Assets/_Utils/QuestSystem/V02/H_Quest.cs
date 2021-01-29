@@ -77,8 +77,8 @@ namespace H_QuestSystem
         {
             if (HasStarted)
             {
-                FailConditions.Cancel();
-                Goals.Cancel();
+                FailConditions.RemoveListeners();
+                Goals.RemoveListeners();
                 FailConditions.RemoveEventListener(ES_Event.ON_COMPLETE, OnFailConditionsCompleteHandler);
                 Goals.RemoveEventListener(ES_Event.ON_COMPLETE, OnGoalsCompleteHandler);
             }

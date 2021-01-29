@@ -26,11 +26,11 @@ namespace H_QuestSystem
         {
             H_QuestVar v = new H_QuestVar() { Fullname = CVarSystem.GetFullName<float>("new_float"), Command = "EQUAL", Value = 5f, StartValue = 0f, ID = "v01" };
             v.AddEventListener(ES_Event.ON_COMPLETE, (ES_Event e) => Debug.Log("Complete"));
-            v.Start((ES_Event e) => Debug.Log("Complete"));
+            v.Start();
 
             H_QuestVar v2 = new H_QuestVar() { Fullname = CVarSystem.GetFullName<Vector3>("teste"), Command = "EQUAL", Value = new Vector3(55,1,1), StartValue = Vector3.zero, ID = "v01" };
             v2.AddEventListener(ES_Event.ON_COMPLETE, (ES_Event e) => Debug.Log("Complete2"));
-            v2.Start((ES_Event e) => Debug.Log("Complete2"));
+            v2.Start();
             //v.Invoke();
         }
 

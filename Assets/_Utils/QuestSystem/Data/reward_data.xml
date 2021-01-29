@@ -1,6 +1,13 @@
+<!--<var id="s01" name="global.int.VarX" address="5" action="ADD" value="10" relative="true" optional="false"/>
+        <var id="s02" name="global.int.VarX" address="5" action="SUBTRACT" value="[10|100]" relative="true" optional="false"/>
+        <var id="s03" name="global.int.VarX" address="5" action="OVERWRITE" value="[10,20,30]" relative="true" optional="false"/>
+        <var id="s04" name="global.int.VarX" address="5" action="OVERWRITE" value="global.int.VarY" relative="true" optional="false"/>
+        <event target="Tutorial" event_name="ON_COMPLETE" optional="false"/>-->
 <reward_data>
   <rewards>
-    <reward id="reward_identifier">
+    <!--Criar dois dispatch events um para o prêmio que tem como target o prêmio e outro para o tipo do prêmio que tem como-->
+    <!--target o typo do prêmio e que tem como data o prêmio-->
+    <reward id="reward_identifier" type="weapon">
       <!--Nome e descrição são opcionais para prêmios-->
       <name><![CDATA[@reward_name_d_01]]></name>
       <desc><![CDATA[@reward_desc_d_01]]></desc>
@@ -8,10 +15,59 @@
       <!--A variável amount pode ser usada para dar um valor para o prêmio que será lido quando o prêmio for coletado-->
       <on_collect amount="10">
         <!--O prêmio poderá ser fixo, randomizado dentro de uma faixa de valores ou randomizado entre valores pré definidos-->
-        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="10"/>
-        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="[10|100]"/>
-        <var name="global.int.VarX" operation="ADD|SUBTRACT|OVERWRITE" value="[10,20,30]"/>
-        <event target="Tutorial" event_name="ON_COMPLETE" optional="false"/>
+        <conditional_action>
+          <!--Mesma tag da variavel só que aqui será chamada de condition para fazer a diferenciação-->>
+          <conditions mode="or">
+            <conditions mode="and">
+              <action type="check_var">
+                <param>global.int.VarX</param>
+                <!--name-->
+                <param>NOT_EQUAL</param>
+                <!--address-->
+                <param>5</param>
+                <!--value-->
+                <param>10</param>
+              </action>
+              <action type="check_var">
+                <param>global.int.VarY</param>
+                <!--name-->
+                <param>EQUAL</param>
+                <!--address-->
+                <param>5</param>
+                <!--value-->
+                <param>10</param>
+              </action>
+            </conditions>
+            <conditions mode="and">
+              <action type="check_var">
+                <param>global.int.VarX</param>
+                <!--name-->
+                <param>NOT_EQUAL</param>
+                <!--address-->
+                <param>5</param>
+                <!--value-->
+                <param>10</param>
+              </action>
+            </conditions>
+          </conditions>
+          <actions>
+          <!--type define o que a action é-->
+          <!--param define os parametros necessários para que esta action aconteça-->
+            <action type="change_var">
+              <param>s01</param>
+              <param>global.int.VarX</param>
+              <param>5</param>
+              <param>10</param>
+              <param>false</param>
+              <param>false</param>
+            </action>
+            <action type="dispatch_event">
+              <param>Tutorial</param>
+              <param>ON_COMPLETE</param>
+              <param>false</param>
+            </action>
+          </actions>
+        </conditional_action>
       </on_collect>
     </reward>
   </rewards>
