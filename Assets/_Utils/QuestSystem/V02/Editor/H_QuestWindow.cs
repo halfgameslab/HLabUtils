@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -10,8 +11,10 @@ namespace H_QuestSystemV2
 {
     public class H_QuestWindow : EditorWindow
     {
-        QuestEditor e = new QuestEditor();
-        QuestGroupEditor g = new QuestGroupEditor();
+        QuestGroupListEditor<H_Quest> _questListEditor = new QuestGroupListEditor<H_Quest>();
+        QuestEditor _questEditor = new QuestEditor();
+        QuestGroupEditor _questGroupEditor = new QuestGroupEditor();
+        string _currentQuestUID = string.Empty;
 
         [MenuItem("HLab/Quest Editor")]
         public static void ShowWindow()
@@ -31,31 +34,55 @@ namespace H_QuestSystemV2
 
         public void OnEnable()
         {
-            g.AddEventListener(ES_Event.ON_CLICK, OnSelectQuestHandler);
-            g.AddEventListener(ES_Event.ON_DESTROY, OnQuestDestroyHandler);
+            _questListEditor.AddEventListener(ES_Event.ON_CHANGE, OnChangeGroupsListHandler);
+            _questListEditor.AddEventListener(ES_Event.ON_CONFIRM, OnCreateGroupHandler);
 
-            //e.Start(new H_Quest());
-            g.Start(H_QuestManager.Instance.QuestGroups.GetGroupByName("global"));
+            _questGroupEditor.AddEventListener(ES_Event.ON_CLICK, OnSelectQuestHandler);
+            _questGroupEditor.AddEventListener(ES_Event.ON_DESTROY, OnQuestDestroyHandler);
         }
-
+        
         public void OnDisable()
         {
-            if(g != null)
+            if(_questListEditor != null)
             {
-                g.RemoveEventListener(ES_Event.ON_CLICK, OnSelectQuestHandler);
-                g.RemoveEventListener(ES_Event.ON_DESTROY, OnSelectQuestHandler);
+                _questListEditor.RemoveEventListener(ES_Event.ON_CHANGE, OnChangeGroupsListHandler);
+                _questListEditor.RemoveEventListener(ES_Event.ON_CONFIRM, OnCreateGroupHandler);
             }
+            if(_questGroupEditor != null)
+            {
+                _questGroupEditor.RemoveEventListener(ES_Event.ON_CLICK, OnSelectQuestHandler);
+                _questGroupEditor.RemoveEventListener(ES_Event.ON_DESTROY, OnSelectQuestHandler);
+            }
+        }
+
+        public void SelectGroup(H_DataGroup<H_Quest> group)
+        {
+            _currentQuestUID = group.UID;
+            _questGroupEditor.Start(group);
+            _questEditor.Clear();
+        }
+
+        private void OnChangeGroupsListHandler(ES_Event ev)
+        {
+            SelectGroup((H_DataGroup<H_Quest>)ev.Data);
+        }
+
+        private void OnCreateGroupHandler(ES_Event ev)
+        {
+            string name = (string)ev.Data;
+
+            SelectGroup(H_QuestManager.Instance.QuestGroups.CreateGroup(name));
         }
 
         private void OnSelectQuestHandler(ES_Event ev)
         {
-            e.Start((H_Quest)ev.Data);
+            _questEditor.Start((H_Quest)ev.Data);
         }
         
         private void OnQuestDestroyHandler(ES_Event ev)
         {
-            if((H_Quest)ev.Data == e.CurrentQuest)
-                e.Clear();
+            if((H_Quest)ev.Data == _questEditor.CurrentQuest)
+                _questEditor.Clear();
         }
 
         public static void ConfigureWindow(H_QuestWindow window)
@@ -65,60 +92,147 @@ namespace H_QuestSystemV2
             window.Show();
         }
 
-        private bool DefaultTextureButton(string textureName, string hint, float w = 50, float h = 40)
-        {
-            return GUILayout.Button(new GUIContent(EditorGUIUtility.FindTexture(textureName), hint), GUILayout.Width(w), GUILayout.Height(h));
-        }
-
         public void OnGUI()
         {
+            AvoidNullQuestList();
+
             float firstCollumWidth = EditorGUIUtility.currentViewWidth / 3f;
 
-            //EditorGUI.DrawRect(new Rect(0, 0, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight*2), Color.blue);
+            _questListEditor.Draw(_questGroupEditor.CurrentQuestGroup, H_QuestManager.Instance.QuestGroups.GetGroups());
 
+            EditorGUI.BeginDisabledGroup(_questListEditor.CurrentState != 0);
             EditorGUILayout.BeginHorizontal();
-            DefaultTextureButton("d_Collab.FileAdded", "Create New Group");
+
+            _questGroupEditor.Draw();
+
+            EditorGUILayout.BeginVertical(GUILayout.MinWidth((firstCollumWidth * 2) - 50), GUILayout.MaxWidth((firstCollumWidth * 2) - 50));
+
+            //EditorGUI.DrawRect(new Rect(firstCollumWidth, EditorGUIUtility.singleLineHeight * 2, firstCollumWidth*2, EditorGUIUtility.singleLineHeight), Color.red);
+
+            _questEditor.Draw();
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
+        }
+
+        public void SelectQuest(int index)
+        {
+            if(_questGroupEditor.CurrentQuestGroup.Data.Count > index)
+                SelectQuest(_questGroupEditor.CurrentQuestGroup.Data[index]);
+        }
+
+        public void SelectQuest(H_Quest quest)
+        {
+            _questEditor.Start(quest);
+        }
+
+        private void AvoidNullQuestList()
+        {
+            if (_questGroupEditor.CurrentQuestGroup == null)
+            {
+                H_DataGroup<H_Quest> currentQuest = H_QuestManager.Instance.QuestGroups.GetGroupByUID(_currentQuestUID);
+                if (currentQuest != null)
+                {
+                    _questGroupEditor.Start(currentQuest);
+                }
+                else
+                {
+                    _questGroupEditor.Start(H_QuestManager.Instance.QuestGroups.GetGroupByName("global"));
+                    _currentQuestUID = _questGroupEditor.CurrentQuestGroup.UID;
+                }
+            }
+        }
+    }
+
+    public class QuestGroupListEditor<T>
+    { 
+        public int CurrentState { get; set; }
+
+        private string _auxString = string.Empty;
+        public void Draw(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        {
+            EditorGUI.BeginDisabledGroup(CurrentState != 0);
+            DrawFileManager();
+            EditorGUI.EndDisabledGroup();
+
+            if (CurrentState == 0)
+                DrawGroupPopup(currentGroup, groups);
+            else if (CurrentState == 1)
+                DrawCreateGroup();
+        }
+
+        protected void DrawFileManager()
+        {
+            EditorGUILayout.BeginHorizontal();
+            if(DefaultTextureButton("d_Collab.FileAdded", "Create New Group"))
+            {
+                _auxString = "new_group_name";
+                CurrentState = 1;
+            }
             DefaultTextureButton("d_Refresh@2x", "Reload");
             DefaultTextureButton(CVarSystem.IsEditModeActived ? "d_PlayButton@2x" : "d_PauseButton@2x", CVarSystem.IsEditModeActived ? "Disable Edit Mode" : "Enable Edit Mode");
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
+        }
 
+        protected void DrawGroupPopup(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        {
+            string[] names = groups.Select(e => e.Name).ToArray();
+            int index = Array.IndexOf(groups, currentGroup);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.Popup("Group (id)", 0, new string[] { "group a", "group b", "group c" });
-            GUILayout.Button("E", GUILayout.Width(18));
-            GUILayout.Button("-", GUILayout.Width(18));
+            int newIndex = EditorGUILayout.Popup(string.Format("Group ({0})", currentGroup.UID), index, names);
+
+            if(newIndex != index)
+            {
+                this.DispatchEvent(ES_Event.ON_CHANGE, groups[newIndex]);
+            }
+
+            if(GUILayout.Button("E", GUILayout.Width(18)))
+            {
+
+            }
+            if(GUILayout.Button("-", GUILayout.Width(18)))
+            {
+
+            }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Popup("Persistent Type", 0, new string[] { "SHARED", "PER_SCENE", "CUSTOM" });
             EditorGUILayout.Space();
+        }
 
+        protected void DrawCreateGroup()
+        {
             EditorGUILayout.BeginHorizontal();
+            _auxString = EditorGUILayout.TextField("Name", _auxString);
 
-            g.Draw();
+            if (GUILayout.Button("V", GUILayout.Width(19)))
+            {
+                CurrentState = 0;
 
-            EditorGUILayout.BeginVertical(GUILayout.MinWidth((firstCollumWidth * 2) - 50), GUILayout.MaxWidth((firstCollumWidth * 2) - 50));
+                this.DispatchEvent(ES_Event.ON_CONFIRM, _auxString);
 
-            //EditorGUI.DrawRect(new Rect(firstCollumWidth, EditorGUIUtility.singleLineHeight * 2, firstCollumWidth*2, EditorGUIUtility.singleLineHeight), Color.red);
-
-            e.Draw();
-
-            EditorGUILayout.EndVertical();
-
+                _auxString = string.Empty;
+            }
+            if (GUILayout.Button("C", GUILayout.Width(19)))
+            {
+                CurrentState = 0;
+                _auxString = string.Empty;
+            }
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Popup("Persistent Type", 0, new string[] { "SHARED", "PER_SCENE", "CUSTOM" });
+            EditorGUILayout.Space();
         }
 
-        public void SelectQuest(int index)
+        private bool DefaultTextureButton(string textureName, string hint, float w = 50, float h = 40)
         {
-            if(g.CurrentQuestGroup.Data.Count > index)
-                SelectQuest(g.CurrentQuestGroup.Data[index]);
-        }
-
-        public void SelectQuest(H_Quest quest)
-        {
-            e.Start(quest);
+            return GUILayout.Button(new GUIContent(EditorGUIUtility.FindTexture(textureName), hint), GUILayout.Width(w), GUILayout.Height(h));
         }
     }
+
 
     public class QuestGroupEditor
     {
@@ -127,13 +241,17 @@ namespace H_QuestSystemV2
         private Vector2 _scrollPosition;
         public void Start(string currentGroup)
         {
-            //H_QuestGroup group = H_QuestManager.GetGroup(currentGroup);
-            //Start(group);
+            Start(H_QuestManager.Instance.QuestGroups.GetGroupByName(currentGroup));   
         }
 
         public void Start(H_DataGroup<H_Quest> currentGroup)
         {
-            CurrentQuestGroup = currentGroup;
+            if (CurrentQuestGroup != currentGroup)
+            {
+                CurrentQuestGroup = currentGroup;
+                _scrollPosition = Vector2.zero;
+                SelectedQuest = null;
+            }
         }
 
         public void Draw()
@@ -237,6 +355,8 @@ namespace H_QuestSystemV2
 
         public void Clear()
         {
+            _scroolPosition = Vector2.zero;
+            _currentOption = 0;
             CurrentQuest = null;
             _infoList = null;
             _start.Clear();

@@ -436,7 +436,8 @@ namespace H_QuestSystemV2
         public string UID { get; set; }
         public string Name { get; set; }
 
-        public List<T> Data { get; set; }
+        [XmlIgnore]
+        public List<T> Data { get; set; } = new List<T>();
 
         public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
@@ -586,12 +587,9 @@ namespace H_QuestSystemV2
 
                 //IsLoaded = true;
                 //CVarSystem.AddData(obj, this);
-                Data = new List<T>(obj);
+                Data.InsertRange(0, obj);
             }
-            else
-            {
-                Data = new List<T>();
-            }
+
             //if(!CVarSystem.IsEditModeActived)
             if (CVarSystem.CanLoadRuntimePersistent)
                 LoadPersistent();
