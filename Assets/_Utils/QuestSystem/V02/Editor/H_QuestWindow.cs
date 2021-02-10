@@ -35,7 +35,7 @@ namespace H_QuestSystemV2
             g.AddEventListener(ES_Event.ON_DESTROY, OnQuestDestroyHandler);
 
             //e.Start(new H_Quest());
-            g.Start(new H_QuestGroup());
+            g.Start(H_QuestManager.Instance.QuestGroups.GetGroupByName("global"));
         }
 
         public void OnDisable()
@@ -110,8 +110,8 @@ namespace H_QuestSystemV2
 
         public void SelectQuest(int index)
         {
-            if(g.CurrentQuestGroup.Quests.Count > index)
-                SelectQuest(g.CurrentQuestGroup.Quests[index]);
+            if(g.CurrentQuestGroup.Data.Count > index)
+                SelectQuest(g.CurrentQuestGroup.Data[index]);
         }
 
         public void SelectQuest(H_Quest quest)
@@ -122,7 +122,7 @@ namespace H_QuestSystemV2
 
     public class QuestGroupEditor
     {
-        public H_QuestGroup CurrentQuestGroup { get; set; }
+        public H_DataGroup<H_Quest> CurrentQuestGroup { get; set; }
         public H_Quest SelectedQuest { get; set; }
         private Vector2 _scrollPosition;
         public void Start(string currentGroup)
@@ -131,7 +131,7 @@ namespace H_QuestSystemV2
             //Start(group);
         }
 
-        public void Start(H_QuestGroup currentGroup)
+        public void Start(H_DataGroup<H_Quest> currentGroup)
         {
             CurrentQuestGroup = currentGroup;
         }
@@ -151,10 +151,10 @@ namespace H_QuestSystemV2
 
             if(GUILayout.Button("+", GUILayout.MinWidth(18)))
             {
-                CurrentQuestGroup.Quests.Add(new H_Quest() { ID = CurrentQuestGroup.Quests.Count.ToString() } );
+                CurrentQuestGroup.Add(new H_Quest() { ID = CurrentQuestGroup.Data.Count.ToString() });
             }
 
-            H_Quest[] displayableQuests = CurrentQuestGroup.Quests.ToArray();
+            H_Quest[] displayableQuests = CurrentQuestGroup.Data.ToArray();
 
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space();
@@ -183,12 +183,13 @@ namespace H_QuestSystemV2
                 if (GUILayout.Button(new GUIContent("D", "Duplicate Quest"), GUILayout.MinWidth(19)))
                 {
                     //duplicate quest
-                    CurrentQuestGroup.Quests.Insert(CurrentQuestGroup.Quests.IndexOf(displayableQuests[i])+1, displayableQuests[i].Clone() );
+                    //CurrentQuestGroup.Data.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i])+1, displayableQuests[i].Clone() );
+                    CurrentQuestGroup.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i]) + 1, displayableQuests[i].Clone());
                 }
                 if(GUILayout.Button(new GUIContent("-", "Delete Quest"), GUILayout.MinWidth(18), GUILayout.MaxWidth(18)) && EditorUtility.DisplayDialog("Delete Quest", String.Format("Want delete quest {0}?\n\nYou can't revert this operation.", displayableQuests[i].ID), "Delete", "Cancel"))
                 {
                     //remove quest
-                    CurrentQuestGroup.Quests.Remove(displayableQuests[i]);
+                    CurrentQuestGroup.Remove(displayableQuests[i]);
                     this.DispatchEvent(ES_Event.ON_DESTROY, displayableQuests[i]);
                 }
                 

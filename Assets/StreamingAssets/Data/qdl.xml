@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ArrayOfH_DataGroupOfH_Quest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <H_DataGroupOfH_Quest las="true">
+    <UID>89</UID>
+    <Name>global</Name>
+    <PersistentType>SHARED</PersistentType>
+  </H_DataGroupOfH_Quest>
+</ArrayOfH_DataGroupOfH_Quest>

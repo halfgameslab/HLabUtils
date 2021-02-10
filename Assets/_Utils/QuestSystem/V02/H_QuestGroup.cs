@@ -1,5 +1,6 @@
 ﻿using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,7 @@ namespace H_QuestSystemV2
         }
     }
 
+
     public class H_Quest
     {
         public string ID { get; set; }
@@ -110,20 +112,145 @@ namespace H_QuestSystemV2
         }
     }
 
-    public class H_DataGroupList<T>
+    public sealed class H_QuestManager
     {
-        public Dictionary<string, T> Groups { get; set; }
-        public static bool CanLoadRuntimeDefault { get; set; }
+        private static H_QuestManager _instance;
 
-        public void SaveGroupListToFile()
+        public static H_QuestManager Instance { get { return _instance ?? (_instance = new H_QuestManager()); } }
+        private H_QuestManager() { /*block external initialization*/ }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void InitializeOnLoad()
         {
-            M_XMLFileManager.Save<T[]>(ParseDataPathWith("groups_data.xml"), GetGroups());
+            Instance.Start();
         }
 
-        public T[] GetGroups()
+        public H_DataGroupList<H_Quest> QuestGroups = new H_DataGroupList<H_Quest>() { Filename="qdl.xml" };
+        public void Start()
         {
-            return Groups.Values.ToArray();
+            QuestGroups.AddEventListener(ES_Event.ON_LOAD, OnQuestsLoadHandler);
+            QuestGroups.Load();
         }
+
+        private void OnQuestsLoadHandler(ES_Event ev)
+        {
+            QuestGroups.RemoveEventListener(ES_Event.ON_LOAD, OnQuestsLoadHandler);
+            // configure quests
+        }
+    }
+
+    public class H_AddressManager
+    {
+        private int _currentAddress = -1;
+
+        public string Filename { get; set; } = "current_address.xml";
+        
+        public bool WasLoaded{ get { return _currentAddress != -1; } }
+        
+        public int CurrentAddress
+        {
+            get
+            {
+                return _currentAddress;
+            }
+            private set
+            {
+                if (_currentAddress != value)
+                {
+                    _currentAddress = value;
+
+#if UNITY_EDITOR
+                    //save
+                    H_FileManager.Save(H_DataManager.ParseStreamingDefaultDataPathWith(Filename), _currentAddress.ToString());
+
+#else
+                H_FileManager.Save(ParsePersistentDefaultDataPathWith(FileName), _currentAddress.ToString());
+#endif
+                }
+            }
+        }
+
+        public int GetNextAvaliableAddress()
+        {
+            CurrentAddress++;
+            return CurrentAddress;
+        }
+
+        public void Load()
+        {
+#if UNITY_EDITOR
+            H_FileManager.Load(H_DataManager.ParseStreamingDefaultDataPathWith(Filename), OnLoadCompleteHandler);
+#else
+            if(System.IO.File.Exists(ParsePersistentDefaultDataPathWith(filename)))
+                H_FileManager.Load(ParsePersistentDefaultDataPathWith(filename), OnLoadCompleteHandler);
+            else
+                H_FileManager.Load(ParseStreamingDefaultDataPathWith(filename), OnLoadCompleteHandler);
+#endif
+        }
+
+        public void OnLoadCompleteHandler(string obj)
+        {
+            if (int.TryParse(obj, out _currentAddress))
+            {
+                this.DispatchEvent(ES_Event.ON_LOAD, this);
+            }
+            else
+            {
+                CurrentAddress = 0;
+            }
+        }
+    }
+
+
+    public sealed class H_DataManager
+    {
+        private static H_DataManager _instance;
+
+        public static H_DataManager Instance { get { return _instance ?? (_instance = new H_DataManager()); } }
+        private H_DataManager() { /*block external initialization*/ }
+
+        public bool CanLoadRuntimeDefault { get; set; }
+
+        public H_AddressManager Address { get; set; } = new H_AddressManager();
+        
+        [RuntimeInitializeOnLoadMethod]
+        private static void InitializeOnLoad()
+        {
+            Instance.Start();
+        }
+
+        public void Start()
+        {
+            Address.Load();
+        }
+
+        public void LoadGroupList<T>(string filename)
+        {
+            if(!Address.WasLoaded)
+            {
+                Address.AddEventListener(ES_Event.ON_LOAD, (ev)=>Load<T>(filename));
+                Address.Load();
+            }
+            else
+            {
+                Load<T>(filename);
+            }
+        }    
+
+        public void Load<T>(string filename)
+        {
+            if (CanLoadRuntimeDefault && System.IO.File.Exists(ParsePersistentDefaultDataPathWith(filename)))
+                // load groups file        
+                M_XMLFileManager.NewLoad<H_DataGroup<T>[]>(ParsePersistentDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));
+            else
+                M_XMLFileManager.NewLoad<H_DataGroup<T>[]>(ParseStreamingDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));    
+        }
+
+        public static void SaveGroupListToFile<T>(string filename, T[] groups, bool useRuntimeDefault = false)
+        {
+            M_XMLFileManager.Save(ParseDataPathWith(filename, useRuntimeDefault), groups);
+        }
+           
 
         /// <summary>
         /// Used after build
@@ -155,12 +282,151 @@ namespace H_QuestSystemV2
             return System.IO.Path.Combine(Application.streamingAssetsPath, "Data", filename);
         }
 
-        public static string ParseDataPathWith(string filename)
+        public static string ParseDataPathWith(string filename, bool useRuntimeDefault = false)
         {
-            if (!CanLoadRuntimeDefault)
+            if (!useRuntimeDefault)
                 return ParseStreamingDefaultDataPathWith(filename);
 
             return ParsePersistentDefaultDataPathWith(filename);
+        }
+    }
+
+
+    public class H_DataGroupList<T>
+    {
+        public Dictionary<string, H_DataGroup<T>> Groups { get; set; } = new Dictionary<string, H_DataGroup<T>>();
+
+        public string Filename { get; set; } = "group_list.xml";
+
+        private int _loadedGroups = 0;
+
+        public void LoadGroups(bool canChangePrefix = true)
+        {
+            _loadedGroups = Groups.Values.Count;
+            foreach (H_DataGroup<T> group in Groups.Values)
+            {
+                if (group.CanLoadAtStart)
+                {
+                    if (!ES_EventManager.HasEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler))
+                        ES_EventManager.AddEventListener(group.Name, ES_Event.ON_LOAD, OnGroupLoadedHandler);
+
+                    group.Load(canChangePrefix);
+                }
+                else
+                {
+                    _loadedGroups--;
+
+                    if (_loadedGroups == 0)
+                    {
+                        this.DispatchEvent(ES_Event.ON_LOAD);
+                    }
+                }
+            }
+        }
+
+
+        private void OnGroupLoadedHandler(ES_Event ev)
+        {
+            ES_EventManager.RemoveEventListener(ev.TargetIdentifier, ES_Event.ON_LOAD, OnGroupLoadedHandler);
+            _loadedGroups--;
+            if (_loadedGroups == 0)
+            {
+                this.DispatchEvent(ES_Event.ON_LOAD);
+            }
+        }
+
+        public void Load()
+        {
+            if (Groups != null)
+            {
+                if (Groups.Count == 0)
+                {
+                    H_DataManager.Instance.AddEventListener(ES_Event.ON_LOAD, OnLoadGroupListHandler) ;
+                    H_DataManager.Instance.LoadGroupList<T>(Filename);
+                }
+                else
+                    LoadGroups();
+            }
+        }
+        public void OnLoadGroupListHandler(ES_Event ev)
+        {
+            if (ev.Data != null)
+            {
+                H_DataGroup<T>[] groups = (H_DataGroup<T>[])ev.Data;
+
+                foreach (H_DataGroup<T> group in groups)
+                {
+                    Groups.Add(group.UID, group);
+                }
+
+                LoadGroups();
+            }
+            else
+            {
+                CreateGroup("global");
+                this.DispatchEvent(ES_Event.ON_LOAD);
+            }
+        }
+
+        public void Save()
+        {
+            H_DataManager.SaveGroupListToFile(Filename, Groups.Values.ToArray());
+        }
+
+        public H_DataGroup<T> CreateGroup(string name, bool overrideIfExist = false)
+        {
+            if (CVarSystem.ValidateName(name))
+            {
+                H_DataGroup<T> oldGroup = GetGroupByName(name);
+
+                // check if group exists
+                if (oldGroup == null || overrideIfExist)//  se o grupo não existir
+                {
+                    int address = H_DataManager.Instance.Address.GetNextAvaliableAddress();
+                    // Create group with the desired name
+                    H_DataGroup<T> group = new H_DataGroup<T>() { Name = name, UID = address.ToString(), IsLoaded = true };
+
+                    if (oldGroup == null)
+                        // update group list
+                        Groups.Add(group.UID, group);
+                    else
+                    {
+                        // Delete old
+                        Groups[oldGroup.UID].Clear();
+
+                        // insert new group
+                        Groups[oldGroup.UID] = group;
+                    }
+
+                    // update group file
+                    Save();
+
+                    return group;
+                }
+
+                return oldGroup;
+
+                // se existir 
+                //  ignore
+            }
+
+            Debug.LogWarning("Invalid name");
+            return null;
+        }
+
+        public H_DataGroup<T>[] GetGroups()
+        {
+            return Groups.Values.ToArray();
+        }
+
+        public H_DataGroup<T> GetGroupByName(string name)
+        {
+            return Groups.Values.FirstOrDefault(group => group.Name == name);
+        }
+
+        public H_DataGroup<T> GetGroupByUID(string UID)
+        {
+            return Groups.TryGetValue(UID, out H_DataGroup<T> g) ? g : null;
         }
     }
 
@@ -169,6 +435,8 @@ namespace H_QuestSystemV2
         public const string DEFAULT_EXTENSION = ".xml";
         public string UID { get; set; }
         public string Name { get; set; }
+
+        public List<T> Data { get; set; }
 
         public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
@@ -233,10 +501,10 @@ namespace H_QuestSystemV2
 
         }
 
-        public void Add(CVarObject var, bool canSave = false)
+        public void Add(T var, bool canSave = true)
         {
-            /*Vars.Add(var);
-            var.Group = this;
+            Data.Add(var);
+            /*var.Group = this;
             if (var.IsPersistent)
                 _persistentsVars.Add(var);*/
 
@@ -244,9 +512,17 @@ namespace H_QuestSystemV2
                 Save();
         }
 
-        public void Remove(CVarObject var, bool canSave = false)
+        public void Insert(int index, T item, bool canSave = true)
         {
-            //Vars.Remove(var);
+            Data.Insert(index, item);
+
+            if (canSave)
+                Save();
+        }
+
+        public void Remove(T var, bool canSave = true)
+        {
+            Data.Remove(var);
             //var.Group = null;
             //if (var.IsPersistent)
             //    _persistentsVars.Remove(var);
@@ -285,19 +561,18 @@ namespace H_QuestSystemV2
         private void LoadDefault()
         {
             string fileName = CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION));
-
             if (!CVarSystem.CanLoadRuntimeDefault || !System.IO.File.Exists(fileName)
 #if UNITY_EDITOR
             || CVarSystem.ClearDefaultOnPlay)
 #else
 )
 #endif
-                M_XMLFileManager.NewLoad<CVarData>(CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), OnLoadDefaultCompleteHandler);
+                M_XMLFileManager.NewLoad<T[]>(CVarSystem.ParseStreamingDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION)), OnLoadDefaultCompleteHandler);
             else
-                M_XMLFileManager.NewLoad<CVarData>(fileName, OnLoadDefaultCompleteHandler);
+                M_XMLFileManager.NewLoad<T[]>(fileName, OnLoadDefaultCompleteHandler);
         }
 
-        private void OnLoadDefaultCompleteHandler(CVarData obj)
+        private void OnLoadDefaultCompleteHandler(T[] obj)
         {
             if (obj != null)
             {
@@ -311,21 +586,28 @@ namespace H_QuestSystemV2
 
                 //IsLoaded = true;
                 //CVarSystem.AddData(obj, this);
+                Data = new List<T>(obj);
             }
-
+            else
+            {
+                Data = new List<T>();
+            }
             //if(!CVarSystem.IsEditModeActived)
             if (CVarSystem.CanLoadRuntimePersistent)
                 LoadPersistent();
             else
+            {
                 ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
+            }
         }
+
 
         /// <summary>
         /// Load persistent var value from disk
         /// </summary>
         private void LoadPersistent()
         {
-            CVarData data = M_XMLFileManager.Load<CVarData>(GetPersistentFilePath());
+            T[] data = M_XMLFileManager.Load<T[]>(GetPersistentFilePath());
             if (data != null)
             {
                 //IsLoaded = true;
@@ -361,8 +643,10 @@ namespace H_QuestSystemV2
 
         public void Save()
         {
+            Debug.Log("save");
             if (!HasChanged)
             {
+                Debug.Log("save HasChanged");
                 if (CVarSystem.EditorAutoSave && !CVarSystem.CanLoadRuntimePersistent)
                 {
                     HasChanged = true;
@@ -401,9 +685,11 @@ namespace H_QuestSystemV2
         /// </summary>
         public void Flush(bool force = false)
         {
+            Debug.Log("flush "+ GetFilePath());
             if (force || (HasChanged && !CVarSystem.CanLoadRuntimePersistent))
             {
-                //M_XMLFileManager.Save(GetFilePath(), new CVarData() { Objects = Vars.ToArray() });
+                Debug.Log("flushed");
+                M_XMLFileManager.Save(GetFilePath(), Data.ToArray());
 
                 HasChanged = false;
             }
@@ -416,7 +702,7 @@ namespace H_QuestSystemV2
         {
             if (force || (HasChanged && CVarSystem.CanLoadRuntimePersistent))
             {
-                //M_XMLFileManager.Save(GetPersistentFilePath(), new CVarData() { Objects = _persistentsVars.ToArray() });
+                M_XMLFileManager.Save(GetPersistentFilePath(), Data.ToArray());
 
                 HasChanged = false;
             }
@@ -558,12 +844,4 @@ namespace H_QuestSystemV2
         }
     }
 
-
-    public class H_QuestGroup : H_DataGroup<H_Quest>
-    {
-        public List<H_Quest> Quests { get; set; } = new List<H_Quest>();
-
-
-        
-    }
 }
