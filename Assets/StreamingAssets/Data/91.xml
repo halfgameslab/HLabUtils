@@ -44,4 +44,26 @@
       <Conditions />
     </FailCondition>
   </H_Quest>
+  <H_Quest>
+    <ID>2</ID>
+    <Info />
+    <StartCondition>
+      <ID>s1</ID>
+      <Type>Condition</Type>
+      <Operation>AND</Operation>
+      <Conditions />
+    </StartCondition>
+    <TaskCondition>
+      <ID>g1</ID>
+      <Type>Condition</Type>
+      <Operation>AND</Operation>
+      <Conditions />
+    </TaskCondition>
+    <FailCondition>
+      <ID>f1</ID>
+      <Type>Condition</Type>
+      <Operation>AND</Operation>
+      <Conditions />
+    </FailCondition>
+  </H_Quest>
 </ArrayOfH_Quest>

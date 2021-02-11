@@ -34,6 +34,7 @@ namespace Mup.EventSystem.Events
         public const string ON_UPDATE = "ON_UPDATE";
         public const string ON_VALUE_CHANGE = "ON_VALUE_CHANGE";
         public const string ON_LOAD = "ON_LOAD";
+        public const string ON_UNLOAD = "ON_UNLOAD";
         public const string ON_ENABLE = "ON_ENABLE";
         public const string ON_DISABLE = "ON_DISABLE";
         public const string ON_DESTROY = "ON_DESTROY";

@@ -87,7 +87,7 @@ namespace H_QuestSystemV2
     }
 
 
-    public class H_Quest
+    public class H_Quest: H_Clonnable<H_Quest>
     {
         public string ID { get; set; }
         public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
@@ -224,7 +224,7 @@ namespace H_QuestSystemV2
             Address.Load();
         }
 
-        public void LoadGroupList<T>(string filename)
+        public void LoadGroupList<T>(string filename)where T: H_Clonnable<T>
         {
             if(!Address.WasLoaded)
             {
@@ -237,7 +237,7 @@ namespace H_QuestSystemV2
             }
         }    
 
-        public void Load<T>(string filename)
+        public void Load<T>(string filename) where T: H_Clonnable<T>
         {
             if (CanLoadRuntimeDefault && System.IO.File.Exists(ParsePersistentDefaultDataPathWith(filename)))
                 // load groups file        
@@ -292,7 +292,7 @@ namespace H_QuestSystemV2
     }
 
 
-    public class H_DataGroupList<T>
+    public class H_DataGroupList<T> where T: H_Clonnable<T>
     {
         public Dictionary<string, H_DataGroup<T>> Groups { get; set; } = new Dictionary<string, H_DataGroup<T>>();
 
@@ -324,14 +324,39 @@ namespace H_QuestSystemV2
             }
         }
 
-
-        private void OnGroupLoadedHandler(ES_Event ev)
+        public void UnloadGroups(bool clearListAfterUnload = false)
         {
-            ES_EventManager.RemoveEventListener(ev.TargetIdentifier, ES_Event.ON_LOAD, OnGroupLoadedHandler);
-            _loadedGroups--;
-            if (_loadedGroups == 0)
+            foreach (H_DataGroup<T> group in Groups.Values)
             {
-                this.DispatchEvent(ES_Event.ON_LOAD);
+                group.RemoveEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
+                group.Unload();
+            }
+
+            if (clearListAfterUnload)
+                Groups.Clear();
+        }
+
+        public void RemoveGroupByName(string name)
+        {
+            RemoveGroup(GetGroupByName(name));
+        }
+
+        public void RemoveGroupByUID(string uid)
+        {
+            if (Groups.TryGetValue(uid, out H_DataGroup<T> g))
+            {
+                RemoveGroup(g);
+            }
+        }
+
+        public void RemoveGroup(H_DataGroup<T> group)
+        {
+            if (group != null)
+            {
+                group.Clear();
+                group.RemoveEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
+                Groups.Remove(group.UID);
+                Save();
             }
         }
 
@@ -350,12 +375,16 @@ namespace H_QuestSystemV2
         }
         public void OnLoadGroupListHandler(ES_Event ev)
         {
+
             if (ev.Data != null)
             {
                 H_DataGroup<T>[] groups = (H_DataGroup<T>[])ev.Data;
 
                 foreach (H_DataGroup<T> group in groups)
                 {
+                    if(!group.HasEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler))
+                        group.AddEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
+
                     Groups.Add(group.UID, group);
                 }
 
@@ -373,7 +402,7 @@ namespace H_QuestSystemV2
             H_DataManager.SaveGroupListToFile(Filename, Groups.Values.ToArray());
         }
 
-        public H_DataGroup<T> CreateGroup(string name, bool overrideIfExist = false)
+        public H_DataGroup<T> CreateGroup(string name, H_DataGroup<T> baseGroup = null, bool overrideIfExist = false)
         {
             if (CVarSystem.ValidateName(name))
             {
@@ -383,14 +412,31 @@ namespace H_QuestSystemV2
                 if (oldGroup == null || overrideIfExist)//  se o grupo não existir
                 {
                     int address = H_DataManager.Instance.Address.GetNextAvaliableAddress();
-                    // Create group with the desired name
-                    H_DataGroup<T> group = new H_DataGroup<T>() { Name = name, UID = address.ToString(), IsLoaded = true };
 
+                    H_DataGroup<T> group;
+                    // Create group with the desired name
+                    if (baseGroup == null)
+                        group = new H_DataGroup<T>() { Name = name, UID = address.ToString(), IsLoaded = true };
+                    else
+                    {
+                        group = baseGroup.Clone(address.ToString(), name);
+                        
+                        // if there is some data then save to create file
+                        if(group.Data.Count > 0)
+                            group.Save();
+                    }
+
+                    if(!group.HasEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler))
+                        group.AddEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
+                    
                     if (oldGroup == null)
                         // update group list
                         Groups.Add(group.UID, group);
                     else
                     {
+                        // Remove Update listener
+                        oldGroup.RemoveEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
+
                         // Delete old
                         Groups[oldGroup.UID].Clear();
 
@@ -428,18 +474,38 @@ namespace H_QuestSystemV2
         {
             return Groups.TryGetValue(UID, out H_DataGroup<T> g) ? g : null;
         }
+
+        private void OnGroupUpdateHandler(ES_Event ev)
+        {
+            Save();
+        }
+
+        private void OnGroupLoadedHandler(ES_Event ev)
+        {
+            ES_EventManager.RemoveEventListener(ev.TargetIdentifier, ES_Event.ON_LOAD, OnGroupLoadedHandler);
+            _loadedGroups--;
+            if (_loadedGroups == 0)
+            {
+                this.DispatchEvent(ES_Event.ON_LOAD);
+            }
+        }
     }
 
-    public class H_DataGroup<T>
+    public interface H_Clonnable<T>
+    {
+        T Clone(string sufix = " (clone)");
+    }
+
+
+    public class H_DataGroup<T> where T:H_Clonnable<T>
     {
         public const string DEFAULT_EXTENSION = ".xml";
         public string UID { get; set; }
         public string Name { get; set; }
+        public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
         [XmlIgnore]
         public List<T> Data { get; set; } = new List<T>();
-
-        public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
 
         [XmlAttribute("las")]
         public bool CanLoadAtStart { get; set; } = true;
@@ -458,7 +524,8 @@ namespace H_QuestSystemV2
             if (PersistentType != persistentType)
             {
                 PersistentType = persistentType;
-                CVarSystem.SaveGroupListToFile();
+                this.DispatchEvent(ES_Event.ON_UPDATE, "PersistentType");
+                //CVarSystem.SaveGroupListToFile();
             }
         }
 
@@ -467,7 +534,8 @@ namespace H_QuestSystemV2
             if (CanLoadAtStart != canLoadAtStart)
             {
                 CanLoadAtStart = canLoadAtStart;
-                CVarSystem.SaveGroupListToFile();
+                this.DispatchEvent(ES_Event.ON_UPDATE, "CanLoadAtStart");
+                //CVarSystem.SaveGroupListToFile();
             }
         }
         /// <summary>
@@ -629,13 +697,17 @@ namespace H_QuestSystemV2
                         Flush();
                 }
 
+
                 //for (int i = Vars.Count - 1; i >= 0; i--)
                 //{
                 //    CVarSystem.RemoveVarByFullName(Vars[i].FullName);
                 //}
+                Data.Clear();
 
                 IsLoaded = false;
                 HasChanged = false;
+
+                //this.DispatchEvent(ES_Event.ON_UPDATE, "unload");
             }
         }
 
@@ -723,7 +795,8 @@ namespace H_QuestSystemV2
 
                     Load();
 
-                    CVarSystem.SaveGroupListToFile();// update group list table
+                    this.DispatchEvent(ES_Event.ON_UPDATE, "Rename");
+                    //CVarSystem.SaveGroupListToFile();// update group list table
                     return true;
                 }
                 else
@@ -733,6 +806,24 @@ namespace H_QuestSystemV2
             }
 
             return false;
+        }
+
+        public H_DataGroup<T> Clone(string cloneUID, string name)
+        {
+            H_DataGroup<T> clone = new H_DataGroup<T>();
+
+            foreach(T d in Data)
+            {
+                clone.Data.Add(d.Clone(""));
+            }
+
+            clone.PersistentType = PersistentType;
+            clone.PersistentPrefix = PersistentPrefix;
+            clone.Name = name;
+            clone.UID = cloneUID;
+            clone.CanLoadAtStart = CanLoadAtStart;
+
+            return clone;
         }
 
         /// <summary>

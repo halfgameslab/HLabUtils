@@ -16,28 +16,33 @@
     <PersistentType>SHARED</PersistentType>
   </H_DataGroupOfH_Quest>
   <H_DataGroupOfH_Quest las="true">
-    <UID>92</UID>
-    <Name>teste2</Name>
-    <PersistentType>SHARED</PersistentType>
-  </H_DataGroupOfH_Quest>
-  <H_DataGroupOfH_Quest las="true">
-    <UID>93</UID>
-    <Name>teste3</Name>
-    <PersistentType>SHARED</PersistentType>
-  </H_DataGroupOfH_Quest>
-  <H_DataGroupOfH_Quest las="true">
-    <UID>94</UID>
-    <Name>teste45</Name>
+    <UID>97</UID>
+    <Name>teste1010111</Name>
     <PersistentType>SHARED</PersistentType>
   </H_DataGroupOfH_Quest>
   <H_DataGroupOfH_Quest las="true">
     <UID>95</UID>
-    <Name>group001</Name>
+    <Name>group002</Name>
     <PersistentType>SHARED</PersistentType>
   </H_DataGroupOfH_Quest>
   <H_DataGroupOfH_Quest las="true">
-    <UID>96</UID>
-    <Name>teste55321</Name>
+    <UID>106</UID>
+    <Name>globalcopy</Name>
+    <PersistentType>SHARED</PersistentType>
+  </H_DataGroupOfH_Quest>
+  <H_DataGroupOfH_Quest las="true">
+    <UID>111</UID>
+    <Name>new_group_name1</Name>
+    <PersistentType>SHARED</PersistentType>
+  </H_DataGroupOfH_Quest>
+  <H_DataGroupOfH_Quest las="true">
+    <UID>112</UID>
+    <Name>new_group_name2</Name>
+    <PersistentType>SHARED</PersistentType>
+  </H_DataGroupOfH_Quest>
+  <H_DataGroupOfH_Quest las="true">
+    <UID>113</UID>
+    <Name>new_group_name44</Name>
     <PersistentType>SHARED</PersistentType>
   </H_DataGroupOfH_Quest>
 </ArrayOfH_DataGroupOfH_Quest>
