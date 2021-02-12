@@ -17,12 +17,14 @@ namespace H_QuestSystemV2
         AND,
         OR
     }
-
     public class Condition
     {
         private string _type = "CheckVar";
 
-        public string ID { get; set; }
+        [XmlAttribute("uid")]
+        public string UID { get; set; }
+
+        [XmlAttribute("t")]
         public string Type
         {
             get { return _type; }
@@ -43,10 +45,15 @@ namespace H_QuestSystemV2
             }
         }
 
+        [XmlAttribute("op")]
         public ConditionOperation Operation { get; set; } = ConditionOperation.AND;
 
+        [XmlArray("pl")]
+        [XmlArrayItem("pi")]
         public object[] _params;
 
+        [XmlArray("cl")]
+        [XmlArrayItem("ci")]
         public List<Condition> Conditions { get; set; }
 
         public bool IsLeaf { get { return !Type.Equals("Condition"); } }
@@ -57,7 +64,7 @@ namespace H_QuestSystemV2
             clone.Type = _type;
             clone._params = _params;
             clone.Operation = Operation;
-            clone.ID = string.Concat(ID, sufix);
+            clone.UID = string.Concat(UID, sufix);
 
             if (Conditions != null)
             {
@@ -73,7 +80,9 @@ namespace H_QuestSystemV2
 
     public class QuestInfo
     {
+        [XmlElement("n")]
         public string Name { get; set; }
+        [XmlElement("d")]
         public string Description { get; set; }
 
         public QuestInfo Clone()
@@ -86,21 +95,28 @@ namespace H_QuestSystemV2
         }
     }
 
-
-    public class H_Quest: H_Clonnable<H_Quest>
+    public class H_Quest: H_Clonnable<H_Quest>, H_Processable<H_Quest>
     {
-        public string ID { get; set; }
+        [XmlAttribute("uid")]
+        public string UID { get; set; }
+
+        [XmlArray("il")]
+        [XmlArrayItem("i")]
         public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
 
-        public Condition StartCondition { get; set; } = new Condition() { Type = "Condition", ID = "s1" };
-        public Condition TaskCondition { get; set; } = new Condition() { Type = "Condition", ID = "g1" };
-        public Condition FailCondition { get; set; } = new Condition() { Type = "Condition", ID = "f1" };
+        [XmlElement("sc")]
+        public Condition StartCondition { get; set; } = new Condition() { Type = "Condition", UID = "s1" };
+        [XmlElement("tc")]
+        public Condition TaskCondition { get; set; } = new Condition() { Type = "Condition", UID = "g1" };
+        [XmlElement("fc")]
+        public Condition FailCondition { get; set; } = new Condition() { Type = "Condition", UID = "f1" };
 
-        public H_Quest Clone(string sufix = " (clone)")
+
+        public H_Quest Clone(string cloneUID)
         {
             H_Quest q = new H_Quest();
 
-            q.ID = string.Concat(ID, sufix);
+            q.UID = cloneUID;
             q.StartCondition = this.StartCondition.Clone(string.Empty);
             q.TaskCondition = this.TaskCondition.Clone(string.Empty);
             q.FailCondition = this.FailCondition.Clone(string.Empty);
@@ -109,6 +125,11 @@ namespace H_QuestSystemV2
                 q.Info.Add(info.Clone());
 
             return q;
+        }
+
+        public void Process()
+        {
+            
         }
     }
 
@@ -125,7 +146,7 @@ namespace H_QuestSystemV2
             Instance.Start();
         }
 
-        public H_DataGroupList<H_Quest> QuestGroups = new H_DataGroupList<H_Quest>() { Filename="qdl.xml" };
+        public H_DataGroupList<H_Quest, H_PersistentQuestData> QuestGroups = new H_DataGroupList<H_Quest, H_PersistentQuestData>() { Filename="qdl.xml" };
         public void Start()
         {
             QuestGroups.AddEventListener(ES_Event.ON_LOAD, OnQuestsLoadHandler);
@@ -201,6 +222,29 @@ namespace H_QuestSystemV2
         }
     }
 
+    public class H_PersistentQuestData : H_Clonnable<H_PersistentQuestData>, H_Processable<H_PersistentQuestData>
+    {
+        public H_PersistentQuestData Clone(string cloneUID)
+        {
+            return this;
+        }
+
+        public void Process()
+        {
+            
+        }
+    }
+
+
+    /*public class H_QuestGroup : H_DataGroup<H_Quest, H_PersistentQuestData>
+    { 
+    
+    }
+
+    public class H_QuestGroupList : H_DataGroupList<H_Quest, H_PersistentQuestData>
+    {
+
+    }*/
 
     public sealed class H_DataManager
     {
@@ -224,26 +268,26 @@ namespace H_QuestSystemV2
             Address.Load();
         }
 
-        public void LoadGroupList<T>(string filename)where T: H_Clonnable<T>
+        public void LoadGroupList<T, K>(string filename) where T : H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
         {
             if(!Address.WasLoaded)
             {
-                Address.AddEventListener(ES_Event.ON_LOAD, (ev)=>Load<T>(filename));
+                Address.AddEventListener(ES_Event.ON_LOAD, (ev)=>Load<T, K>(filename));
                 Address.Load();
             }
             else
             {
-                Load<T>(filename);
+                Load<T, K>(filename);
             }
         }    
 
-        public void Load<T>(string filename) where T: H_Clonnable<T>
+        public void Load<T, K>(string filename) where T: H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
         {
             if (CanLoadRuntimeDefault && System.IO.File.Exists(ParsePersistentDefaultDataPathWith(filename)))
                 // load groups file        
-                M_XMLFileManager.NewLoad<H_DataGroup<T>[]>(ParsePersistentDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));
+                M_XMLFileManager.NewLoad<H_DataGroup<T, K>[]>(ParsePersistentDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));
             else
-                M_XMLFileManager.NewLoad<H_DataGroup<T>[]>(ParseStreamingDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));    
+                M_XMLFileManager.NewLoad<H_DataGroup<T, K>[]>(ParseStreamingDefaultDataPathWith(filename), (ev) => this.DispatchEvent(ES_Event.ON_LOAD, ev));    
         }
 
         public static void SaveGroupListToFile<T>(string filename, T[] groups, bool useRuntimeDefault = false)
@@ -292,9 +336,9 @@ namespace H_QuestSystemV2
     }
 
 
-    public class H_DataGroupList<T> where T: H_Clonnable<T>
+    public class H_DataGroupList<T, K> where T : H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
     {
-        public Dictionary<string, H_DataGroup<T>> Groups { get; set; } = new Dictionary<string, H_DataGroup<T>>();
+        public Dictionary<string, H_DataGroup<T, K>> Groups { get; set; } = new Dictionary<string, H_DataGroup<T, K>>();
 
         public string Filename { get; set; } = "group_list.xml";
 
@@ -303,7 +347,7 @@ namespace H_QuestSystemV2
         public void LoadGroups(bool canChangePrefix = true)
         {
             _loadedGroups = Groups.Values.Count;
-            foreach (H_DataGroup<T> group in Groups.Values)
+            foreach (H_DataGroup<T, K> group in Groups.Values)
             {
                 if (group.CanLoadAtStart)
                 {
@@ -326,7 +370,7 @@ namespace H_QuestSystemV2
 
         public void UnloadGroups(bool clearListAfterUnload = false)
         {
-            foreach (H_DataGroup<T> group in Groups.Values)
+            foreach (H_DataGroup<T, K> group in Groups.Values)
             {
                 group.RemoveEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
                 group.Unload();
@@ -343,13 +387,13 @@ namespace H_QuestSystemV2
 
         public void RemoveGroupByUID(string uid)
         {
-            if (Groups.TryGetValue(uid, out H_DataGroup<T> g))
+            if (Groups.TryGetValue(uid, out H_DataGroup<T, K> g))
             {
                 RemoveGroup(g);
             }
         }
 
-        public void RemoveGroup(H_DataGroup<T> group)
+        public void RemoveGroup(H_DataGroup<T, K> group)
         {
             if (group != null)
             {
@@ -367,7 +411,7 @@ namespace H_QuestSystemV2
                 if (Groups.Count == 0)
                 {
                     H_DataManager.Instance.AddEventListener(ES_Event.ON_LOAD, OnLoadGroupListHandler) ;
-                    H_DataManager.Instance.LoadGroupList<T>(Filename);
+                    H_DataManager.Instance.LoadGroupList<T, K>(Filename);
                 }
                 else
                     LoadGroups();
@@ -378,9 +422,9 @@ namespace H_QuestSystemV2
 
             if (ev.Data != null)
             {
-                H_DataGroup<T>[] groups = (H_DataGroup<T>[])ev.Data;
+                H_DataGroup<T, K>[] groups = (H_DataGroup<T, K>[])ev.Data;
 
-                foreach (H_DataGroup<T> group in groups)
+                foreach (H_DataGroup<T, K> group in groups)
                 {
                     if(!group.HasEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler))
                         group.AddEventListener(ES_Event.ON_UPDATE, OnGroupUpdateHandler);
@@ -402,21 +446,21 @@ namespace H_QuestSystemV2
             H_DataManager.SaveGroupListToFile(Filename, Groups.Values.ToArray());
         }
 
-        public H_DataGroup<T> CreateGroup(string name, H_DataGroup<T> baseGroup = null, bool overrideIfExist = false)
+        public H_DataGroup<T, K> CreateGroup(string name, H_DataGroup<T, K> baseGroup = null, bool overrideIfExist = false)
         {
             if (CVarSystem.ValidateName(name))
             {
-                H_DataGroup<T> oldGroup = GetGroupByName(name);
+                H_DataGroup<T, K> oldGroup = GetGroupByName(name);
 
                 // check if group exists
                 if (oldGroup == null || overrideIfExist)//  se o grupo não existir
                 {
                     int address = H_DataManager.Instance.Address.GetNextAvaliableAddress();
 
-                    H_DataGroup<T> group;
+                    H_DataGroup<T, K> group;
                     // Create group with the desired name
                     if (baseGroup == null)
-                        group = new H_DataGroup<T>() { Name = name, UID = address.ToString(), IsLoaded = true };
+                        group = new H_DataGroup<T, K>() { Name = name, UID = address.ToString(), IsLoaded = true };
                     else
                     {
                         group = baseGroup.Clone(address.ToString(), name);
@@ -460,19 +504,19 @@ namespace H_QuestSystemV2
             return null;
         }
 
-        public H_DataGroup<T>[] GetGroups()
+        public H_DataGroup<T, K>[] GetGroups()
         {
             return Groups.Values.ToArray();
         }
 
-        public H_DataGroup<T> GetGroupByName(string name)
+        public H_DataGroup<T, K> GetGroupByName(string name)
         {
             return Groups.Values.FirstOrDefault(group => group.Name == name);
         }
 
-        public H_DataGroup<T> GetGroupByUID(string UID)
+        public H_DataGroup<T, K> GetGroupByUID(string UID)
         {
-            return Groups.TryGetValue(UID, out H_DataGroup<T> g) ? g : null;
+            return Groups.TryGetValue(UID, out H_DataGroup<T, K> g) ? g : null;
         }
 
         private void OnGroupUpdateHandler(ES_Event ev)
@@ -493,22 +537,39 @@ namespace H_QuestSystemV2
 
     public interface H_Clonnable<T>
     {
-        T Clone(string sufix = " (clone)");
+        T Clone(string cloneUID);
+    }
+    public interface H_Processable<T>
+    {
+        //bool IsPersistent { get; set; }
+
+        void Process();
     }
 
-
-    public class H_DataGroup<T> where T:H_Clonnable<T>
+    public class H_DataGroup<T, K> where T : H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
     {
         public const string DEFAULT_EXTENSION = ".xml";
+        
+        [XmlAttribute("uid")]
         public string UID { get; set; }
+
+        [XmlElement("n")]
         public string Name { get; set; }
+
+        [XmlAttribute("as")]
+        public bool RuntimeAutoSave { get; set; } = true;
+
+        [XmlAttribute("pt")]
         public CVarGroupPersistentType PersistentType { get; set; } = CVarGroupPersistentType.SHARED;
+
+        [XmlAttribute("las")]
+        public bool CanLoadAtStart { get; set; } = true;
 
         [XmlIgnore]
         public List<T> Data { get; set; } = new List<T>();
 
-        [XmlAttribute("las")]
-        public bool CanLoadAtStart { get; set; } = true;
+        [XmlIgnore]
+        public List<K> PersistentData { get; set; } = new List<K>();
 
         [XmlIgnore]
         public string PersistentPrefix { get; set; } = string.Empty;
@@ -550,23 +611,23 @@ namespace H_QuestSystemV2
             SetPersistentTypeAndSave(persistentType);
         }
 
-        public void SetPersistentVar(CVarObject var, bool state)
+        public void SetPersistentVar(K data, bool state)
         {
-            if (var.IsPersistent != state)
+            //if (data.IsPersistent != state)
+            //{
+                //data.IsPersistent = state;
+            if (state)
             {
-                var.IsPersistent = state;
-                if (state)
-                {
-                    //if (!_persistentsVars.Contains(var))
-                    //    _persistentsVars.Add(var);
-                }
-                else
-                {
-                    //if (_persistentsVars.Contains(var))
-                    //    _persistentsVars.Remove(var);
-                }
-
+                if(!PersistentData.Contains(data))
+                    PersistentData.Add(data);
             }
+            else
+            {
+                if (PersistentData.Contains(data))
+                    PersistentData.Remove(data);
+            }
+
+            //}
 
         }
 
@@ -641,9 +702,9 @@ namespace H_QuestSystemV2
                 M_XMLFileManager.NewLoad<T[]>(fileName, OnLoadDefaultCompleteHandler);
         }
 
-        private void OnLoadDefaultCompleteHandler(T[] obj)
+        private void OnLoadDefaultCompleteHandler(T[] data)
         {
-            if (obj != null)
+            if (data != null)
             {
                 //            string fileName = CVarSystem.ParsePersistentDefaultDataPathWith(string.Concat(UID, DEFAULT_EXTENSION));
                 //#if UNITY_EDITOR
@@ -655,7 +716,12 @@ namespace H_QuestSystemV2
 
                 //IsLoaded = true;
                 //CVarSystem.AddData(obj, this);
-                Data.InsertRange(0, obj);
+                foreach (T d in data)
+                {
+                    d.Process();
+                }
+
+                Data.InsertRange(0, data);
             }
 
             //if(!CVarSystem.IsEditModeActived)
@@ -673,11 +739,18 @@ namespace H_QuestSystemV2
         /// </summary>
         private void LoadPersistent()
         {
-            T[] data = M_XMLFileManager.Load<T[]>(GetPersistentFilePath());
+            K[] data = M_XMLFileManager.Load<K[]>(GetPersistentFilePath());
             if (data != null)
             {
+                IsLoaded = true;
                 //IsLoaded = true;
                 //CVarSystem.AddData(data, this);
+                foreach(K d in data)
+                {
+                    d.Process();
+                }
+
+                PersistentData.InsertRange(0, data);
             }
             ES_EventManager.DispatchEvent(Name, ES_Event.ON_LOAD, this);
         }
@@ -772,7 +845,7 @@ namespace H_QuestSystemV2
         {
             if (force || (HasChanged && CVarSystem.CanLoadRuntimePersistent))
             {
-                M_XMLFileManager.Save(GetPersistentFilePath(), Data.ToArray());
+                M_XMLFileManager.Save(GetPersistentFilePath(), PersistentData.ToArray());
 
                 HasChanged = false;
             }
@@ -808,13 +881,18 @@ namespace H_QuestSystemV2
             return false;
         }
 
-        public H_DataGroup<T> Clone(string cloneUID, string name)
+        public H_DataGroup<T, K> Clone(string cloneUID, string name)
         {
-            H_DataGroup<T> clone = new H_DataGroup<T>();
+            H_DataGroup<T, K> clone = new H_DataGroup<T, K>();
 
             foreach(T d in Data)
             {
-                clone.Data.Add(d.Clone(""));
+                clone.Data.Add(d.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
+            }
+
+            foreach (K pd in PersistentData)
+            {
+                clone.PersistentData.Add(pd.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
             }
 
             clone.PersistentType = PersistentType;

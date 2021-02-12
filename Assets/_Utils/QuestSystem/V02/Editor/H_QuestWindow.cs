@@ -12,10 +12,10 @@ namespace H_QuestSystemV2
 {
     public class H_QuestWindow : EditorWindow
     {
-        QuestGroupListEditor<H_Quest> _questListEditor = new QuestGroupListEditor<H_Quest>();
+        QuestGroupListEditor<H_Quest, H_PersistentQuestData> _questListEditor = new QuestGroupListEditor<H_Quest, H_PersistentQuestData>();
         QuestEditor _questEditor = new QuestEditor();
         QuestGroupEditor _questGroupEditor = new QuestGroupEditor();
-        RuntimeFilesEditor<H_Quest> _runtimeFilesEditor = new RuntimeFilesEditor<H_Quest>();
+        RuntimeFilesEditor<H_Quest, H_PersistentQuestData> _runtimeFilesEditor = new RuntimeFilesEditor<H_Quest, H_PersistentQuestData>();
         string _currentQuestUID = string.Empty;
 
         [MenuItem("HLab/Quest Editor")]
@@ -95,7 +95,7 @@ namespace H_QuestSystemV2
             }
         }
 
-        public void SelectGroup(H_DataGroup<H_Quest> group)
+        public void SelectGroup(H_DataGroup<H_Quest, H_PersistentQuestData> group)
         {
             if (group != null)
             {
@@ -125,7 +125,7 @@ namespace H_QuestSystemV2
         {
             if (_questGroupEditor.CurrentQuestGroup == null && _questListEditor.CurrentState != 1)
             {
-                H_DataGroup<H_Quest> currentQuest = H_QuestManager.Instance.QuestGroups.GetGroupByUID(_currentQuestUID);
+                H_DataGroup<H_Quest, H_PersistentQuestData> currentQuest = H_QuestManager.Instance.QuestGroups.GetGroupByUID(_currentQuestUID);
                 if (currentQuest != null)
                 {
                     _questGroupEditor.Start(currentQuest);
@@ -140,13 +140,13 @@ namespace H_QuestSystemV2
 
         private void OnRemoveGroupHandler(ES_Event ev)
         {
-            H_QuestManager.Instance.QuestGroups.RemoveGroup((H_DataGroup<H_Quest>)ev.Data);
+            H_QuestManager.Instance.QuestGroups.RemoveGroup((H_DataGroup<H_Quest, H_PersistentQuestData>)ev.Data);
             SelectGroup(H_QuestManager.Instance.QuestGroups.GetGroupByName("global"));
         }
 
         private void OnChangeGroupsListHandler(ES_Event ev)
         {
-            SelectGroup((H_DataGroup<H_Quest>)ev.Data);
+            SelectGroup((H_DataGroup<H_Quest, H_PersistentQuestData>)ev.Data);
         }
 
         private void OnCreateGroupHandler(ES_Event ev)
@@ -169,14 +169,14 @@ namespace H_QuestSystemV2
         }
     }
 
-    public class QuestGroupListEditor<T> where T:H_Clonnable<T> 
+    public class QuestGroupListEditor<T, K> where T:H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
     { 
         public int CurrentState { get; set; }
 
         private string _auxString = string.Empty;
 
-        private H_DataGroup<T> _lastGroup;
-        public void Draw(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        private H_DataGroup<T, K> _lastGroup;
+        public void Draw(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             CVarSystem.ClearDefaultOnPlay = GUILayout.Toggle(CVarSystem.ClearDefaultOnPlay, "Clear default on Play");
 
@@ -194,7 +194,7 @@ namespace H_QuestSystemV2
             EditorGUILayout.Space();
         }
 
-        protected void DrawFileManager(H_DataGroup<T> currentGroup)
+        protected void DrawFileManager(H_DataGroup<T, K> currentGroup)
         {
             Color backgroundColor = GUI.backgroundColor;
             backgroundColor.a = 0;
@@ -235,7 +235,7 @@ namespace H_QuestSystemV2
             EditorGUILayout.Space();
         }
 
-        protected void DrawGroupPopup(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        protected void DrawGroupPopup(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             string[] names = groups.Select(e => e.Name).ToArray();
             int index = Array.IndexOf(groups, currentGroup);
@@ -262,7 +262,7 @@ namespace H_QuestSystemV2
             DrawPersistentTypeInfo(currentGroup);
         }
 
-        protected void DrawCreateGroup(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        protected void DrawCreateGroup(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             EditorGUILayout.BeginHorizontal();
             _auxString = EditorGUILayout.TextField("Name", _auxString);
@@ -296,7 +296,7 @@ namespace H_QuestSystemV2
             DrawCopyFromOption(currentGroup, groups);
         }
 
-        protected void DrawEditGroup(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        protected void DrawEditGroup(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             EditorGUILayout.BeginHorizontal();
             _auxString = EditorGUILayout.TextField("New Name", _auxString);
@@ -335,7 +335,7 @@ namespace H_QuestSystemV2
             DrawPersistentTypeInfo(currentGroup);
         }
 
-        protected void DrawPersistentTypeInfo(H_DataGroup<T> currentGroup)
+        protected void DrawPersistentTypeInfo(H_DataGroup<T, K> currentGroup)
         {
             EditorGUI.BeginDisabledGroup(CurrentState != 0 || currentGroup.Name == "global");
             EditorGUILayout.BeginHorizontal();
@@ -345,7 +345,7 @@ namespace H_QuestSystemV2
             EditorGUI.EndDisabledGroup();
         }
 
-        protected void DrawCopyFromOption(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        protected void DrawCopyFromOption(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             List<string> groupList = new List<string>();
 
@@ -372,12 +372,12 @@ namespace H_QuestSystemV2
         }
     }
 
-    public class RuntimeFilesEditor<T> where T : H_Clonnable<T>
+    public class RuntimeFilesEditor<T, K> where T : H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
     {
         private CVarWindowAction _currentAction;
         private string _editableAuxName;
 
-        public void Draw(H_DataGroup<T> currentGroup, H_DataGroup<T>[] groups)
+        public void Draw(H_DataGroup<T, K> currentGroup, H_DataGroup<T, K>[] groups)
         {
             if (currentGroup == null)
                 return;
@@ -386,7 +386,7 @@ namespace H_QuestSystemV2
             EditorGUILayout.Space();
         }
 
-        protected void DrawPersistentFileManager(H_DataGroup<T> currentGroup)
+        protected void DrawPersistentFileManager(H_DataGroup<T, K> currentGroup)
         {
             //EditorGUI.BeginDisabledGroup(PlayerPrefs.GetInt("FilesCopied", 0) == 0);
             EditorGUI.BeginDisabledGroup(Application.isPlaying || !CVarSystem.IsEditModeActived);
@@ -618,7 +618,7 @@ namespace H_QuestSystemV2
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawDefaultFileManagerOptions(H_DataGroup<T> currentGroup, string loadedPath, string unloadedPath, string readGroupsFrom)
+        private void DrawDefaultFileManagerOptions(H_DataGroup<T, K> currentGroup, string loadedPath, string unloadedPath, string readGroupsFrom)
         {
             //if (CVarSystem.FilesHasBeenCopied)
             //{
@@ -676,12 +676,12 @@ namespace H_QuestSystemV2
 
         }
 
-        private void RevertGroupToDefault(H_DataGroup<T> currentGroup, string origenPath, string destinationPath)
+        private void RevertGroupToDefault(H_DataGroup<T, K> currentGroup, string origenPath, string destinationPath)
         {
             // read all groups from path
-            H_DataGroup<T>[] groups = M_XMLFileManager.Load<H_DataGroup<T>[]>(CVarSystem.ParseStreamingDefaultDataPathWith("groups_data.xml"));
+            H_DataGroup<T, K>[] groups = M_XMLFileManager.Load<H_DataGroup<T, K>[]>(CVarSystem.ParseStreamingDefaultDataPathWith("groups_data.xml"));
             // check if group exists
-            H_DataGroup<T> group = groups.FirstOrDefault((g) => g.UID == currentGroup.UID);
+            H_DataGroup<T, K> group = groups.FirstOrDefault((g) => g.UID == currentGroup.UID);
             if (group != null)
             {
                 //change group data
@@ -708,14 +708,14 @@ namespace H_QuestSystemV2
             }
         }
 
-        private void OverwriteData(H_DataGroup<T> currentGroup, string origenPath, string destinationPath, string readGroupsFrom)
+        private void OverwriteData(H_DataGroup<T, K> currentGroup, string origenPath, string destinationPath, string readGroupsFrom)
         {
             // read all groups from path
-            List<H_DataGroup<T>> groups = new List<H_DataGroup<T>>();
-            groups.AddRange(M_XMLFileManager.Load<H_DataGroup<T>[]>(readGroupsFrom));
+            List<H_DataGroup<T, K>> groups = new List<H_DataGroup<T, K>>();
+            groups.AddRange(M_XMLFileManager.Load<H_DataGroup<T, K>[]>(readGroupsFrom));
 
             // check if group exists
-            H_DataGroup<T> group = groups.FirstOrDefault((g) => g.UID == currentGroup.UID);
+            H_DataGroup<T, K> group = groups.FirstOrDefault((g) => g.UID == currentGroup.UID);
             if (group != null)
             {
                 //change group data
@@ -747,7 +747,7 @@ namespace H_QuestSystemV2
 
     public class QuestGroupEditor
     {
-        public H_DataGroup<H_Quest> CurrentQuestGroup { get; set; }
+        public H_DataGroup<H_Quest, H_PersistentQuestData> CurrentQuestGroup { get; set; }
         public H_Quest SelectedQuest { get; set; }
         private Vector2 _scrollPosition;
         public void Start(string currentGroup)
@@ -755,7 +755,7 @@ namespace H_QuestSystemV2
             Start(H_QuestManager.Instance.QuestGroups.GetGroupByName(currentGroup));   
         }
 
-        public void Start(H_DataGroup<H_Quest> currentGroup)
+        public void Start(H_DataGroup<H_Quest, H_PersistentQuestData> currentGroup)
         {
             if (CurrentQuestGroup != currentGroup)
             {
@@ -783,7 +783,7 @@ namespace H_QuestSystemV2
 
             if(GUILayout.Button("+", GUILayout.MinWidth(18)))
             {
-                CurrentQuestGroup.Add(new H_Quest() { ID = CurrentQuestGroup.Data.Count.ToString() });
+                CurrentQuestGroup.Add(new H_Quest() { UID = H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString() });
             }
 
             H_Quest[] displayableQuests = CurrentQuestGroup.Data.ToArray();
@@ -805,7 +805,7 @@ namespace H_QuestSystemV2
             {
                 EditorGUILayout.BeginHorizontal(GUILayout.MinWidth(firstCollumWidth - 40), GUILayout.MaxWidth(firstCollumWidth - 40));
                 EditorGUI.BeginDisabledGroup(displayableQuests[i] == SelectedQuest);
-                if(GUILayout.Button("quest "+ displayableQuests[i].ID, GUILayout.MinWidth(firstCollumWidth - 62)))
+                if(GUILayout.Button("quest "+ displayableQuests[i].UID, GUILayout.MinWidth(firstCollumWidth - 62)))
                 {
                     //select quest and display on board
                     SelectedQuest = displayableQuests[i];
@@ -816,9 +816,9 @@ namespace H_QuestSystemV2
                 {
                     //duplicate quest
                     //CurrentQuestGroup.Data.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i])+1, displayableQuests[i].Clone() );
-                    CurrentQuestGroup.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i]) + 1, displayableQuests[i].Clone());
+                    CurrentQuestGroup.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i]) + 1, displayableQuests[i].Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
                 }
-                if(GUILayout.Button(new GUIContent("-", "Delete Quest"), GUILayout.MinWidth(18), GUILayout.MaxWidth(18)) && EditorUtility.DisplayDialog("Delete Quest", String.Format("Want delete quest {0}?\n\nYou can't revert this operation.", displayableQuests[i].ID), "Delete", "Cancel"))
+                if(GUILayout.Button(new GUIContent("-", "Delete Quest"), GUILayout.MinWidth(18), GUILayout.MaxWidth(18)) && EditorUtility.DisplayDialog("Delete Quest", String.Format("Want delete quest {0}?\n\nYou can't revert this operation.", displayableQuests[i].UID), "Delete", "Cancel"))
                 {
                     //remove quest
                     CurrentQuestGroup.Remove(displayableQuests[i]);
@@ -890,6 +890,10 @@ namespace H_QuestSystemV2
                 EditorGUILayout.BeginVertical(GUILayout.MinWidth(size), GUILayout.MaxWidth(size));
                 EditorGUILayout.Space();
 
+                EditorGUILayout.TextField(string.Format("Quest ({0})", CurrentQuest.UID), CurrentQuest.UID);
+
+                EditorGUILayout.Space();
+
                 _infoList.DoLayoutList();
 
                 EditorGUILayout.Space();
@@ -942,7 +946,7 @@ namespace H_QuestSystemV2
 
         void OnDrawHeaderHandler(Rect rect)
         {
-            EditorGUI.LabelField(rect, "Quest Info (id)");
+            EditorGUI.LabelField(rect, "Quest Info");
         }
         void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
@@ -958,7 +962,7 @@ namespace H_QuestSystemV2
     {
         string _title = string.Empty;
 
-        Condition _condition = new Condition() { Type = "Condition", ID = "q1" };
+        Condition _condition = new Condition() { Type = "Condition", UID = "q1" };
 
         ReorderableList reorderableList;
 
@@ -1019,7 +1023,7 @@ namespace H_QuestSystemV2
             Condition condition = new Condition() { Type = "CheckVar" };
             if (list.index < 0 || list.count == 0)
             {
-                condition.ID = string.Concat(_condition.ID, "_c", 0);
+                condition.UID = string.Concat(_condition.UID, "_c", 0);
                 c._condition = condition;;
                 _condition.Conditions.Add(condition);
                 _conditions.Add(c);
@@ -1027,7 +1031,7 @@ namespace H_QuestSystemV2
             }
             else
             {
-                condition.ID = string.Concat(_condition.ID, "_c", list.index);
+                condition.UID = string.Concat(_condition.UID, "_c", list.index);
                 c._condition = condition;
                 _conditions.Insert(list.index + 1, c);
                 _condition.Conditions.Insert(list.index + 1, condition);
@@ -1075,7 +1079,7 @@ namespace H_QuestSystemV2
             rect.width = halfWidth - 18f;
             rect.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.TextField(rect, _conditions[index]._condition.ID);
+            EditorGUI.TextField(rect, _conditions[index]._condition.UID);
             EditorGUI.EndDisabledGroup();
             rect.x += rect.width;
             rect.width = 18f;
