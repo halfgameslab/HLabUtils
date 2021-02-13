@@ -1,4 +1,6 @@
-﻿using Mup.EventSystem.Events;
+﻿using H_DataSystem;
+using H_Misc;
+using Mup.EventSystem.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace H_QuestSystemV2
+namespace H_QuestSystem.H_QuestEditor
 {
     public class H_QuestWindow : EditorWindow
     {
@@ -169,7 +171,7 @@ namespace H_QuestSystemV2
         }
     }
 
-    public class QuestGroupListEditor<T, K> where T:H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
+    public class QuestGroupListEditor<T, K> where T:H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
     { 
         public int CurrentState { get; set; }
 
@@ -372,7 +374,7 @@ namespace H_QuestSystemV2
         }
     }
 
-    public class RuntimeFilesEditor<T, K> where T : H_Clonnable<T>, H_Processable<T> where K : H_Clonnable<K>, H_Processable<K>
+    public class RuntimeFilesEditor<T, K> where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
     {
         private CVarWindowAction _currentAction;
         private string _editableAuxName;
@@ -749,10 +751,15 @@ namespace H_QuestSystemV2
     {
         public H_DataGroup<H_Quest, H_PersistentQuestData> CurrentQuestGroup { get; set; }
         public H_Quest SelectedQuest { get; set; }
+
+        private ReorderableList _questList;
         private Vector2 _scrollPosition;
+
+        private H_Quest _copiedQuest;
+
         public void Start(string currentGroup)
         {
-            Start(H_QuestManager.Instance.QuestGroups.GetGroupByName(currentGroup));   
+            Start(H_QuestManager.Instance.QuestGroups.GetGroupByName(currentGroup));
         }
 
         public void Start(H_DataGroup<H_Quest, H_PersistentQuestData> currentGroup)
@@ -760,6 +767,19 @@ namespace H_QuestSystemV2
             if (CurrentQuestGroup != currentGroup)
             {
                 CurrentQuestGroup = currentGroup;
+                
+                if (currentGroup != null)
+                    _questList = new ReorderableList(currentGroup.Data, typeof(H_Quest), true, true, true, true)
+                    {
+                        drawHeaderCallback = OnDrawHeaderHandler,
+                        drawElementCallback = OnDrawElementHandler,
+                        onAddCallback = OnAddElementHandler,
+                        onRemoveCallback = OnRemoveElementHandler,
+                        onSelectCallback = OnSelectElementHandler
+                    };
+                else
+                    _questList = null;
+
                 _scrollPosition = Vector2.zero;
                 SelectedQuest = null;
             }
@@ -774,63 +794,136 @@ namespace H_QuestSystemV2
 
             EditorGUILayout.BeginVertical(GUILayout.MinWidth(firstCollumWidth));
 
-            EditorGUILayout.Space();
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Quest", GUILayout.MinWidth(firstCollumWidth / 4));
-            GUIStyle searchStyle = GUI.skin.FindStyle("ToolbarSeachTextField");
-
-            EditorGUILayout.TextField("", searchStyle);
-
-            if(GUILayout.Button("+", GUILayout.MinWidth(18)))
-            {
-                CurrentQuestGroup.Add(new H_Quest() { UID = H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString() });
-            }
-
-            H_Quest[] displayableQuests = CurrentQuestGroup.Data.ToArray();
-
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space();
-
-            Rect r = EditorGUILayout.GetControlRect(false, 1);
-
-            EditorGUI.DrawRect(r,Color.grey);
             _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, false, true, GUILayout.MinWidth(firstCollumWidth), GUILayout.MaxWidth(firstCollumWidth));
 
-            if(displayableQuests.Length == 0)
-            {
-                EditorGUILayout.HelpBox("No quests to display!", MessageType.Warning);
-            }
-
-            for (int i = 0; i < displayableQuests.Length; i++)
-            {
-                EditorGUILayout.BeginHorizontal(GUILayout.MinWidth(firstCollumWidth - 40), GUILayout.MaxWidth(firstCollumWidth - 40));
-                EditorGUI.BeginDisabledGroup(displayableQuests[i] == SelectedQuest);
-                if(GUILayout.Button("quest "+ displayableQuests[i].UID, GUILayout.MinWidth(firstCollumWidth - 62)))
-                {
-                    //select quest and display on board
-                    SelectedQuest = displayableQuests[i];
-                    this.DispatchEvent(ES_Event.ON_CLICK, displayableQuests[i]);
-                }
-                EditorGUI.EndDisabledGroup();
-                if (GUILayout.Button(new GUIContent("D", "Duplicate Quest"), GUILayout.MinWidth(19)))
-                {
-                    //duplicate quest
-                    //CurrentQuestGroup.Data.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i])+1, displayableQuests[i].Clone() );
-                    CurrentQuestGroup.Insert(CurrentQuestGroup.Data.IndexOf(displayableQuests[i]) + 1, displayableQuests[i].Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
-                }
-                if(GUILayout.Button(new GUIContent("-", "Delete Quest"), GUILayout.MinWidth(18), GUILayout.MaxWidth(18)) && EditorUtility.DisplayDialog("Delete Quest", String.Format("Want delete quest {0}?\n\nYou can't revert this operation.", displayableQuests[i].UID), "Delete", "Cancel"))
-                {
-                    //remove quest
-                    CurrentQuestGroup.Remove(displayableQuests[i]);
-                    this.DispatchEvent(ES_Event.ON_DESTROY, displayableQuests[i]);
-                }
-                
-                EditorGUILayout.EndHorizontal();
-            }
+            _questList?.DoLayoutList();
 
             GUILayout.EndScrollView();
 
             EditorGUILayout.EndVertical();
+        }
+
+        void OnDrawHeaderHandler(Rect rect)
+        {
+            EditorGUI.LabelField(rect, string.Format("Quests {0}", CurrentQuestGroup.Name));
+            rect.x += rect.width - 40;
+            rect.width = 20;
+            EditorGUI.BeginDisabledGroup(SelectedQuest == null);
+            if(GUI.Button(rect, new GUIContent("C", "Copy Quest")))
+            {
+                _copiedQuest = SelectedQuest;
+            }
+            EditorGUI.EndDisabledGroup();
+            rect.x += rect.width;
+            EditorGUI.BeginDisabledGroup(_copiedQuest == null);
+
+            if(GUI.Button(rect, new GUIContent("P", "Paste Quest")))
+            {
+                H_Quest clone = _copiedQuest.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString());
+
+                if (_questList.index >= 0 && _questList.index < CurrentQuestGroup.Data.Count)
+                {
+                    CurrentQuestGroup.Insert(_questList.index + 1, clone);
+                    clone.CheckAndUpdateUName();
+                    _questList.index++;
+                }
+                else
+                {
+                    CurrentQuestGroup.Add(clone);
+                    clone.CheckAndUpdateUName();
+                    _questList.index = _questList.list.Count - 1;
+                }
+
+                SelectedQuest = clone;
+                this.DispatchEvent(ES_Event.ON_CLICK, clone);
+            }
+
+            EditorGUI.EndDisabledGroup();
+        }
+        void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            rect.height -= 2;
+            EditorGUI.DrawRect(rect, new Color(0.1f,0.1f,0.1f,0.3f));
+            
+            rect.width = rect.width - 20;
+            GUI.Label(rect, string.Format("[#{0}] {1}", CurrentQuestGroup.Data[index].UID, CurrentQuestGroup.Data[index].UName));
+
+            rect.x += rect.width;
+            rect.width = 19;
+            if (GUI.Button(rect, new GUIContent("D", "Duplicate Quest")))
+            {
+                //duplicate quest
+                CurrentQuestGroup.Insert(index + 1, CurrentQuestGroup.Data[index].Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
+                SelectQuest(index+1);
+                /*_questList.index = index + 1;
+                this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[index+1]);*/
+            }
+        }
+
+        private void OnRemoveElementHandler(ReorderableList list)
+        {
+            H_Quest q = CurrentQuestGroup.Data[list.index];
+            if(EditorUtility.DisplayDialog("Delete Quest", String.Format("Want delete quest {0}?\n\nYou can't revert this operation.", q.UName), "Delete", "Cancel"))
+            {
+                CurrentQuestGroup.Remove(q);
+                this.DispatchEvent(ES_Event.ON_DESTROY, q);
+                if (list.index > 0)
+                {
+                    SelectQuest(list.index-1);
+                    /*list.index = list.index - 1;
+                    SelectedQuest = CurrentQuestGroup.Data[list.index];
+                    this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[list.index]);*/
+                }
+                else if(list.count > 0)
+                {
+                    SelectQuest(list.index);
+                    //SelectedQuest = CurrentQuestGroup.Data[list.index];
+                    //this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[list.index]);
+                }
+                else
+                {
+                    SelectedQuest = null;
+                }
+            }
+        }
+
+        private void OnAddElementHandler(ReorderableList list)
+        {
+            if (list.index > 0)
+            {
+                CurrentQuestGroup.Insert(list.index + 1, CurrentQuestGroup.Data[list.index].Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
+                list.index++;
+            }
+            else
+            {
+                CurrentQuestGroup.Add(
+                    new H_Quest()
+                    {
+                        UID = H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString(),
+                        Group = CurrentQuestGroup,
+                        UName = "quest_(0)"
+                    });
+
+                list.index = list.count - 1;
+            }
+
+            SelectQuest(list.index);
+            //this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[list.index]);
+        }
+
+        private void OnSelectElementHandler(ReorderableList list)
+        {
+            //list.index
+            SelectQuest(list.index);
+            /*SelectedQuest = CurrentQuestGroup.Data[list.index];
+            this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[list.index]);*/
+        }
+
+        private void SelectQuest(int index)
+        {
+            _questList.index = index;
+            SelectedQuest = CurrentQuestGroup.Data[index];
+            this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[index]);
         }
     }
 
@@ -890,7 +983,22 @@ namespace H_QuestSystemV2
                 EditorGUILayout.BeginVertical(GUILayout.MinWidth(size), GUILayout.MaxWidth(size));
                 EditorGUILayout.Space();
 
-                EditorGUILayout.TextField(string.Format("Quest ({0})", CurrentQuest.UID), CurrentQuest.UID);
+                EditorGUILayout.BeginHorizontal();
+                string uname = EditorGUILayout.TextField(new GUIContent(string.Format("Unique Name ({0})", CurrentQuest.UID), "Used for internal control"), CurrentQuest.UName);
+                if(uname != CurrentQuest.UName)
+                {
+                    if (ObjectNamesManager.ValidateName(uname, '.', '[', ']', ' ', '\0'))
+                        CurrentQuest.UName = uname;
+                    else
+                        Debug.LogWarning("Avoid use . [ ] to name your strings. Names with only spaces are not alloweds to.");
+                }
+
+                if (GUILayout.Button("E", GUILayout.MinWidth(19), GUILayout.MaxWidth(19)))
+                {
+
+                }
+
+                EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
 
@@ -946,14 +1054,18 @@ namespace H_QuestSystemV2
 
         void OnDrawHeaderHandler(Rect rect)
         {
+            rect.width -= 19;
             EditorGUI.LabelField(rect, "Quest Info");
+            rect.x += rect.width;
+            rect.width = 19;
+            EditorGUI.Toggle(rect, true);
         }
         void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
             rect.height = EditorGUIUtility.singleLineHeight;
             CurrentQuest.Info[index].Name = EditorGUI.TextField(rect, "Name:", CurrentQuest.Info[index].Name);
             rect.y += rect.height;
-            CurrentQuest.Info[index].Description = EditorGUI.TextField(rect, "Description:", CurrentQuest.Info[index].Description);
+            CurrentQuest.Info[index].Description = EditorGUI.TextField(rect, "Description:", CurrentQuest.Info[index].Description);            
         }
 
     }
@@ -962,13 +1074,13 @@ namespace H_QuestSystemV2
     {
         string _title = string.Empty;
 
-        Condition _condition = new Condition() { Type = "Condition", UID = "q1" };
+        H_Condition _condition = new H_Condition() { Type = "Condition", UID = "q1" };
 
         ReorderableList reorderableList;
 
         List<ConditionEditor> _conditions = new List<ConditionEditor>();
 
-        public void Start(Condition condition, string title = "Conditions")
+        public void Start(H_Condition condition, string title = "Conditions")
         {
             //save title
             _title = title;
@@ -977,7 +1089,7 @@ namespace H_QuestSystemV2
             _conditions.Clear();
             if (_condition.Type == "Condition")
             {
-                foreach(Condition c in condition.Conditions)
+                foreach(H_Condition c in condition.Conditions)
                 {
                     ConditionEditor ce = new ConditionEditor();
                     _conditions.Add(ce);
@@ -1020,11 +1132,11 @@ namespace H_QuestSystemV2
         private void OnAddElementHandler(ReorderableList list)
         {
             ConditionEditor c = new ConditionEditor();
-            Condition condition = new Condition() { Type = "CheckVar" };
+            H_Condition condition = new H_Condition() { Type = "CheckVar" };
             if (list.index < 0 || list.count == 0)
             {
                 condition.UID = string.Concat(_condition.UID, "_c", 0);
-                c._condition = condition;;
+                c._condition = condition;
                 _condition.Conditions.Add(condition);
                 _conditions.Add(c);
                 list.index = 0;
@@ -1054,8 +1166,7 @@ namespace H_QuestSystemV2
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
-            GUILayout.Button(string.Format("Create On {0} Complete Handler", _title));
-
+            GUILayout.Button(string.Format("Create On {0} Complete Scene Handler", _title));
         }
 
         void OnDrawHeaderHandler(Rect rect)
@@ -1211,11 +1322,4 @@ namespace H_QuestSystemV2
             EditorGUILayout.LabelField("Reward field");
         }
     }
-
-
-    public class QuestList
-    {
-
-    }
-
 }

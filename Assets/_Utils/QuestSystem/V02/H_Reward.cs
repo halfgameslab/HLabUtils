@@ -10,12 +10,12 @@
 
         public bool AutoCollect { get; set; }
 
-        public H_QuestElementGroup Rewards { get; set; }
+        //public H_QuestElementGroup Rewards { get; set; }
 
         public float Collect()
         {
             // for each var in rewards
-            Rewards.Invoke();
+            //Rewards.Invoke();
 
             IsCollect = true;
             return Value;

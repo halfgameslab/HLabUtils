@@ -3,10 +3,10 @@
   <H_DataGroupOfH_QuestH_PersistentQuestData uid="123" as="true" pt="SHARED" las="true">
     <n>global</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
-  <H_DataGroupOfH_QuestH_PersistentQuestData uid="126" as="true" pt="SHARED" las="true">
-    <n>teste</n>
+  <H_DataGroupOfH_QuestH_PersistentQuestData uid="161" as="true" pt="SHARED" las="true">
+    <n>new_group_name</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
-  <H_DataGroupOfH_QuestH_PersistentQuestData uid="129" as="true" pt="SHARED" las="true">
-    <n>globalcopy</n>
+  <H_DataGroupOfH_QuestH_PersistentQuestData uid="167" as="true" pt="SHARED" las="true">
+    <n>group02</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
 </ArrayOfH_DataGroupOfH_QuestH_PersistentQuestData>

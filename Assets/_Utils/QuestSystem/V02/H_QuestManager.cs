@@ -1,4 +1,5 @@
-﻿using Mup.EventSystem.Events;
+﻿using H_DataSystem;
+using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,9 +7,34 @@ using UnityEngine;
 
 namespace H_QuestSystem
 {
-    public class H_QuestManager : MonoBehaviour
+    public sealed class H_QuestManager
     {
-        public TextAsset[] _questsFiles;
+        private static H_QuestManager _instance;
+
+        public static H_QuestManager Instance { get { return _instance ?? (_instance = new H_QuestManager()); } }
+        private H_QuestManager() { /*block external initialization*/ }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void InitializeOnLoad()
+        {
+            Instance.Start();
+        }
+
+        public H_DataGroupList<H_Quest, H_PersistentQuestData> QuestGroups = new H_DataGroupList<H_Quest, H_PersistentQuestData>() { Filename = "qdl.xml" };
+        public void Start()
+        {
+            QuestGroups.AddEventListener(ES_Event.ON_LOAD, OnQuestsLoadHandler);
+            QuestGroups.Load();
+        }
+
+        private void OnQuestsLoadHandler(ES_Event ev)
+        {
+            QuestGroups.RemoveEventListener(ES_Event.ON_LOAD, OnQuestsLoadHandler);
+            // configure quests
+        }
+
+
+        /*public TextAsset[] _questsFiles;
 
         public Dictionary<string, H_Quest> QuestTable { get; private set; }
 
@@ -39,16 +65,16 @@ namespace H_QuestSystem
             
 
 
-            /*H_Quest[] quests = M_XMLFileManager.Deserialize<H_Quest[]>(_questsFiles[0].text);
+            //H_Quest[] quests = M_XMLFileManager.Deserialize<H_Quest[]>(_questsFiles[0].text);
 
-            foreach(H_Quest quest in quests)
-            {
-                Add(quest);
-            }*/
+            //foreach(H_Quest quest in quests)
+            //{
+            //    Add(quest);
+            //}
 
-            // carregar as quests
-            // ler o arquivo persistent
-            // Configurar as quests de acordo com o arquivo persistent e seus valores padrões
+        // carregar as quests
+        // ler o arquivo persistent
+        // Configurar as quests de acordo com o arquivo persistent e seus valores padrões
         }
 
         public H_Quest[] GetAllActivatedQuests()
@@ -67,12 +93,12 @@ namespace H_QuestSystem
 
         private void Add(H_Quest quest)
         {
-            QuestTable.Add(quest.ID, quest);
+            QuestTable.Add(quest.UID, quest);
         }
 
         private void Play()
         {
 
-        }
+        }*/
     }
 }

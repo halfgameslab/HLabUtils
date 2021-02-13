@@ -1,0 +1,19 @@
+﻿using H_DataSystem;
+
+namespace H_QuestSystem 
+{
+    public class H_PersistentQuestData : H_Clonnable<H_PersistentQuestData>, H_Processable<H_PersistentQuestData>, H_Groupable<H_Quest, H_PersistentQuestData>
+    {
+        public H_DataGroup<H_Quest, H_PersistentQuestData> Group { get; set; }
+
+        public H_PersistentQuestData Clone(string cloneUID)
+        {
+            return this;
+        }
+
+        public void Process()
+        {
+
+        }
+    }
+}

@@ -55,4 +55,29 @@ public static class ObjectNamesManager
 
         return name;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="s"></param>
+    /// <param name="notAllowedChars"></param>
+    /// <returns></returns>
+    public static bool ValidateName(string s, params char[] notAllowedChars)
+    {
+        int len = s.Length;
+        int count = 0;
+
+        for (int i = 0; i < len; ++i)
+        {
+            foreach (char c in notAllowedChars)
+            {
+                if (s[i] == c)
+                    return false;
+                else if (s[i] == ' ' || s[i] == '\0')// check spaces and voids
+                    count++;
+            }
+        }
+
+        return count != len;// if count == len there is only spaces on string
+    }
 }

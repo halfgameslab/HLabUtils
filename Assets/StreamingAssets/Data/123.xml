@@ -1,13 +1,10 @@
 <?xml version="1.0"?>
 <ArrayOfH_Quest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <H_Quest uid="124">
-    <il>
-      <i />
-    </il>
+  <H_Quest uid="541">
+    <un>quest (0)</un>
+    <il />
     <sc uid="s1" t="Condition" op="AND">
-      <cl>
-        <ci uid="s1_c0" t="CheckVar" op="AND" />
-      </cl>
+      <cl />
     </sc>
     <tc uid="g1" t="Condition" op="AND">
       <cl />
@@ -16,7 +13,21 @@
       <cl />
     </fc>
   </H_Quest>
-  <H_Quest uid="125">
+  <H_Quest uid="542">
+    <un>quest (1)</un>
+    <il />
+    <sc uid="s1" t="Condition" op="AND">
+      <cl />
+    </sc>
+    <tc uid="g1" t="Condition" op="AND">
+      <cl />
+    </tc>
+    <fc uid="f1" t="Condition" op="AND">
+      <cl />
+    </fc>
+  </H_Quest>
+  <H_Quest uid="543">
+    <un>quest (2)</un>
     <il />
     <sc uid="s1" t="Condition" op="AND">
       <cl />

@@ -1,57 +1,86 @@
-﻿using Mup.EventSystem.Events;
+﻿using H_DataSystem;
+using H_Misc;
+using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace H_QuestSystem
 {
-    public class H_Quest
+    public class H_Quest: H_Clonnable<H_Quest>, H_Processable<H_Quest>, H_Groupable<H_Quest, H_PersistentQuestData>
     {
-        public string ID { get; set; }
-        public string Type { get; set; }
+        private string _uname = string.Empty;
 
-        public string Name { get; set; }
-        public string Desc { get; set; }
+        [XmlAttribute("uid")]
+        public string UID { get; set; }
 
-        public H_QuestElementGroup StartConditions { get; set; }
+        [XmlElement("un")]
+        public string UName 
+        {
+            get
+            {
+                return _uname;
+            }
+            set
+            {
+                if (value != _uname)
+                {
+                    if (Group != null)
+                        _uname = ObjectNamesManager.GetUniqueName(Group.Data.Select(e => e.UName).ToArray(), value, "_");
+                    else
+                        _uname = value;
 
-        public H_QuestElementGroup Goals { get; set; }
+                    //this.SetInstanceName(_uname);
+                }
+            }
 
-        public H_QuestElementGroup FailConditions { get; set; }
+        }
 
-        public H_Reward[] Rewards { get; set; }
+        [XmlArray("il")]
+        [XmlArrayItem("i")]
+        public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
 
-        public bool HasStarted { get; set; }
+        [XmlElement("sc")]
+        public H_Condition StartCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "s1" };
+        [XmlElement("tc")]
+        public H_Condition TaskCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "g1" };
+        [XmlElement("fc")]
+        public H_Condition FailCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "f1" };
 
-        public bool WasCompleted { get; set; }
+        [XmlIgnore]
+        public H_DataGroup<H_Quest, H_PersistentQuestData> Group { get; set; }
 
-        public bool IsActivated { get; private set; }
+        //[XmlIgnore]
+        //public bool HasStarted { get; set; }
 
-        /// <summary>
+        //[XmlIgnore]
+        //public bool WasCompleted { get; set; }
+
+        //[XmlIgnore]
+        //public bool IsActivated { get; private set; }
+
+        [XmlIgnore]
+        public List<H_Reward> Rewards { get; set; }
+
+        /*/// <summary>
         /// 
         /// </summary>
         /// <param name="status"></param>
         public void SetActive(bool status)
         {
-            // check if we have a diferente instance name setted for this quest
-            /* if (this.GetInstanceName() != ID)
-             {
-                 // rename the object
-                 ES_EventManager.SwapInstanceEvents(this.GetInstanceName(), ID);
-                 this.SetInstanceName(ID);
-             }*/
-
-            this.SetInstanceName(ID);
-
+            this.SetInstanceName(UName);
 
             if (status && !IsActivated)
             {
-                if (StartConditions.WasCompleted)
+                if (StartCondition.WasCompleted)
                 {
                     Start();
                 }
                 else
                 {
-                    StartConditions.AddEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
-                    StartConditions.Start();
+                    StartCondition.AddEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
+                    StartCondition.Start();
                 }
             }
             else if (!status && IsActivated)
@@ -64,11 +93,11 @@ namespace H_QuestSystem
 
         public void Start()
         {
-            FailConditions.AddEventListener(ES_Event.ON_COMPLETE, OnFailConditionsCompleteHandler);
-            Goals.AddEventListener(ES_Event.ON_COMPLETE, OnGoalsCompleteHandler);
+            FailCondition.AddEventListener(ES_Event.ON_COMPLETE, OnFailConditionsCompleteHandler);
+            TaskCondition.AddEventListener(ES_Event.ON_COMPLETE, OnGoalsCompleteHandler);
 
-            FailConditions.Start();
-            Goals.Start();
+            FailCondition.Start();
+            TaskCondition.Start();
 
             HasStarted = true;
         }
@@ -77,20 +106,50 @@ namespace H_QuestSystem
         {
             if (HasStarted)
             {
-                FailConditions.RemoveListeners();
-                Goals.RemoveListeners();
-                FailConditions.RemoveEventListener(ES_Event.ON_COMPLETE, OnFailConditionsCompleteHandler);
-                Goals.RemoveEventListener(ES_Event.ON_COMPLETE, OnGoalsCompleteHandler);
+                FailCondition.RemoveListeners();
+                TaskCondition.RemoveListeners();
+                FailCondition.RemoveEventListener(ES_Event.ON_COMPLETE, OnFailConditionsCompleteHandler);
+                TaskCondition.RemoveEventListener(ES_Event.ON_COMPLETE, OnGoalsCompleteHandler);
             }
             else
             {
-                StartConditions.RemoveEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
+                StartCondition.RemoveEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
+            }
+        }*/
+
+        public void CheckAndUpdateUName()
+        {
+            if (Group != null)
+            {
+                _uname = ObjectNamesManager.GetUniqueName(Group.Data.Where(e => e != this).Select(e => e.UName).ToArray(), _uname, "_");
             }
         }
 
-        private void OnStartConditionsHandler(ES_Event ev)
+        public H_Quest Clone(string cloneUID)
         {
-            StartConditions.RemoveEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
+            H_Quest q = new H_Quest();
+
+            q.Group = Group;
+            q.UName = UName;
+            q.UID = cloneUID;
+            q.StartCondition = this.StartCondition.Clone(string.Empty);
+            q.TaskCondition = this.TaskCondition.Clone(string.Empty);
+            q.FailCondition = this.FailCondition.Clone(string.Empty);
+
+            foreach (QuestInfo info in Info)
+                q.Info.Add(info.Clone());
+
+            return q;
+        }
+
+        public void Process()
+        {
+
+        }
+
+        /*private void OnStartConditionsHandler(ES_Event ev)
+        {
+            StartCondition.RemoveEventListener(ES_Event.ON_COMPLETE, OnStartConditionsHandler);
             Start();
         }
 
@@ -114,6 +173,6 @@ namespace H_QuestSystem
             Stop();
 
             this.DispatchEvent(ES_Event.ON_FAIL);
-        }
+        }*/
     }
 }
