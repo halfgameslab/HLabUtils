@@ -24,7 +24,7 @@ public static class ObjectNamesManager
     /// <returns></returns>
     public static string GetUniqueName(string[] existingNames, string name, string space=" ")
     {
-        if (Array.Exists(existingNames, (T => T == name)))
+        if (Array.Exists(existingNames, (e => e == name)))
         {
             //return GetUniqueName(existingNames, Pattern.Replace(name, string.Concat("(", ++index, ")")));
             if (int.TryParse(Pattern.Match(name).Groups[1].Value, out int index))

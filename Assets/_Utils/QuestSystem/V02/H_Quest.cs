@@ -29,7 +29,7 @@ namespace H_QuestSystem
                 if (value != _uname)
                 {
                     if (Group != null)
-                        _uname = ObjectNamesManager.GetUniqueName(Group.Data.Select(e => e.UName).ToArray(), value, "_");
+                        _uname = ObjectNamesManager.GetUniqueName(Group.Data.Where(e=>e != this).Select(e => e.UName).ToArray(), value, "_");
                     else
                         _uname = value;
 

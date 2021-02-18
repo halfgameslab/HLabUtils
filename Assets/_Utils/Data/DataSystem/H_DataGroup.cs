@@ -118,6 +118,7 @@ namespace H_DataSystem
             Data.Add(item);
             item.Group = this;
             item.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
+            item.Process();
             /*var.Group = this;
             if (var.IsPersistent)
                 _persistentsVars.Add(var);*/
@@ -131,6 +132,7 @@ namespace H_DataSystem
             Data.Insert(index, item);
             item.Group = this;
             item.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
+            item.Process();
 
             if (canSave)
                 Save();

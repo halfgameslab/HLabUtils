@@ -120,6 +120,61 @@ namespace H_Misc
             }
         }
 
+        public void AddCondition(H_Condition condition)
+        {
+            if (Conditions == null)
+                Conditions = new List<H_Condition>();
+
+            if (!Conditions.Contains(condition))
+            {
+                Conditions.Add(condition);
+                condition?.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                condition?.ListenConditions();
+
+                this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+            }
+        }
+
+        public void InsertCondition(int index, H_Condition condition)
+        {
+            if (Conditions == null)
+                Conditions = new List<H_Condition>();
+
+            if (!Conditions.Contains(condition))
+            {
+                Conditions.Insert(index, condition);
+                condition?.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                condition?.ListenConditions();
+
+                this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+            }
+        }
+
+        public void RemoveCondition(int index)
+        {
+            if (Conditions != null && index < Conditions.Count)
+            {
+                Conditions[index].RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                Conditions[index].StopListenConditions();
+                Conditions.RemoveAt(index);
+            }
+
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+        }
+
+        public void RemoveCondition(H_Condition condition)
+        {
+            if (Conditions != null)
+            {
+                condition?.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                condition?.StopListenConditions();
+
+                Conditions.Remove(condition);
+            }
+
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+        }
+
         public void AddParams(params object[] values)
         {
             Params = values;
@@ -143,8 +198,13 @@ namespace H_Misc
             if(Conditions != null)
                 foreach(H_Condition condition in Conditions)
                 {
-                    condition?.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
-                    condition?.ListenConditions();
+                    if ( condition != null )
+                    {
+                        if(!condition.HasEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler))
+                            condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+
+                        condition.ListenConditions();
+                    }
                 }
         }
 

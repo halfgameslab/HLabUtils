@@ -47,15 +47,41 @@
       <cl />
     </fc>
   </H_Quest>
-  <H_Quest uid="192">
-    <un>boss_fight</un>
+  <H_Quest uid="606">
+    <un>tutorial_(0)</un>
     <il>
+      <i />
       <i />
     </il>
     <sc uid="s1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
       <_combineOperation>JOIN</_combineOperation>
-      <cl />
+      <cl>
+        <ci uid="s1_c0" t="CheckVar" op="OR" cop="JOIN">
+          <_operation>OR</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
     </sc>
     <tc uid="g1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
@@ -68,13 +94,180 @@
       <cl />
     </fc>
   </H_Quest>
+  <H_Quest uid="608">
+    <un>tutorial_(1)</un>
+    <il>
+      <i />
+      <i />
+    </il>
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl>
+        <ci uid="s1_c0" t="Condition" op="OR" cop="JOIN">
+          <_operation>OR</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="OnChangeVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+        </ci>
+      </cl>
+    </sc>
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl />
+    </tc>
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl />
+    </fc>
+  </H_Quest>
+  <H_Quest uid="192">
+    <un>boss_fight</un>
+    <il>
+      <i />
+    </il>
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
+    </sc>
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl>
+        <ci uid="g1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
+    </tc>
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl>
+        <ci uid="f1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="f1_c0" t="Condition" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
+    </fc>
+  </H_Quest>
   <H_Quest uid="577">
     <un>kill_5_(1)</un>
     <il />
     <sc uid="s1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
       <_combineOperation>JOIN</_combineOperation>
-      <cl />
+      <cl>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="Condition" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
     </sc>
     <tc uid="g1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
@@ -93,7 +286,32 @@
     <sc uid="s1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
       <_combineOperation>JOIN</_combineOperation>
-      <cl />
+      <cl>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
     </sc>
     <tc uid="g1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
@@ -106,7 +324,7 @@
       <cl />
     </fc>
   </H_Quest>
-  <H_Quest uid="198">
+  <H_Quest uid="614">
     <un>kill_5</un>
     <il />
     <sc uid="s1" t="Condition" op="AND" cop="JOIN">
@@ -131,7 +349,31 @@
     <sc uid="s1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>
       <_combineOperation>JOIN</_combineOperation>
-      <cl />
+      <cl>
+        <ci uid="s1_c0" t="Condition" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="OnChangeVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+        </ci>
+      </cl>
     </sc>
     <tc uid="g1" t="Condition" op="AND" cop="JOIN">
       <_operation>AND</_operation>

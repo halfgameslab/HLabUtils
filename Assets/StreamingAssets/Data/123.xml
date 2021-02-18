@@ -1,41 +1,106 @@
 <?xml version="1.0"?>
 <ArrayOfH_Quest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <H_Quest uid="607">
+    <un>tutorial_(1)</un>
+    <il>
+      <i />
+      <i />
+    </il>
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl>
+        <ci uid="s1_c0" t="Condition" op="OR" cop="JOIN">
+          <_operation>OR</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">222222</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CheckVar" op="AND" cop="JOIN">
+          <_operation>AND</_operation>
+          <_combineOperation>JOIN</_combineOperation>
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">222222</pi>
+            <pi xsi:type="xsd:int">4</pi>
+            <pi xsi:type="xsd:string">value</pi>
+          </pl>
+          <cl />
+        </ci>
+      </cl>
+    </sc>
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl />
+    </tc>
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
+      <cl />
+    </fc>
+  </H_Quest>
   <H_Quest uid="541">
     <un>quest (0)</un>
     <il />
-    <sc uid="s1" t="Condition" op="AND">
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </sc>
-    <tc uid="g1" t="Condition" op="AND">
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </tc>
-    <fc uid="f1" t="Condition" op="AND">
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </fc>
   </H_Quest>
   <H_Quest uid="542">
     <un>quest (1)</un>
     <il />
-    <sc uid="s1" t="Condition" op="AND">
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </sc>
-    <tc uid="g1" t="Condition" op="AND">
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </tc>
-    <fc uid="f1" t="Condition" op="AND">
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </fc>
   </H_Quest>
   <H_Quest uid="543">
     <un>quest (2)</un>
     <il />
-    <sc uid="s1" t="Condition" op="AND">
+    <sc uid="s1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </sc>
-    <tc uid="g1" t="Condition" op="AND">
+    <tc uid="g1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </tc>
-    <fc uid="f1" t="Condition" op="AND">
+    <fc uid="f1" t="Condition" op="AND" cop="JOIN">
+      <_operation>AND</_operation>
+      <_combineOperation>JOIN</_combineOperation>
       <cl />
     </fc>
   </H_Quest>

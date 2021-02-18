@@ -830,16 +830,19 @@ namespace H_QuestSystem.H_QuestEditor
             {
                 H_Quest clone = _copiedQuest.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString());
 
+                clone.Group = null; // remove group to avoid name error
+                clone.UName = _copiedQuest.UName;// save the UName without changes
+
                 if (_questList.index >= 0 && _questList.index < CurrentQuestGroup.Data.Count)
                 {
                     CurrentQuestGroup.Insert(_questList.index + 1, clone);
-                    clone.CheckAndUpdateUName();
+                    clone.CheckAndUpdateUName();// process a new UName for the clone avoiding duplicated names in the group
                     _questList.index++;
                 }
                 else
                 {
                     CurrentQuestGroup.Add(clone);
-                    clone.CheckAndUpdateUName();
+                    clone.CheckAndUpdateUName();// process a new UName for the clone avoiding duplicated names in the group
                     _questList.index = _questList.list.Count - 1;
                 }
 
@@ -1025,7 +1028,7 @@ namespace H_QuestSystem.H_QuestEditor
                 EditorGUILayout.BeginHorizontal(GUILayout.MinWidth(size), GUILayout.MaxWidth(size));
 
                 DrawTabButton("Start", 0, size, w);
-                DrawTabButton("Tasks", 1, size, w);
+                DrawTabButton("Goals/Tasks", 1, size, w);
                 DrawTabButton("Fails", 2, size, w);
                 DrawTabButton("Rewards", 3, size, w);
 
@@ -1138,6 +1141,7 @@ namespace H_QuestSystem.H_QuestEditor
 
         private void OnRemoveElementHandler(ReorderableList list)
         {
+            _condition.RemoveCondition(list.index);
             _conditions.RemoveAt(list.index);
 
             // select the up next element to facilitate delete operation
@@ -1162,8 +1166,8 @@ namespace H_QuestSystem.H_QuestEditor
             {
                 condition.UID = string.Concat(_condition.UID, "_c", 0);
                 c._condition = condition;
-                _condition.Conditions.Add(condition);
                 _conditions.Add(c);
+                _condition.AddCondition(condition);
                 list.index = 0;
             }
             else
@@ -1171,7 +1175,7 @@ namespace H_QuestSystem.H_QuestEditor
                 condition.UID = string.Concat(_condition.UID, "_c", list.index);
                 c._condition = condition;
                 _conditions.Insert(list.index + 1, c);
-                _condition.Conditions.Insert(list.index + 1, condition);
+                _condition.InsertCondition(list.index + 1, condition);
                 list.index++;
             }
             c.Start(condition);
@@ -1216,13 +1220,21 @@ namespace H_QuestSystem.H_QuestEditor
 
             rect.width = halfWidth / 2;
             rect.x += 18f;
-            _conditions[index]._condition.CombineOperation = (H_ECombineOperation)EditorGUI.EnumPopup(rect, _conditions[index]._condition.CombineOperation);
+            EditorGUI.BeginDisabledGroup(index == 0);
+                _conditions[index]._condition.CombineOperation = (H_ECombineOperation)EditorGUI.EnumPopup(rect, _conditions[index]._condition.CombineOperation);
+            if(index == 0 && _conditions[index]._condition.CombineOperation != H_ECombineOperation.JOIN)
+            {
+                _conditions[index]._condition.CombineOperation = H_ECombineOperation.JOIN;
+            }
+            EditorGUI.EndDisabledGroup();
             rect.x += rect.width;
-            string lastType = _conditions[index]._condition.Type;
+            //string lastType = _conditions[index]._condition.Type;
 
-            _conditions[index]._condition.Type = types[EditorGUI.Popup(rect, Array.IndexOf(types, _conditions[index]._condition.Type), types)];
+            EditorGUI.BeginChangeCheck();
+                _conditions[index]._condition.Type = types[EditorGUI.Popup(rect, Array.IndexOf(types, _conditions[index]._condition.Type), types)];
 
-            if(lastType != _conditions[index]._condition.Type)
+            //if(lastType != _conditions[index]._condition.Type)
+            if(EditorGUI.EndChangeCheck())
             {
                 _conditions[index].Start(_conditions[index]._condition);
                 _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
