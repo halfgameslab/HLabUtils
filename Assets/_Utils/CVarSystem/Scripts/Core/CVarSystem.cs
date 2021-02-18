@@ -16,8 +16,15 @@ using UnityEngine.SceneManagement;
 /// https://github.com/id-Software/DOOM-3/blob/master/neo/framework/CVarSystem.h
 /// </summary>
 public static class CVarSystem
-{   
-
+{
+    public static string[] AllowedTypes { get; private set; } = new string[] 
+    { 
+        GetTypeName<string>(),
+        GetTypeName<int>(),
+        GetTypeName<float>(),
+        GetTypeName<bool>(),
+        GetTypeName<Vector3>()
+    };
 #if UNITY_EDITOR
     
     /// <summary>
@@ -1107,7 +1114,8 @@ public static class CVarSystem
 
     public static string[] GetVarNamesByType<T>(string group="global")
     {
-        List<string> names = new List<string>();
+        return GetVarNamesByType(GetTypeName<T>(), group);
+        /*List<string> names = new List<string>();
 
         CVarGroup g = GetGroupByName(group);
 
@@ -1116,6 +1124,25 @@ public static class CVarSystem
             foreach (CVarObject obj in g.Vars)
             {
                 if (GetObjectTypeByVarName(obj.FullName) == GetTypeName<T>())
+                    names.Add(RemoveTypeAndGroup(obj.FullName));
+                //names.Add(obj.Name);
+            }
+        }
+
+        return names.ToArray();*/
+    }
+
+    public static string[] GetVarNamesByType(string type, string group="")
+    {
+        List<string> names = new List<string>();
+
+        CVarGroup g = GetGroupByName(group);
+
+        if (g != null)
+        {
+            foreach (CVarObject obj in g.Vars)
+            {
+                if (GetObjectTypeByVarName(obj.FullName) == type)
                     names.Add(RemoveTypeAndGroup(obj.FullName));
                 //names.Add(obj.Name);
             }

@@ -18,6 +18,7 @@ namespace H_QuestSystem.H_QuestEditor
         QuestEditor _questEditor = new QuestEditor();
         QuestGroupEditor _questGroupEditor = new QuestGroupEditor();
         RuntimeFilesEditor<H_Quest, H_PersistentQuestData> _runtimeFilesEditor = new RuntimeFilesEditor<H_Quest, H_PersistentQuestData>();
+        string _currentGroupUID = string.Empty;
         string _currentQuestUID = string.Empty;
 
         [MenuItem("HLab/Quest Editor")]
@@ -101,11 +102,11 @@ namespace H_QuestSystem.H_QuestEditor
         {
             if (group != null)
             {
-                _currentQuestUID = group.UID;
+                _currentGroupUID = group.UID;
             }
             else
             {
-                _currentQuestUID = string.Empty;
+                _currentGroupUID = string.Empty;
             }
 
             _questGroupEditor.Start(group);
@@ -121,21 +122,26 @@ namespace H_QuestSystem.H_QuestEditor
         public void SelectQuest(H_Quest quest)
         {
             _questEditor.Start(quest);
+            //_questGroupEditor.SelectedQuest = quest;
+            _currentQuestUID = quest!=null?quest.UID:string.Empty;
         }
 
         private void CheckToAvoidNullQuestList()
         {
             if (_questGroupEditor.CurrentQuestGroup == null && _questListEditor.CurrentState != 1)
             {
-                H_DataGroup<H_Quest, H_PersistentQuestData> currentQuest = H_QuestManager.Instance.QuestGroups.GetGroupByUID(_currentQuestUID);
-                if (currentQuest != null)
+                H_DataGroup<H_Quest, H_PersistentQuestData> currentQuestGroup = H_QuestManager.Instance.QuestGroups.GetGroupByUID(_currentGroupUID);
+                if (currentQuestGroup != null)
                 {
-                    _questGroupEditor.Start(currentQuest);
+                    _questGroupEditor.Start(currentQuestGroup, currentQuestGroup.Data.FirstOrDefault(e => e.UID == _currentQuestUID));
+                    SelectQuest(_questGroupEditor.SelectedQuest);
                 }
                 else
                 {
                     _questGroupEditor.Start(H_QuestManager.Instance.QuestGroups.GetGroupByName("global"));
-                    _currentQuestUID = _questGroupEditor.CurrentQuestGroup.UID;
+                    _currentGroupUID = _questGroupEditor.CurrentQuestGroup.UID;
+                    _currentQuestUID = string.Empty;
+
                 }
             }
         }
@@ -158,10 +164,10 @@ namespace H_QuestSystem.H_QuestEditor
             SelectGroup(H_QuestManager.Instance.QuestGroups.CreateGroup(name, _questGroupEditor.CurrentQuestGroup));
         }
 
-
         private void OnSelectQuestHandler(ES_Event ev)
         {
-            _questEditor.Start((H_Quest)ev.Data);
+            SelectQuest((H_Quest)ev.Data);
+            //_questEditor.Start((H_Quest)ev.Data);
         }
 
         private void OnQuestDestroyHandler(ES_Event ev)
@@ -171,7 +177,7 @@ namespace H_QuestSystem.H_QuestEditor
         }
     }
 
-    public class QuestGroupListEditor<T, K> where T:H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+    public class QuestGroupListEditor<T, K> where T:H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
     { 
         public int CurrentState { get; set; }
 
@@ -374,7 +380,7 @@ namespace H_QuestSystem.H_QuestEditor
         }
     }
 
-    public class RuntimeFilesEditor<T, K> where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+    public class RuntimeFilesEditor<T, K> where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
     {
         private CVarWindowAction _currentAction;
         private string _editableAuxName;
@@ -762,7 +768,7 @@ namespace H_QuestSystem.H_QuestEditor
             Start(H_QuestManager.Instance.QuestGroups.GetGroupByName(currentGroup));
         }
 
-        public void Start(H_DataGroup<H_Quest, H_PersistentQuestData> currentGroup)
+        public void Start(H_DataGroup<H_Quest, H_PersistentQuestData> currentGroup, H_Quest selected = null)
         {
             if (CurrentQuestGroup != currentGroup)
             {
@@ -781,7 +787,10 @@ namespace H_QuestSystem.H_QuestEditor
                     _questList = null;
 
                 _scrollPosition = Vector2.zero;
-                SelectedQuest = null;
+                SelectedQuest = selected;
+
+                if (selected != null)
+                    _questList.index = currentGroup.Data.IndexOf(selected);
             }
         }
 
@@ -846,7 +855,7 @@ namespace H_QuestSystem.H_QuestEditor
             EditorGUI.DrawRect(rect, new Color(0.1f,0.1f,0.1f,0.3f));
             
             rect.width = rect.width - 20;
-            GUI.Label(rect, string.Format("[#{0}] {1}", CurrentQuestGroup.Data[index].UID, CurrentQuestGroup.Data[index].UName));
+            GUI.Label(rect, string.Format("[#{0}][#{1}] {2}", index, CurrentQuestGroup.Data[index].UID, CurrentQuestGroup.Data[index].UName));
 
             rect.x += rect.width;
             rect.width = 19;
@@ -945,19 +954,26 @@ namespace H_QuestSystem.H_QuestEditor
 
         public void Start(H_Quest quest)
         {
-            CurrentQuest = quest;
-
-            _infoList = new ReorderableList(quest.Info, typeof(QuestInfo))
+            if (quest != null)
             {
-                drawHeaderCallback = OnDrawHeaderHandler,
-                drawElementCallback = OnDrawElementHandler,
-                elementHeightCallback = OnElementHeightHandler
-            };
+                CurrentQuest = quest;
 
-            _start.Start(quest.StartCondition, "Start Conditions");
-            _goals.Start(quest.TaskCondition, "Goals/Tasks");
-            _fails.Start(quest.FailCondition, "Fails Conditions");
-            _rewardList.Start();
+                _infoList = new ReorderableList(quest.Info, typeof(QuestInfo))
+                {
+                    drawHeaderCallback = OnDrawHeaderHandler,
+                    drawElementCallback = OnDrawElementHandler,
+                    elementHeightCallback = OnElementHeightHandler
+                };
+
+                _start.Start(quest.StartCondition, "Start Conditions");
+                _goals.Start(quest.TaskCondition, "Goals/Tasks");
+                _fails.Start(quest.FailCondition, "Fails Conditions");
+                _rewardList.Start();
+            }
+            else
+            {
+                Clear();
+            }
         }
 
         public void Clear()
@@ -1033,7 +1049,7 @@ namespace H_QuestSystem.H_QuestEditor
             {
                 EditorGUILayout.BeginVertical(GUILayout.MinWidth(size), GUILayout.MaxWidth(size));
 
-                EditorGUILayout.HelpBox("Select one quest to edit!", MessageType.Warning);
+                EditorGUILayout.HelpBox("Select some quest to edit!", MessageType.Warning);
 
                 EditorGUILayout.EndVertical();
             }
@@ -1074,7 +1090,7 @@ namespace H_QuestSystem.H_QuestEditor
     {
         string _title = string.Empty;
 
-        H_Condition _condition = new H_Condition() { Type = "Condition", UID = "q1" };
+        H_Condition _condition;// = new H_Condition() { Type = "Condition", UID = "q1" };
 
         ReorderableList reorderableList;
 
@@ -1129,6 +1145,15 @@ namespace H_QuestSystem.H_QuestEditor
                 list.index = list.index - 1;
         }
 
+        public void Draw()
+        {
+            reorderableList?.DoLayoutList();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            GUILayout.Button(string.Format("Create On {0} Complete Scene Handler", _title));
+        }
+
         private void OnAddElementHandler(ReorderableList list)
         {
             ConditionEditor c = new ConditionEditor();
@@ -1160,15 +1185,6 @@ namespace H_QuestSystem.H_QuestEditor
             return EditorGUIUtility.singleLineHeight * 2 + 10;
         }
 
-        public void Draw()
-        {
-            reorderableList?.DoLayoutList();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            GUILayout.Button(string.Format("Create On {0} Complete Scene Handler", _title));
-        }
-
         void OnDrawHeaderHandler(Rect rect)
         {
             rect.width = rect.width / 2;
@@ -1176,11 +1192,13 @@ namespace H_QuestSystem.H_QuestEditor
             rect.x += rect.width;
             rect.width = rect.width / 2;
             rect.x += rect.width;
-            _condition.Operation = (ConditionOperation)EditorGUI.EnumPopup(rect, _condition.Operation);
+            _condition.Operation = (H_EConditionOperation)EditorGUI.EnumPopup(rect, _condition.Operation);
         }
+
         void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
-
+            if (_conditions[index]._condition.Params == null)
+                _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
             //EditorGUI.LabelField(rect, list[index]);
             //EditorGUI.LabelField(rect, list[index]);
             Rect origin = rect;
@@ -1198,7 +1216,7 @@ namespace H_QuestSystem.H_QuestEditor
 
             rect.width = halfWidth / 2;
             rect.x += 18f;
-            EditorGUI.Popup(rect, 0, new string[] { "Join", "Append" });
+            _conditions[index]._condition.CombineOperation = (H_ECombineOperation)EditorGUI.EnumPopup(rect, _conditions[index]._condition.CombineOperation);
             rect.x += rect.width;
             string lastType = _conditions[index]._condition.Type;
 
@@ -1207,6 +1225,7 @@ namespace H_QuestSystem.H_QuestEditor
             if(lastType != _conditions[index]._condition.Type)
             {
                 _conditions[index].Start(_conditions[index]._condition);
+                _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
 
             }
 
@@ -1214,25 +1233,51 @@ namespace H_QuestSystem.H_QuestEditor
 
             rect.x = origin.x;
 
-
-
             rect.y += EditorGUIUtility.singleLineHeight;
 
             if (_conditions[index]._condition.Type.Equals("CheckVar") || _conditions[index]._condition.Type.Equals("OnChangeVar"))
             {
+                string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
+                string[] varTypes = CVarSystem.AllowedTypes;
+                
                 rect.width = 18;
                 EditorGUI.Toggle(rect, false);
                 rect.x += 18;
                 rect.width = (origin.width - 18) / 5;
-                EditorGUI.Popup(rect, 0, new string[] { "Global", "Other Group" });
+
+                CheckableOptionPopup(rect, index, 0, groupsNames);
+
+                //_conditions[index]._condition.UpdateParam(0, EditorGUI.Popup(rect, 0, new string[] { "Global", "Other Group" }));
                 rect.x += rect.width;
-                EditorGUI.Popup(rect, 0, new string[] { "String", "Int", "Float", "Boolean", "Vector3" });
+
+                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e=>e == (string)_conditions[index]._condition.Params[1]);
+                int newValue = CheckableOptionPopup(rect, index, 1, varTypes);
+
+                if(newValue != i)
+                {
+                    _conditions[index]._condition.UpdateParam(4, GetNewDefaultValue(varTypes[newValue]));
+                }
+
+                //_conditions[index]._condition.UpdateParam(1, varTypes[EditorGUI.Popup(rect, Array.FindIndex(varTypes, 0, varTypes.Length, (e)=>e == (string)_conditions[index]._condition.Params[1]), varTypes)]);
                 rect.x += rect.width;
-                EditorGUI.Popup(rect, 0, new string[] { "Var01", "Var02" });
+
+                CheckableOptionPopup(rect, index, 2, CVarSystem.GetVarNamesByType((string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]));
+
+                //EditorGUI.Popup(rect, 0, new string[] { "Var01", "Var02" });
                 rect.x += rect.width;
-                EditorGUI.EnumPopup(rect, CVarCommands.EQUAL);
+                EditorGUI.BeginChangeCheck();
+                    CVarCommands param3 = (CVarCommands)EditorGUI.EnumPopup(rect, (CVarCommands)_conditions[index]._condition.Params[3]);
+                if (EditorGUI.EndChangeCheck())
+                    _conditions[index]._condition.UpdateParam(3, param3);
+
                 rect.x += rect.width;
-                EditorGUI.TextField(rect, "value");
+
+                EditorGUI.BeginChangeCheck();
+                    object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[4]);
+                if(EditorGUI.EndChangeCheck())
+                    _conditions[index]._condition.UpdateParam(4,param4);
+
+                //EditorGUI.TextField(rect, "value");
             }
             else if (_conditions[index]._condition.Type.Equals("OnEventDispatch"))
             {
@@ -1277,7 +1322,65 @@ namespace H_QuestSystem.H_QuestEditor
             //EditorGUI.LabelField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, rect.width, EditorGUIUtility.singleLineHeight), list[index]);
         }
 
+        private static object GetNewDefaultValue(string type)
+        {
+            if (type == typeof(string).Name)
+                return "value";
+            else if (type == typeof(int).Name)
+                return 0;
+            else if (type == typeof(float).Name)
+                return 0.0f;
+            else if (type == typeof(bool).Name)
+                return false;
+            else if (type == typeof(Vector3).Name)
+                return Vector3.zero;
+
+            return null;
+        }
+
+        private static object DrawFieldByType(Rect rect, object value)
+        {
+            if (value is string)
+                return EditorGUI.TextField(rect, (string)value);
+            else if (value is int)
+                return EditorGUI.IntField(rect, (int)value);
+            else if (value is float)
+                return EditorGUI.FloatField(rect, (float)value);
+            else if (value is bool)
+                return EditorGUI.Toggle(rect, (bool)value);
+            else if (value is Vector3)
+                return EditorGUI.Vector3Field(rect, "", (Vector3)value);
+
+            return null;
+        }
+
+        public int CheckableOptionPopup(Rect rect, int conditionIndex, int paramIndex, string[] displayableOptions)
+        {
+            int oldIndex = Array.FindIndex(displayableOptions, 0, displayableOptions.Length, (e) => e == (string)_conditions[conditionIndex]._condition.Params[paramIndex]);
+
+            if(CheckablePopup(rect, oldIndex, displayableOptions, out int index))
+            {
+                _conditions[conditionIndex]._condition.UpdateParam(paramIndex, displayableOptions[index]);
+                return index;
+            }
+
+            return oldIndex;
+        }
+
+        public bool CheckablePopup(Rect rect, int selectedIndex, string[] displayableOptions, out int index)
+        {
+            index = EditorGUI.Popup(rect, selectedIndex, displayableOptions);
+
+            if(selectedIndex != index)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
+
+    
 
     public class RewardListEditor
     {

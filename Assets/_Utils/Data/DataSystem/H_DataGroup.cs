@@ -1,5 +1,6 @@
 ﻿using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace H_DataSystem
 {
-    public interface H_Clonnable<T>
+    public interface H_Cloneable<T>
     {
         T Clone(string cloneUID);
     }
@@ -21,13 +22,13 @@ namespace H_DataSystem
         void Process();
     }
 
-    public interface H_Groupable<T, K> where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+    public interface H_Groupable<T, K> where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
     { 
         H_DataGroup<T, K> Group { get; set; }
     }
 
 
-    public class H_DataGroup<T, K> where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+    public class H_DataGroup<T, K> where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
     {
         public const string DEFAULT_EXTENSION = ".xml";
         
@@ -112,10 +113,11 @@ namespace H_DataSystem
 
         }
 
-        public void Add(T obj, bool canSave = true)
+        public void Add(T item, bool canSave = true)
         {
-            Data.Add(obj);
-            obj.Group = this;
+            Data.Add(item);
+            item.Group = this;
+            item.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
             /*var.Group = this;
             if (var.IsPersistent)
                 _persistentsVars.Add(var);*/
@@ -128,15 +130,17 @@ namespace H_DataSystem
         {
             Data.Insert(index, item);
             item.Group = this;
+            item.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
 
             if (canSave)
                 Save();
         }
 
-        public void Remove(T var, bool canSave = true)
+        public void Remove(T item, bool canSave = true)
         {
-            Data.Remove(var);
-            var.Group = null;
+            Data.Remove(item);
+            item.Group = null;
+            item.RemoveEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
             //if (var.IsPersistent)
             //    _persistentsVars.Remove(var);
 
@@ -202,6 +206,10 @@ namespace H_DataSystem
                 foreach (T d in data)
                 {
                     d.Group = this;
+                    
+                    if(!d.HasEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander))
+                        d.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
+
                     d.Process();
                 }
 
@@ -232,6 +240,10 @@ namespace H_DataSystem
                 foreach(K d in data)
                 {
                     d.Group = this;
+                    
+                    if (!d.HasEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander))
+                        d.AddEventListener(ES_Event.ON_UPDATE, OnDataUpdateHander);
+
                     d.Process();
                 }
 
@@ -469,6 +481,16 @@ namespace H_DataSystem
         }
 
         /// <summary>
+        /// Save the group when some quest has change
+        /// </summary>
+        /// <param name="ev"></param>
+        private void OnDataUpdateHander(ES_Event ev)
+        {
+            if(!Application.isPlaying || RuntimeAutoSave)
+                Save();
+        }
+
+        /// <summary>
         /// Return the file path to default data
         /// </summary>
         /// <returns></returns>
@@ -494,6 +516,7 @@ namespace H_DataSystem
         {
             return string.Format("[{0}]_", prefix);
         }
+
     }
 
 }

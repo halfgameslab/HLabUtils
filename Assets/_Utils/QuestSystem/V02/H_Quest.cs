@@ -2,13 +2,15 @@
 using H_Misc;
 using Mup.EventSystem.Events;
 using Mup.EventSystem.Events.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace H_QuestSystem
 {
-    public class H_Quest: H_Clonnable<H_Quest>, H_Processable<H_Quest>, H_Groupable<H_Quest, H_PersistentQuestData>
+    public class H_Quest: H_Cloneable<H_Quest>, H_Processable<H_Quest>, H_Groupable<H_Quest, H_PersistentQuestData>
     {
         private string _uname = string.Empty;
 
@@ -31,7 +33,13 @@ namespace H_QuestSystem
                     else
                         _uname = value;
 
-                    //this.SetInstanceName(_uname);
+                    
+                    //if(!string.IsNullOrEmpty(_uname))
+                    //{
+                    //    this.SetInstanceName(_uname);
+                    //}
+
+                    this.DispatchEvent(ES_Event.ON_UPDATE);
                 }
             }
 
@@ -62,6 +70,33 @@ namespace H_QuestSystem
 
         [XmlIgnore]
         public List<H_Reward> Rewards { get; set; }
+
+        public void Open()
+        {
+            StartCondition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+            TaskCondition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+            FailCondition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+
+            StartCondition.ListenConditions();
+            TaskCondition.ListenConditions();
+            FailCondition.ListenConditions();
+        }
+
+        public void Close()
+        {
+            StartCondition.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+            TaskCondition.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+            FailCondition.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+
+            StartCondition.StopListenConditions();
+            TaskCondition.StopListenConditions();
+            FailCondition.StopListenConditions();
+        }
+
+        private void OnConditionChangeValueHandler(ES_Event ev)
+        {
+            this.DispatchEvent(ES_Event.ON_UPDATE);
+        }
 
         /*/// <summary>
         /// 
@@ -144,7 +179,7 @@ namespace H_QuestSystem
 
         public void Process()
         {
-
+            Open();
         }
 
         /*private void OnStartConditionsHandler(ES_Event ev)

@@ -42,12 +42,12 @@
   </CVarGroup>
   <CVarGroup las="true">
     <UID>60</UID>
-    <Name>new_group1234</Name>
+    <Name>teste/new_group1234</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup las="true">
     <UID>74</UID>
-    <Name>new_group (5)</Name>
+    <Name>teste/new_group (5)</Name>
     <PersistentType>SHARED</PersistentType>
   </CVarGroup>
   <CVarGroup las="true">

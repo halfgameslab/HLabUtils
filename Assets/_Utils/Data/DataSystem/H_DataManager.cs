@@ -26,7 +26,7 @@ namespace H_DataSystem
             Address.Load();
         }
 
-        public void LoadGroupList<T, K>(string filename) where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+        public void LoadGroupList<T, K>(string filename) where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
         {
             if (!Address.WasLoaded)
             {
@@ -39,7 +39,7 @@ namespace H_DataSystem
             }
         }
 
-        public void Load<T, K>(string filename) where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+        public void Load<T, K>(string filename) where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
         {
             if (CanLoadRuntimeDefault && System.IO.File.Exists(ParsePersistentDefaultDataPathWith(filename)))
                 // load groups file        

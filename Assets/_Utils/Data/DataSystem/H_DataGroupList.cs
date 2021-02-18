@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace H_DataSystem
 {
-    public class H_DataGroupList<T, K> where T : H_Clonnable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Clonnable<K>, H_Processable<K>, H_Groupable<T, K>
+    public class H_DataGroupList<T, K> where T : H_Cloneable<T>, H_Processable<T>, H_Groupable<T, K> where K : H_Cloneable<K>, H_Processable<K>, H_Groupable<T, K>
     {
         public Dictionary<string, H_DataGroup<T, K>> Groups { get; set; } = new Dictionary<string, H_DataGroup<T, K>>();
 
