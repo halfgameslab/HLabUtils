@@ -50,11 +50,11 @@ namespace H_QuestSystem
         public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
 
         [XmlElement("sc")]
-        public H_Condition StartCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "s1" };
+        public H_Condition StartCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "s1" };
         [XmlElement("tc")]
-        public H_Condition TaskCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "g1" };
+        public H_Condition TaskCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "g1" };
         [XmlElement("fc")]
-        public H_Condition FailCondition { get; set; } = new H_Condition() { Type = "Condition", UID = "f1" };
+        public H_Condition FailCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "f1" };
 
         [XmlIgnore]
         public H_DataGroup<H_Quest, H_PersistentQuestData> Group { get; set; }

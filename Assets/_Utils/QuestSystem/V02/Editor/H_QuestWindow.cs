@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Util.InstanceSystem.Editor;
 
 namespace H_QuestSystem.H_QuestEditor
 {
@@ -858,7 +859,7 @@ namespace H_QuestSystem.H_QuestEditor
             EditorGUI.DrawRect(rect, new Color(0.1f,0.1f,0.1f,0.3f));
             
             rect.width = rect.width - 20;
-            GUI.Label(rect, string.Format("[#{0}][#{1}] {2}", index, CurrentQuestGroup.Data[index].UID, CurrentQuestGroup.Data[index].UName));
+            GUI.Label(rect, string.Format("[#{0}][#{1}] {2}", (index+1).ToString("#00"), CurrentQuestGroup.Data[index].UID, CurrentQuestGroup.Data[index].UName));
 
             rect.x += rect.width;
             rect.width = 19;
@@ -1091,13 +1092,15 @@ namespace H_QuestSystem.H_QuestEditor
 
     public class ConditionEditor
     {
-        string _title = string.Empty;
+        private string _title = string.Empty;
 
-        H_Condition _condition;// = new H_Condition() { Type = "Condition", UID = "q1" };
+        private H_Condition _condition;
 
-        ReorderableList reorderableList;
+        private ReorderableList _reorderableList;
 
-        List<ConditionEditor> _conditions = new List<ConditionEditor>();
+        private List<ConditionEditor> _conditions = new List<ConditionEditor>();
+
+        private bool _useStringFullname = false;
 
         public void Start(H_Condition condition, string title = "Conditions")
         {
@@ -1106,7 +1109,7 @@ namespace H_QuestSystem.H_QuestEditor
             //save condition
             _condition = condition;
             _conditions.Clear();
-            if (_condition.Type == "Condition")
+            if (_condition.Type == H_EConditionType.CONDITION)
             {
                 foreach(H_Condition c in condition.Conditions)
                 {
@@ -1116,7 +1119,7 @@ namespace H_QuestSystem.H_QuestEditor
                 }
 
                 //create the reorderableList
-                reorderableList = new ReorderableList(_conditions, typeof(ConditionEditor))
+                _reorderableList = new ReorderableList(_conditions, typeof(ConditionEditor))
                 {
                     drawHeaderCallback = OnDrawHeaderHandler,
                     drawElementCallback = OnDrawElementHandler,
@@ -1127,7 +1130,7 @@ namespace H_QuestSystem.H_QuestEditor
             }
             else
             {
-                reorderableList = null;
+                _reorderableList = null;
             }
         }
 
@@ -1135,7 +1138,7 @@ namespace H_QuestSystem.H_QuestEditor
         {
             _title = string.Empty;   
             _condition = null;
-            reorderableList = null;
+            _reorderableList = null;
             _conditions.Clear();
         }
 
@@ -1151,7 +1154,7 @@ namespace H_QuestSystem.H_QuestEditor
 
         public void Draw()
         {
-            reorderableList?.DoLayoutList();
+            _reorderableList?.DoLayoutList();
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
@@ -1161,7 +1164,7 @@ namespace H_QuestSystem.H_QuestEditor
         private void OnAddElementHandler(ReorderableList list)
         {
             ConditionEditor c = new ConditionEditor();
-            H_Condition condition = new H_Condition() { Type = "CheckVar" };
+            H_Condition condition = new H_Condition() { Type = H_EConditionType.CHECK_VAR };
             if (list.index < 0 || list.count == 0)
             {
                 condition.UID = string.Concat(_condition.UID, "_c", 0);
@@ -1183,19 +1186,31 @@ namespace H_QuestSystem.H_QuestEditor
 
         private float OnElementHeightHandler(int index)
         {
-            if (_conditions[index]._condition.Type == "Condition")
-                return _conditions[index].reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 1.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
+            if (_conditions[index]._condition.Type == H_EConditionType.CONDITION)
+                return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 1.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
+            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH)
+                return EditorGUIUtility.singleLineHeight * 3 + 10;
 
             return EditorGUIUtility.singleLineHeight * 2 + 10;
         }
 
         void OnDrawHeaderHandler(Rect rect)
         {
-            rect.width = rect.width / 2;
+            float w = rect.width/2;
+
+            rect.width = w;
             EditorGUI.LabelField(rect, _title);
+            
             rect.x += rect.width;
-            rect.width = rect.width / 2;
+            rect.width = GUI.skin.label.CalcSize(new GUIContent("repeat")).x+9;
+            EditorGUI.LabelField(rect, "Repeat:");
+
             rect.x += rect.width;
+            rect.width = (w / 2)-rect.width;
+            EditorGUI.TextField(rect,"1");
+
+            rect.x += rect.width;
+            rect.width = w / 2;
             _condition.Operation = (H_EConditionOperation)EditorGUI.EnumPopup(rect, _condition.Operation);
         }
 
@@ -1203,12 +1218,10 @@ namespace H_QuestSystem.H_QuestEditor
         {
             if (_conditions[index]._condition.Params == null)
                 _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
-            //EditorGUI.LabelField(rect, list[index]);
-            //EditorGUI.LabelField(rect, list[index]);
+            
             Rect origin = rect;
             float halfWidth = (origin.width / 2f);
-            string[] types = new string[] { "Condition", "CheckVar", "OnChangeVar", "OnEventDispatch", "ListenQuest", "Timer" };
-
+            
             rect.width = halfWidth - 18f;
             rect.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.BeginDisabledGroup(true);
@@ -1228,12 +1241,10 @@ namespace H_QuestSystem.H_QuestEditor
             }
             EditorGUI.EndDisabledGroup();
             rect.x += rect.width;
-            //string lastType = _conditions[index]._condition.Type;
 
             EditorGUI.BeginChangeCheck();
-                _conditions[index]._condition.Type = types[EditorGUI.Popup(rect, Array.IndexOf(types, _conditions[index]._condition.Type), types)];
+            _conditions[index]._condition.Type = (H_EConditionType)EditorGUI.EnumPopup(rect, _conditions[index]._condition.Type);//types[EditorGUI.Popup(rect, Array.IndexOf(types, _conditions[index]._condition.Type), types)];
 
-            //if(lastType != _conditions[index]._condition.Type)
             if(EditorGUI.EndChangeCheck())
             {
                 _conditions[index].Start(_conditions[index]._condition);
@@ -1241,97 +1252,269 @@ namespace H_QuestSystem.H_QuestEditor
 
             }
 
-            //EditorGUI.Popup(rect, 0, new string[] { "AND", "OR" });
-
             rect.x = origin.x;
 
             rect.y += EditorGUIUtility.singleLineHeight;
 
-            if (_conditions[index]._condition.Type.Equals("CheckVar") || _conditions[index]._condition.Type.Equals("OnChangeVar"))
-            {
-                string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
-                string[] varTypes = CVarSystem.AllowedTypes;
-                
-                rect.width = 18;
-                EditorGUI.Toggle(rect, false);
-                rect.x += 18;
-                rect.width = (origin.width - 18) / 5;
+            DrawParamsByConditionType(rect, origin, index, _conditions[index]._condition.Type);
+        }
 
+        private void DrawParamsByConditionType(Rect rect, Rect origin, int index, H_EConditionType type)
+        {
+            if (type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
+            {
+                DrawVarCondition(rect, origin, index);
+            }
+            else if (type == H_EConditionType.ON_EVENT_DISPATCH)
+            {
+                DrawEventDispatch(rect, origin, index);
+            }
+            else if (type == H_EConditionType.CONDITION)
+            {
+                DrawCondition(rect, origin, index);
+            }
+            else if (type == H_EConditionType.LISTEN_QUEST)
+            {
+                DrawListenQuest(rect, origin, index);
+            }
+            else if (type == H_EConditionType.TIMER)
+            {
+                DrawTimerOption(rect, origin, index);
+            }
+        }
+
+        private void DrawVarCondition(Rect rect, Rect origin, int index)
+        {
+            string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
+            string[] varTypes = CVarSystem.AllowedTypes;
+
+            rect.width = 18;
+            _conditions[index]._useStringFullname = EditorGUI.Toggle(rect, _conditions[index]._useStringFullname);
+            rect.x += 18;
+
+            rect.width = (origin.width - 18) / 5;
+
+            if (!_conditions[index]._useStringFullname)
+            {
                 CheckableOptionPopup(rect, index, 0, groupsNames);
 
-                //_conditions[index]._condition.UpdateParam(0, EditorGUI.Popup(rect, 0, new string[] { "Global", "Other Group" }));
                 rect.x += rect.width;
 
-                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e=>e == (string)_conditions[index]._condition.Params[1]);
+                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == (string)_conditions[index]._condition.Params[1]);
                 int newValue = CheckableOptionPopup(rect, index, 1, varTypes);
 
-                if(newValue != i)
+                if (newValue != i)
                 {
                     _conditions[index]._condition.UpdateParam(4, GetNewDefaultValue(varTypes[newValue]));
                 }
 
-                //_conditions[index]._condition.UpdateParam(1, varTypes[EditorGUI.Popup(rect, Array.FindIndex(varTypes, 0, varTypes.Length, (e)=>e == (string)_conditions[index]._condition.Params[1]), varTypes)]);
                 rect.x += rect.width;
 
                 CheckableOptionPopup(rect, index, 2, CVarSystem.GetVarNamesByType((string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]));
 
-                //EditorGUI.Popup(rect, 0, new string[] { "Var01", "Var02" });
-                rect.x += rect.width;
-                EditorGUI.BeginChangeCheck();
-                    CVarCommands param3 = (CVarCommands)EditorGUI.EnumPopup(rect, (CVarCommands)_conditions[index]._condition.Params[3]);
-                if (EditorGUI.EndChangeCheck())
-                    _conditions[index]._condition.UpdateParam(3, param3);
+                
+            }
+            else
+            {
+                rect.width = rect.width * 3f;
 
-                rect.x += rect.width;
-
+                string fullname = CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
                 EditorGUI.BeginChangeCheck();
-                    object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[4]);
+                fullname = EditorGUI.TextField(rect, fullname);
                 if(EditorGUI.EndChangeCheck())
-                    _conditions[index]._condition.UpdateParam(4,param4);
-
-                //EditorGUI.TextField(rect, "value");
-            }
-            else if (_conditions[index]._condition.Type.Equals("OnEventDispatch"))
-            {
-                rect.width = 18;
-                EditorGUI.Toggle(rect, false);
-                rect.x += 18;
-                rect.width = (origin.width - 18) / 3;
-                EditorGUI.ObjectField(rect, (UnityEngine.Object)null, typeof(UnityEngine.Object), true);
-                rect.x += rect.width;
-                EditorGUI.Popup(rect, 0, new string[] { "Target" });
-                rect.x += rect.width;
-                EditorGUI.Popup(rect, 0, new string[] { "ON_TUTORIAL_COMPLETE", "ON_GAME_OVER" });
-            }
-            else if (_conditions[index]._condition.Type.Equals("Condition"))
-            {
-                rect.width = origin.width;
-
-                _conditions[index].reorderableList.DoList(rect);
+                {
+                    string[] p = fullname.Split('.');
+                    _conditions[index]._condition.UpdateParam(0, p[0]);
+                    _conditions[index]._condition.UpdateParam(1, p[1]);
+                    _conditions[index]._condition.UpdateParam(2, p[2]);
+                }
 
             }
-            else if (_conditions[index]._condition.Type.Equals("ListenQuest"))
+
+            rect.x += rect.width;
+            rect.width = (origin.width - 18) / 5;
+            EditorGUI.BeginChangeCheck();
+            CVarCommands param3 = (CVarCommands)EditorGUI.EnumPopup(rect, (CVarCommands)_conditions[index]._condition.Params[3]);
+            if (EditorGUI.EndChangeCheck())
+                _conditions[index]._condition.UpdateParam(3, param3);
+
+            rect.x += rect.width;
+
+            EditorGUI.BeginChangeCheck();
+            object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[4]);
+            if (EditorGUI.EndChangeCheck())
+                _conditions[index]._condition.UpdateParam(4, param4);
+        }
+
+        private void DrawCondition(Rect rect, Rect origin, int index)
+        {
+            rect.width = origin.width;
+
+            _conditions[index]._reorderableList.DoList(rect);
+        }
+        
+        private UnityEngine.Object _objTarget;
+        private IS_InstanceSceneManager InstanceManager;
+
+        private void DrawEventDispatch(Rect rect, Rect origin, int index)
+        {
+            if(!InstanceManager)
+                InstanceManager = GameObject.FindObjectOfType<IS_InstanceSceneManager>();
+            //rect.width = 18;
+            //EditorGUI.Toggle(rect, false);
+            //rect.x += 18;
+            float targetSize = GUI.skin.label.CalcSize(new GUIContent("Target")).x;
+            float identifierSize = GUI.skin.label.CalcSize(new GUIContent("Identifier")).x;
+            float fieldSize = (origin.width - 18 - targetSize- identifierSize) / 3f;
+
+            rect.width = targetSize;
+            EditorGUI.LabelField(rect, "Target:");
+            
+            rect.x += rect.width+9;
+            rect.width = fieldSize;
+            string param0 = (string)_conditions[index]._condition.Params[0];
+            
+            EditorGUI.BeginChangeCheck();
+            _conditions[index]._objTarget = EditorGUI.ObjectField(rect, _conditions[index]._objTarget, typeof(UnityEngine.Object), true);
+            
+            if (_conditions[index]._objTarget)
             {
-                rect.width = 18;
-                EditorGUI.Toggle(rect, false);
-                rect.x += 18;
-                rect.width = (origin.width - 18) / 2;
-                EditorGUI.Popup(rect, 0, new string[] { "Quest (ID)" });
-                rect.x += rect.width;
-                EditorGUI.Popup(rect, 0, new string[] { "ON_COMPLETE", "ON_GOAL_UPDATE", "ON_FAIL" });
+                param0 = (_conditions[index]._objTarget.GetEditorInstanceName() == string.Empty) ? _conditions[index]._objTarget.SetEditorInstanceName("__instance__") : _conditions[index]._objTarget.GetEditorInstanceName(false);
             }
-            else if (_conditions[index]._condition.Type.Equals("Timer"))
+            else
             {
-                rect.width = 18;
-                EditorGUI.Toggle(rect, false);
-                rect.x += 18;
-                rect.width = (origin.width - 18) / 2;
-                EditorGUI.Popup(rect, 0, new string[] { "ASC", "DESC" });
-                rect.x += rect.width;
-                EditorGUI.FloatField(rect, 100f);
+                _conditions[index]._objTarget = GetObjectByString(param0);
             }
-            //EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), _title+" "+list[index]);
-            //EditorGUI.LabelField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, rect.width, EditorGUIUtility.singleLineHeight), list[index]);
+            
+            if (EditorGUI.EndChangeCheck())
+            {
+                if(!_conditions[index]._objTarget)
+                    param0 = string.Empty;
+
+                _conditions[index]._condition.UpdateParam(0, param0);
+            }
+
+            rect.x += rect.width;
+
+            if (_conditions[index]._objTarget)
+            {
+                Component[] cs = null;
+                string[] s = null;
+
+                if (_conditions[index]._objTarget is Component ob)
+                {
+                    cs = ob.GetComponents<Component>();
+                    s = new string[cs.Length + 1];
+                }
+                else if (_conditions[index]._objTarget is GameObject ob2)
+                {
+                    cs = ob2.GetComponents<Component>();
+                    s = new string[cs.Length + 1];
+                }
+
+                if (cs != null)
+                {
+                    int ind = 0;
+                    int newIndex = 0;
+
+                    s[0] = "GameObject";
+                    for (int i = 0; i < cs.Length; i++)
+                    {
+                        s[i + 1] = string.Format("{0}. {1}", i, cs[i].GetType().Name);
+                        if (cs[i] == _conditions[index]._objTarget)
+                            ind = i + 1;
+                    }
+
+                    newIndex = EditorGUI.Popup(rect, ind, s);
+                    //newIndex = EditorGUILayout.Popup(index, s);
+
+                    if (newIndex != ind)
+                    {
+                        if (newIndex != 0)
+                        {
+                            _conditions[index]._objTarget = cs[newIndex - 1];
+                        }
+                        else
+                        {
+                            if (_conditions[index]._objTarget is Component)
+                            {
+                                _conditions[index]._objTarget = (_conditions[index]._objTarget as Component).gameObject;
+                            }
+                            else if (_conditions[index]._objTarget is GameObject)
+                            {
+                                _conditions[index]._objTarget = (_conditions[index]._objTarget as GameObject);
+                            }
+                        }
+
+                        param0 = (_conditions[index]._objTarget.GetEditorInstanceName() == string.Empty) ? _conditions[index]._objTarget.SetEditorInstanceName("__instance__") : _conditions[index]._objTarget.GetEditorInstanceName(false);
+                        _conditions[index]._condition.UpdateParam(0, param0);
+                        //_id.stringValue = (_objTarget.GetEditorInstanceName() == string.Empty) ? _objTarget.SetEditorInstanceName("__instance__") : _objTarget.GetEditorInstanceName(false);
+                    }
+                }
+            }
+            else
+            {
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUI.Popup(rect, 0, new string[] { "none" });
+                EditorGUI.EndDisabledGroup();
+            }
+            
+            rect.x += rect.width;
+            rect.width = identifierSize;
+            EditorGUI.LabelField(rect, "Identifier:");
+
+            rect.x += rect.width+9;
+            rect.width = fieldSize;
+            EditorGUI.BeginChangeCheck();
+            param0 = EditorGUI.TextField(rect, param0);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (InstanceManager != null)
+                {
+                    _conditions[index]._objTarget = GetObjectByString(param0);
+                }
+                _conditions[index]._condition.UpdateParam(0, param0);
+            }
+
+            rect.x = origin.x;
+            rect.width = origin.width;
+            rect.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.TextField(rect, "Event Name:", "ON_COMPLETE");
+            //EditorGUI.Popup(rect, 0, new string[] { "ON_TUTORIAL_COMPLETE", "ON_GAME_OVER" });
+        }
+
+        private UnityEngine.Object GetObjectByString(string objID)
+        {
+            if (InstanceManager.ContainsValue(objID))
+            {
+                return (UnityEngine.Object)InstanceManager.GetKeyByValue(objID);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private void DrawListenQuest(Rect rect, Rect origin, int index)
+        {
+            rect.width = 18;
+            EditorGUI.Toggle(rect, false);
+            rect.x += 18;
+            rect.width = (origin.width - 18) / 2;
+            EditorGUI.Popup(rect, 0, new string[] { "Quest (ID)" });
+            rect.x += rect.width;
+            EditorGUI.Popup(rect, 0, new string[] { "ON_COMPLETE", "ON_GOAL_UPDATE", "ON_FAIL" });
+        }
+
+        private void DrawTimerOption(Rect rect, Rect origin, int index)
+        {
+            rect.width = 18;
+            EditorGUI.Toggle(rect, false);
+            rect.x += 18;
+            rect.width = (origin.width - 18) / 2;
+            EditorGUI.Popup(rect, 0, new string[] { "ASC", "DESC" });
+            rect.x += rect.width;
+            EditorGUI.FloatField(rect, 100f);
         }
 
         private static object GetNewDefaultValue(string type)

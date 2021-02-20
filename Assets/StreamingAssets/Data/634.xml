@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<ArrayOfH_Quest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <H_Quest uid="635">
+    <un>quest_(0)</un>
+    <il>
+      <i />
+    </il>
+    <sc uid="s1" t="CONDITION" op="AND" cop="JOIN">
+      <cl>
+        <ci uid="s1_c0" t="ON_EVENT_DISPATCH" op="AND" cop="JOIN">
+          <pl>
+            <pi xsi:type="xsd:string">enemy</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+        </ci>
+        <ci uid="s1_c0" t="CONDITION" op="AND" cop="JOIN">
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">Int32</pi>
+            <pi xsi:type="xsd:string">teste</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:int">0</pi>
+          </pl>
+          <cl>
+            <ci uid="s1_c0_c0" t="CHECK_VAR" op="AND" cop="JOIN">
+              <pl>
+                <pi xsi:type="xsd:string">global</pi>
+                <pi xsi:type="xsd:string">String</pi>
+                <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+                <pi xsi:type="xsd:int">0</pi>
+                <pi xsi:type="xsd:string" />
+              </pl>
+              <cl />
+            </ci>
+            <ci uid="s1_c0_c0" t="CHECK_VAR" op="AND" cop="JOIN">
+              <pl>
+                <pi xsi:type="xsd:string">global</pi>
+                <pi xsi:type="xsd:string">String</pi>
+                <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+                <pi xsi:type="xsd:int">0</pi>
+                <pi xsi:type="xsd:string" />
+              </pl>
+              <cl />
+            </ci>
+          </cl>
+        </ci>
+        <ci uid="s1_c0" t="CHECK_VAR" op="AND" cop="JOIN">
+          <pl>
+            <pi xsi:type="xsd:string">global</pi>
+            <pi xsi:type="xsd:string">String</pi>
+            <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+      </cl>
+    </sc>
+    <tc uid="g1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </tc>
+    <fc uid="f1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </fc>
+  </H_Quest>
+  <H_Quest uid="636">
+    <un>quest_(1)</un>
+    <il />
+    <sc uid="s1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </sc>
+    <tc uid="g1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </tc>
+    <fc uid="f1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </fc>
+  </H_Quest>
+  <H_Quest uid="637">
+    <un>quest_(2)</un>
+    <il />
+    <sc uid="s1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </sc>
+    <tc uid="g1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </tc>
+    <fc uid="f1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </fc>
+  </H_Quest>
+  <H_Quest uid="638">
+    <un>quest_(3)</un>
+    <il />
+    <sc uid="s1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </sc>
+    <tc uid="g1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </tc>
+    <fc uid="f1" t="CONDITION" op="AND" cop="JOIN">
+      <cl />
+    </fc>
+  </H_Quest>
+</ArrayOfH_Quest>

@@ -19,16 +19,26 @@ namespace H_Misc
         APPEND
     }
 
+    public enum H_EConditionType
+    {
+        CHECK_VAR,
+        ON_CHANGE_VAR,
+        CONDITION,
+        ON_EVENT_DISPATCH,
+        LISTEN_QUEST,
+        TIMER
+    }
+
     public class H_Condition
     {
-        private string _type = "CheckVar";
+        private H_EConditionType _type = H_EConditionType.CHECK_VAR;
 
         [XmlAttribute("uid")]
         public string UID { get; set; }
 
 
         [XmlAttribute("t")]
-        public string Type
+        public H_EConditionType Type
         {
             get { return _type; }
             set
@@ -36,7 +46,7 @@ namespace H_Misc
                 if (_type != value)
                 {
                     _type = value;
-                    if (_type == "Condition")
+                    if (_type == H_EConditionType.CONDITION)
                     {
                         Conditions = new List<H_Condition>();
                     }
@@ -50,7 +60,7 @@ namespace H_Misc
             }
         }
 
-        public H_EConditionOperation _operation = H_EConditionOperation.AND;
+        private H_EConditionOperation _operation = H_EConditionOperation.AND;
         [XmlAttribute("op")]
         public H_EConditionOperation Operation 
         {
@@ -68,7 +78,7 @@ namespace H_Misc
             }
         }
 
-        public H_ECombineOperation _combineOperation = H_ECombineOperation.JOIN;
+        private H_ECombineOperation _combineOperation = H_ECombineOperation.JOIN;
         [XmlAttribute("cop")]
         public H_ECombineOperation CombineOperation
         {
@@ -96,25 +106,25 @@ namespace H_Misc
 
         public bool IsLeaf { get { return !Type.Equals("Condition"); } }
 
-        public void CreateParamsByType(string type)
+        public void CreateParamsByType(H_EConditionType type)
         {
-            if(type == "Condition")
+            if(type == H_EConditionType.CONDITION)
             {
             }
-            else if(type == "CheckVar" || type == "OnChangeVar")
+            else if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
                 AddParams("global", "String", "<undefined>", CVarCommands.EQUAL, "");
 
             }
-            else if (type == "OnEventDispatch")
+            else if (type == H_EConditionType.ON_EVENT_DISPATCH)
+            {
+                AddParams("", "");
+            }
+            else if (type == H_EConditionType.LISTEN_QUEST)
             {
 
             }
-            else if (type == "ListenQuest")
-            {
-
-            }
-            else if (type == "Timer")
+            else if (type == H_EConditionType.TIMER)
             {
 
             }
@@ -125,11 +135,11 @@ namespace H_Misc
             if (Conditions == null)
                 Conditions = new List<H_Condition>();
 
-            if (!Conditions.Contains(condition))
+            if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Add(condition);
-                condition?.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
-                condition?.ListenConditions();
+                condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                condition.ListenConditions();
 
                 this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
             }
@@ -140,11 +150,11 @@ namespace H_Misc
             if (Conditions == null)
                 Conditions = new List<H_Condition>();
 
-            if (!Conditions.Contains(condition))
+            if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Insert(index, condition);
-                condition?.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
-                condition?.ListenConditions();
+                condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                condition.ListenConditions();
 
                 this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
             }

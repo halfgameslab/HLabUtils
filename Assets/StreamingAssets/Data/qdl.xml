@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <ArrayOfH_DataGroupOfH_QuestH_PersistentQuestData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <H_DataGroupOfH_QuestH_PersistentQuestData uid="123" as="true" pt="SHARED" las="true">
+  <H_DataGroupOfH_QuestH_PersistentQuestData uid="634" as="true" pt="SHARED" las="true">
     <n>global</n>
-  </H_DataGroupOfH_QuestH_PersistentQuestData>
-  <H_DataGroupOfH_QuestH_PersistentQuestData uid="161" as="true" pt="SHARED" las="true">
-    <n>new_group_name</n>
-  </H_DataGroupOfH_QuestH_PersistentQuestData>
-  <H_DataGroupOfH_QuestH_PersistentQuestData uid="167" as="true" pt="SHARED" las="true">
-    <n>group02</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
 </ArrayOfH_DataGroupOfH_QuestH_PersistentQuestData>

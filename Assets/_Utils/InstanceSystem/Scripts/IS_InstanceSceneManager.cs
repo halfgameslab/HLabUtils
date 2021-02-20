@@ -10,9 +10,11 @@ using UnityEngine;
 public class IS_InstanceSceneManager : MonoBehaviour, ISerializationCallbackReceiver
 {
     public static List<IS_InstanceSceneManager> Instances { get; private set; } = new List<IS_InstanceSceneManager>();
-
+    [HideInInspector]
     [SerializeField]
     private List<UnityEngine.Object> _keys = new List<UnityEngine.Object>();
+
+    [HideInInspector]
     [SerializeField]
     private List<string> _values = new List<string>();
 
