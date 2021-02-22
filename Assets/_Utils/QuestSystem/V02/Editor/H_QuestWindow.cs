@@ -1188,7 +1188,7 @@ namespace H_QuestSystem.H_QuestEditor
         {
             if (_conditions[index]._condition.Type == H_EConditionType.CONDITION)
                 return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 1.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
-            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH)
+            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH || _conditions[index]._condition.Type == H_EConditionType.LISTEN_QUEST)
                 return EditorGUIUtility.singleLineHeight * 3 + 10;
 
             return EditorGUIUtility.singleLineHeight * 2 + 10;
@@ -1207,7 +1207,7 @@ namespace H_QuestSystem.H_QuestEditor
 
             rect.x += rect.width;
             rect.width = (w / 2)-rect.width;
-            EditorGUI.TextField(rect,"1");
+            _condition.RepeatCount = EditorGUI.IntField(rect, _condition.RepeatCount);
 
             rect.x += rect.width;
             rect.width = w / 2;
@@ -1497,24 +1497,105 @@ namespace H_QuestSystem.H_QuestEditor
 
         private void DrawListenQuest(Rect rect, Rect origin, int index)
         {
+            rect.width = origin.width;
+            EditorGUI.BeginChangeCheck();
+            bool param2 = EditorGUI.ToggleLeft(rect, "Start Quest If Deactivated", (bool)_conditions[index]._condition.Params[2]);
+            if (EditorGUI.EndChangeCheck())
+            {
+                _conditions[index]._condition.UpdateParam(2, param2);
+            }
+
+            rect.y += EditorGUIUtility.singleLineHeight;
+
             rect.width = 18;
-            EditorGUI.Toggle(rect, false);
+            _conditions[index]._useStringFullname = EditorGUI.Toggle(rect, _conditions[index]._useStringFullname);
             rect.x += 18;
-            rect.width = (origin.width - 18) / 2;
-            EditorGUI.Popup(rect, 0, new string[] { "Quest (ID)" });
-            rect.x += rect.width;
+
+            if (!_conditions[index]._useStringFullname)
+            {
+                string[] param0 = ((string)_conditions[index]._condition.Params[0]).Split('.');
+
+                rect.width = (origin.width - 18) / 3;
+                string[] groups = H_QuestManager.Instance.QuestGroups.GetGroups().Select(e => e.Name).ToArray();
+                int option = Array.IndexOf(groups, param0[0]);
+                EditorGUI.BeginChangeCheck();
+                option = EditorGUI.Popup(rect, option, groups);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    _conditions[index]._condition.UpdateParam(0, string.Concat(groups[option], ".", param0[1]));
+                }
+                //
+                rect.x += rect.width;
+                string[] quests = H_QuestManager.Instance.QuestGroups.GetGroupByName(groups[option]).Data.Select(e=>e.UName).ToArray();
+                int option2 = Array.IndexOf(quests, param0[1]);
+                EditorGUI.BeginChangeCheck();
+                option2 = EditorGUI.Popup(rect, option2, quests);
+                if(EditorGUI.EndChangeCheck())
+                {
+                    _conditions[index]._condition.UpdateParam(0, string.Concat(groups[option], ".", quests[option2]));
+                }
+                rect.x += rect.width;
+
+            }
+            else
+            {
+                rect.width = (origin.width - 18) / 3 * 2;
+                EditorGUI.BeginChangeCheck();
+                string aux = EditorGUI.TextField(rect, (string)_conditions[index]._condition.Params[0]);
+                if(EditorGUI.EndChangeCheck())
+                {
+                    _conditions[index]._condition.UpdateParam(0, aux);
+                }
+
+                rect.x += rect.width;
+                rect.width = (origin.width - 18) / 3;
+            }
+
             EditorGUI.Popup(rect, 0, new string[] { "ON_COMPLETE", "ON_GOAL_UPDATE", "ON_FAIL" });
+            //rect.x = origin.x;
+            //rect.width = origin.width;
+            //rect.y += EditorGUIUtility.singleLineHeight;
+
+            //EditorGUI.BeginChangeCheck();
+            //bool param2 = EditorGUI.ToggleLeft(rect, "Start Quest If Deactivated", (bool)_conditions[index]._condition.Params[2]);
+            //if(EditorGUI.EndChangeCheck())
+            //{
+            //    _conditions[index]._condition.UpdateParam(2, param2);
+            //}
+
         }
 
         private void DrawTimerOption(Rect rect, Rect origin, int index)
         {
             rect.width = 18;
             EditorGUI.Toggle(rect, false);
+            //
             rect.x += 18;
-            rect.width = (origin.width - 18) / 2;
-            EditorGUI.Popup(rect, 0, new string[] { "ASC", "DESC" });
+            rect.width = (origin.width - 18) / 3;
+            string aux = (string)_conditions[index]._condition.Params[0];
+            EditorGUI.BeginChangeCheck();
+            aux = EditorGUI.TextField(rect, aux);
+            if(EditorGUI.EndChangeCheck())
+            {
+                _conditions[index]._condition.UpdateParam(0, aux);
+            }
+            //
             rect.x += rect.width;
-            EditorGUI.FloatField(rect, 100f);
+            EditorGUI.BeginChangeCheck();
+            H_ETimeMode timerMode = (H_ETimeMode)EditorGUI.EnumPopup(rect, (H_ETimeMode)_conditions[index]._condition.Params[1]);
+            if(EditorGUI.EndChangeCheck())
+            {
+                _conditions[index]._condition.UpdateParam(1, timerMode);
+            }
+            //
+            rect.x += rect.width;
+            float time = (float)_conditions[index]._condition.Params[2];
+            EditorGUI.BeginChangeCheck();
+            time = EditorGUI.FloatField(rect, time);
+            if(EditorGUI.EndChangeCheck())
+            {
+                _conditions[index]._condition.UpdateParam(2, time);
+            }
         }
 
         private static object GetNewDefaultValue(string type)

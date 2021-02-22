@@ -29,13 +29,18 @@ namespace H_Misc
         TIMER
     }
 
+    public enum H_ETimeMode
+    {
+        ASC,
+        DESC
+    }
+
     public class H_Condition
     {
         private H_EConditionType _type = H_EConditionType.CHECK_VAR;
 
         [XmlAttribute("uid")]
         public string UID { get; set; }
-
 
         [XmlAttribute("t")]
         public H_EConditionType Type
@@ -96,6 +101,24 @@ namespace H_Misc
             }
         }
 
+        private int _repeatCount = 0;
+        [XmlAttribute("r")]
+        public int RepeatCount 
+        { 
+            get 
+            { 
+                return _repeatCount; 
+            } 
+            set
+            {
+                if (_repeatCount != value)
+                {
+                    _repeatCount = value;
+                    this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+                }
+            }
+        }
+
         [XmlArray("pl")]
         [XmlArrayItem("pi")]
         public object[] Params { get; set; }
@@ -122,11 +145,11 @@ namespace H_Misc
             }
             else if (type == H_EConditionType.LISTEN_QUEST)
             {
-
+                AddParams("global.none", "", true);
             }
             else if (type == H_EConditionType.TIMER)
             {
-
+                AddParams("timer_id", H_ETimeMode.ASC, 1.0f);
             }
         }
 
