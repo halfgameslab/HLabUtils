@@ -37,8 +37,8 @@ internal static class CVarSystemInitializer
         //////Debug.Log(g.UID);
 
         CVarSystem.ActiveEditMode(true, true);
-        H_DataSystem.H_DataManager.Instance.Start();
-        H_QuestSystem.H_QuestManager.Instance.Start();
+        HLab.H_DataSystem.H_DataManager.Instance.Start();
+        HLab.H_QuestSystem.H_QuestManager.Instance.Start();
         //CVarSystem.Init();
         Debug.Log("CVarSystemInitializer");
         EditorApplication.playModeStateChanged += OnPlayModeStateChangeHandler;

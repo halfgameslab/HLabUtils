@@ -6,4 +6,7 @@
   <H_DataGroupOfH_QuestH_PersistentQuestData uid="639" as="true" pt="SHARED" las="true">
     <n>new_group_name</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
+  <H_DataGroupOfH_QuestH_PersistentQuestData uid="663" as="true" pt="SHARED" las="true">
+    <n>global_copy</n>
+  </H_DataGroupOfH_QuestH_PersistentQuestData>
 </ArrayOfH_DataGroupOfH_QuestH_PersistentQuestData>

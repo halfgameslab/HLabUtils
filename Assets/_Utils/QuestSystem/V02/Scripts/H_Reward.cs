@@ -1,4 +1,4 @@
-﻿namespace H_QuestSystem
+﻿namespace HLab.H_QuestSystem
 {
     public class H_Reward
     {

@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace H_DataSystem
+namespace HLab.H_DataSystem
 {
     public interface H_Cloneable<T>
     {
@@ -93,7 +93,7 @@ namespace H_DataSystem
             SetPersistentTypeAndSave(persistentType);
         }
 
-        public void SetPersistentVar(K data, bool state)
+        public void SetPersistentData(K data, bool state)
         {
             //if (data.IsPersistent != state)
             //{
@@ -384,21 +384,27 @@ namespace H_DataSystem
         {
             H_DataGroup<T, K> clone = new H_DataGroup<T, K>();
 
-            foreach(T d in Data)
-            {
-                clone.Data.Add(d.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
-            }
-
-            foreach (K pd in PersistentData)
-            {
-                clone.PersistentData.Add(pd.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
-            }
-
             clone.PersistentType = PersistentType;
             clone.PersistentPrefix = PersistentPrefix;
             clone.Name = name;
             clone.UID = cloneUID;
             clone.CanLoadAtStart = CanLoadAtStart;
+
+            foreach (T d in Data)
+            {
+                d.Group = null;// clear the group to avoid the clone to change the name
+                clone.Add(d.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
+                d.Group = this;// set group again to the group before clone
+            }
+
+            foreach (K pd in PersistentData)
+            {
+                pd.Group = null;// clear the group to avoid the clone to change the name
+                clone.SetPersistentData(pd.Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()), true);
+                pd.Group = this;// set group again to the group before clone
+            }
+
+            
 
             return clone;
         }

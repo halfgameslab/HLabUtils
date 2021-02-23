@@ -1,6 +1,6 @@
-﻿using H_DataSystem;
+﻿using HLab.H_DataSystem;
 
-namespace H_QuestSystem 
+namespace HLab.H_QuestSystem 
 {
     public class H_PersistentQuestData : H_Cloneable<H_PersistentQuestData>, H_Processable<H_PersistentQuestData>, H_Groupable<H_Quest, H_PersistentQuestData>
     {

@@ -1,8 +1,7 @@
-﻿using H_QuestSystem;
-using Mup.EventSystem.Events;
+﻿using Mup.EventSystem.Events;
 using UnityEngine;
 
-namespace H_DataSystem
+namespace HLab.H_DataSystem
 {
     public sealed class H_DataManager
     {

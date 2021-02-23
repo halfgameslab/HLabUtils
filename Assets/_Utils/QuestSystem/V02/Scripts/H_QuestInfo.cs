@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace H_QuestSystem
+namespace HLab.H_QuestSystem
 {
     public class QuestInfo
     {

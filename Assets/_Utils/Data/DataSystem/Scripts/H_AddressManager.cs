@@ -1,6 +1,6 @@
 ﻿using Mup.EventSystem.Events;
 
-namespace H_DataSystem
+namespace HLab.H_DataSystem
 {
     public class H_AddressManager
     {
