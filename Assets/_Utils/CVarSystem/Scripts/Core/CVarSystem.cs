@@ -859,7 +859,7 @@ public static class CVarSystem
                     var.Group.Save();// save the var
 
                     // dispatch value change
-                    ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, null, value);
+                    ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, var, value);
                 }
             }
             else// if the table doesnt contains the var
@@ -871,15 +871,34 @@ public static class CVarSystem
                     OnVarChanged?.Invoke(cVarObject);
 
                     // dispatch value change
-                    ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, null, value);
+                    ES_EventManager.DispatchEvent(fullName, ES_Event.ON_VALUE_CHANGE, cVarObject, value);
                 }
             }
         }
     }
 
+    public static bool ValidateFullname(string fullname, bool validateGroup = true)
+    {
+        string[] parts = fullname.Split(DOT);
+
+        return parts.Length == 3 
+            && ValidateType(parts[0]) 
+            && (!validateGroup || (validateGroup && Groups.ContainsKey(parts[1]))
+            && ValidateName(parts[2])
+            );
+    }
+
+    public static bool ValidateType(string type)
+    {
+        if(AllowedTypes.Contains(type))
+            return true;
+
+        return false;
+    }
+
     private static CVarObject CreateVar(string fullName, object value)
     {
-        if (ValidateName(RemoveTypeAndGroup(fullName)))
+        if (ValidateFullname(fullName, false))
         {
             // get new address
             CVarGroup group = GetGroupByName(GetGroupNameByFullName(fullName));

@@ -782,7 +782,8 @@ namespace H_QuestSystem.H_QuestEditor
                         drawElementCallback = OnDrawElementHandler,
                         onAddCallback = OnAddElementHandler,
                         onRemoveCallback = OnRemoveElementHandler,
-                        onSelectCallback = OnSelectElementHandler
+                        onSelectCallback = OnSelectElementHandler,
+                        onReorderCallbackWithDetails = OnReorderListHandler
                     };
                 else
                     _questList = null;
@@ -811,6 +812,13 @@ namespace H_QuestSystem.H_QuestEditor
             GUILayout.EndScrollView();
 
             EditorGUILayout.EndVertical();
+        }
+
+        private void SelectQuest(int index)
+        {
+            _questList.index = index;
+            SelectedQuest = CurrentQuestGroup.Data[index];
+            this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[index]);
         }
 
         void OnDrawHeaderHandler(Rect rect)
@@ -932,11 +940,9 @@ namespace H_QuestSystem.H_QuestEditor
             this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[list.index]);*/
         }
 
-        private void SelectQuest(int index)
+        private void OnReorderListHandler(ReorderableList list, int oldIndex, int newIndex)
         {
-            _questList.index = index;
-            SelectedQuest = CurrentQuestGroup.Data[index];
-            this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[index]);
+            CurrentQuestGroup.Save();
         }
     }
 
@@ -1100,7 +1106,7 @@ namespace H_QuestSystem.H_QuestEditor
 
         private List<ConditionEditor> _conditions = new List<ConditionEditor>();
 
-        private bool _useStringFullname = false;
+        private bool _showStringFullname = false;
 
         public void Start(H_Condition condition, string title = "Conditions")
         {
@@ -1125,13 +1131,23 @@ namespace H_QuestSystem.H_QuestEditor
                     drawElementCallback = OnDrawElementHandler,
                     elementHeightCallback = OnElementHeightHandler,
                     onAddCallback = OnAddElementHandler,
-                    onRemoveCallback = OnRemoveElementHandler
+                    onRemoveCallback = OnRemoveElementHandler,
+                    onReorderCallbackWithDetails = OnReorderListHandler
                 };
             }
             else
             {
                 _reorderableList = null;
             }
+        }
+
+        public void Draw()
+        {
+            _reorderableList?.DoLayoutList();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            GUILayout.Button(string.Format("Create On {0} Complete Scene Handler", _title));
         }
 
         public void Clear()
@@ -1150,15 +1166,6 @@ namespace H_QuestSystem.H_QuestEditor
             // select the up next element to facilitate delete operation
             if (list.index != 0)
                 list.index = list.index - 1;
-        }
-
-        public void Draw()
-        {
-            _reorderableList?.DoLayoutList();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            GUILayout.Button(string.Format("Create On {0} Complete Scene Handler", _title));
         }
 
         private void OnAddElementHandler(ReorderableList list)
@@ -1182,6 +1189,12 @@ namespace H_QuestSystem.H_QuestEditor
                 list.index++;
             }
             c.Start(condition);
+        }
+
+
+        private void OnReorderListHandler(ReorderableList list, int oldIndex, int newIndex)
+        {
+            _condition.SwapConditions(oldIndex, newIndex);
         }
 
         private float OnElementHeightHandler(int index)
@@ -1216,12 +1229,26 @@ namespace H_QuestSystem.H_QuestEditor
 
         void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
-            if (_conditions[index]._condition.Params == null)
+            // just a safe condition to avoid null references
+            if (_conditions[index]._condition.Type != H_EConditionType.CONDITION && _conditions[index]._condition.Params == null)
                 _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
-            
+
+            // create a top padding distance
+            rect.y += 4;
+
             Rect origin = rect;
             float halfWidth = (origin.width / 2f);
-            
+
+            // draw the line between cells
+            if (index < _conditions.Count - 1)
+            {
+                rect.y += rect.height-2;
+                rect.height = 2;
+
+                EditorGUI.DrawRect(rect, new Color(0.18f, 0.18f, 0.18f));
+                rect = origin;
+            }
+
             rect.width = halfWidth - 18f;
             rect.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.BeginDisabledGroup(true);
@@ -1248,7 +1275,7 @@ namespace H_QuestSystem.H_QuestEditor
             if(EditorGUI.EndChangeCheck())
             {
                 _conditions[index].Start(_conditions[index]._condition);
-                _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
+                //_conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
 
             }
 
@@ -1288,29 +1315,32 @@ namespace H_QuestSystem.H_QuestEditor
             string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
             string[] varTypes = CVarSystem.AllowedTypes;
 
+            string[] param0 = ((string)_conditions[index]._condition.Params[0]).Split('.');
+            CVarCommands param3 = (CVarCommands)_conditions[index]._condition.Params[1];
+
             rect.width = 18;
-            _conditions[index]._useStringFullname = EditorGUI.Toggle(rect, _conditions[index]._useStringFullname);
+            _conditions[index]._showStringFullname = EditorGUI.Toggle(rect, _conditions[index]._showStringFullname);
             rect.x += 18;
 
             rect.width = (origin.width - 18) / 5;
 
-            if (!_conditions[index]._useStringFullname)
+            if (!_conditions[index]._showStringFullname)
             {
-                CheckableOptionPopup(rect, index, 0, groupsNames);
-
-                rect.x += rect.width;
-
-                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == (string)_conditions[index]._condition.Params[1]);
-                int newValue = CheckableOptionPopup(rect, index, 1, varTypes);
+                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == param0[0]);
+                int newValue = CheckableOptionPopup(rect, index, 0, varTypes);
 
                 if (newValue != i)
                 {
-                    _conditions[index]._condition.UpdateParam(4, GetNewDefaultValue(varTypes[newValue]));
+                    _conditions[index]._condition.UpdateParam(2, GetNewDefaultValue(varTypes[newValue]));                    
                 }
 
                 rect.x += rect.width;
 
-                CheckableOptionPopup(rect, index, 2, CVarSystem.GetVarNamesByType((string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]));
+                CheckableOptionPopup(rect, index, 1, groupsNames);
+
+                rect.x += rect.width;
+
+                CheckableOptionPopup(rect, index, 2, CVarSystem.GetVarNamesByType(param0[0], param0[1]));
 
                 
             }
@@ -1318,32 +1348,88 @@ namespace H_QuestSystem.H_QuestEditor
             {
                 rect.width = rect.width * 3f;
 
-                string fullname = CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
+                string fullname = (string)_conditions[index]._condition.Params[0];//CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
                 EditorGUI.BeginChangeCheck();
                 fullname = EditorGUI.TextField(rect, fullname);
                 if(EditorGUI.EndChangeCheck())
                 {
-                    string[] p = fullname.Split('.');
-                    _conditions[index]._condition.UpdateParam(0, p[0]);
-                    _conditions[index]._condition.UpdateParam(1, p[1]);
-                    _conditions[index]._condition.UpdateParam(2, p[2]);
-                }
+                    param0 = fullname.Split('.');
 
+                    if (!CVarSystem.ValidateType(param0[0]))
+                    {
+                        if (param0[0].Length >= 1)
+                        {
+                            char firstC = param0[0].ToLower()[0];
+
+                            if (firstC == 'i')
+                            {
+                                param0[0] = CVarSystem.GetTypeName<int>();
+                            }
+                            else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
+                                param0[0] = CVarSystem.GetTypeName<float>();
+                            else if (firstC == 'b')
+                                param0[0] = CVarSystem.GetTypeName<bool>();
+                            else if (firstC == 'v')
+                                param0[0] = CVarSystem.GetTypeName<Vector3>();
+                            else
+                                param0[0] = CVarSystem.GetTypeName<string>();
+                        }
+                        else
+                            param0[0] = CVarSystem.GetTypeName<string>();
+
+                        Debug.LogWarning(string.Format("Quest Editor: Invalid type. Type changed for {0}", param0[0]));
+
+                        fullname = string.Join(".", param0);
+                    }
+                    if(param0.Length == 3)
+                    {
+                        if(!CVarSystem.ValidateName(param0[2]))
+                        {
+                            param0[2] = param0[2].Replace(".", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty);
+                        }
+                    }
+                    else if (param0.Length < 3)
+                    {
+                        for (int i = param0.Length; i < 3; i++)
+                            fullname = string.Concat(fullname, ".");
+
+                        param0 = fullname.Split('.');
+                    }
+
+                    
+
+                    _conditions[index]._condition.UpdateParam(0, fullname);
+                    
+                }
             }
 
             rect.x += rect.width;
             rect.width = (origin.width - 18) / 5;
             EditorGUI.BeginChangeCheck();
-            CVarCommands param3 = (CVarCommands)EditorGUI.EnumPopup(rect, (CVarCommands)_conditions[index]._condition.Params[3]);
+            
+            if (param0[0] == CVarSystem.GetTypeName<int>() || param0[0] == CVarSystem.GetTypeName<float>())
+                param3 = (CVarCommands)EditorGUI.EnumPopup(rect, param3);
+            else
+            {
+                if (param3 != CVarCommands.EQUAL && param3 != CVarCommands.NOT_EQUAL)
+                {
+                    param3 = CVarCommands.NOT_EQUAL;
+                    _conditions[index]._condition.UpdateParam(1, param3);
+                }
+
+                int op = param3 == CVarCommands.EQUAL ? 0 : 1;
+                op = EditorGUI.Popup(rect, op, new string[] { "EQUAL", "NOT_EQUAL" });
+                param3 = op == 0 ? CVarCommands.EQUAL : CVarCommands.NOT_EQUAL;
+            }
             if (EditorGUI.EndChangeCheck())
-                _conditions[index]._condition.UpdateParam(3, param3);
+                _conditions[index]._condition.UpdateParam(1, param3);
 
             rect.x += rect.width;
 
             EditorGUI.BeginChangeCheck();
-            object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[4]);
+            object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[2]);
             if (EditorGUI.EndChangeCheck())
-                _conditions[index]._condition.UpdateParam(4, param4);
+                _conditions[index]._condition.UpdateParam(2, param4);
         }
 
         private void DrawCondition(Rect rect, Rect origin, int index)
@@ -1508,10 +1594,10 @@ namespace H_QuestSystem.H_QuestEditor
             rect.y += EditorGUIUtility.singleLineHeight;
 
             rect.width = 18;
-            _conditions[index]._useStringFullname = EditorGUI.Toggle(rect, _conditions[index]._useStringFullname);
+            _conditions[index]._showStringFullname = EditorGUI.Toggle(rect, _conditions[index]._showStringFullname);
             rect.x += 18;
 
-            if (!_conditions[index]._useStringFullname)
+            if (!_conditions[index]._showStringFullname)
             {
                 string[] param0 = ((string)_conditions[index]._condition.Params[0]).Split('.');
 
@@ -1632,14 +1718,42 @@ namespace H_QuestSystem.H_QuestEditor
 
         public int CheckableOptionPopup(Rect rect, int conditionIndex, int paramIndex, string[] displayableOptions)
         {
-            int oldIndex = Array.FindIndex(displayableOptions, 0, displayableOptions.Length, (e) => e == (string)_conditions[conditionIndex]._condition.Params[paramIndex]);
+            string[] param0 = ((string)_conditions[conditionIndex]._condition.Params[0]).Split('.');
+            
+            List<string> displayableOptionsWithAdd = new List<string>();
 
-            if(CheckablePopup(rect, oldIndex, displayableOptions, out int index))
+            int oldIndex = Array.FindIndex(displayableOptions, 0, displayableOptions.Length, (e) => e == param0[paramIndex]);
+
+            if(oldIndex == -1)
             {
-                _conditions[conditionIndex]._condition.UpdateParam(paramIndex, displayableOptions[index]);
+                displayableOptionsWithAdd.Add(string.Concat("<missing>", param0[paramIndex]));
+                displayableOptionsWithAdd.InsertRange(1, displayableOptions);
+                oldIndex = 0;
+                GUI.contentColor = new Color(0.9f, 0.35f, 0.35f);
+            }
+            else
+            {
+                displayableOptionsWithAdd.InsertRange(0, displayableOptions);
+            }
+            
+            if(CheckablePopup(rect, oldIndex, displayableOptionsWithAdd.ToArray(), out int index))
+            {
+                GUI.contentColor = Color.white;
+                string s = string.Empty;
+                for(int i = 0; i < param0.Length; i++)
+                {
+                    if (i != paramIndex)
+                        s += param0[i];
+                    else
+                        s += displayableOptionsWithAdd[index];
+
+                    if (i < param0.Length - 1)
+                        s += ".";
+                }
+                _conditions[conditionIndex]._condition.UpdateParam(0, s);
                 return index;
             }
-
+            GUI.contentColor = Color.white;
             return oldIndex;
         }
 

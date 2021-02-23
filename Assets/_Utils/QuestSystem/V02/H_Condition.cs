@@ -54,10 +54,12 @@ namespace H_Misc
                     if (_type == H_EConditionType.CONDITION)
                     {
                         Conditions = new List<H_Condition>();
+                        Params = null;
                     }
                     else
                     {
                         Conditions = null;
+                        CreateParamsByType(value);
                     }
                     
                     this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
@@ -131,12 +133,9 @@ namespace H_Misc
 
         public void CreateParamsByType(H_EConditionType type)
         {
-            if(type == H_EConditionType.CONDITION)
+            if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-            }
-            else if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
-            {
-                AddParams("global", "String", "<undefined>", CVarCommands.EQUAL, "");
+                AddParams("String.global.<none>", CVarCommands.EQUAL, "");
 
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
@@ -145,7 +144,7 @@ namespace H_Misc
             }
             else if (type == H_EConditionType.LISTEN_QUEST)
             {
-                AddParams("global.none", "", true);
+                AddParams("global.<none>", "", true);
             }
             else if (type == H_EConditionType.TIMER)
             {
@@ -178,6 +177,18 @@ namespace H_Misc
                 Conditions.Insert(index, condition);
                 condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
                 condition.ListenConditions();
+
+                this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+            }
+        }
+
+        public void SwapConditions(int a, int b)
+        {
+            if (a != b)
+            {
+                H_Condition aux = Conditions[a];
+                Conditions[a] = Conditions[b];
+                Conditions[b] = aux;
 
                 this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
             }
@@ -243,10 +254,13 @@ namespace H_Misc
 
         public void StopListenConditions()
         {
-            foreach (H_Condition condition in Conditions)
+            if (Conditions != null)
             {
-                condition?.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
-                condition?.StopListenConditions();
+                foreach (H_Condition condition in Conditions)
+                {
+                    condition?.RemoveEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
+                    condition?.StopListenConditions();
+                }
             }
         }
 

@@ -7,39 +7,48 @@
     </il>
     <sc uid="s1" t="CONDITION" op="AND" cop="JOIN" r="0">
       <cl>
-        <ci uid="s1_c0" t="LISTEN_QUEST" op="AND" cop="JOIN" r="0">
+        <ci uid="s1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
           <pl>
-            <pi xsi:type="xsd:string">global.quest_(0)</pi>
-            <pi xsi:type="xsd:string" />
-            <pi xsi:type="xsd:boolean">true</pi>
+            <pi xsi:type="xsd:string">Int32.global.new_int (0)</pi>
+            <pi xsi:type="xsd:int">5</pi>
+            <pi xsi:type="xsd:string">value</pi>
           </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string">String.global.string51</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:int">0</pi>
+          </pl>
+          <cl />
         </ci>
         <ci uid="s1_c0" t="CONDITION" op="AND" cop="JOIN" r="0">
           <pl>
-            <pi xsi:type="xsd:string">global</pi>
-            <pi xsi:type="xsd:string">Int32</pi>
-            <pi xsi:type="xsd:string">teste</pi>
+            <pi xsi:type="xsd:string">String.global.none</pi>
             <pi xsi:type="xsd:int">1</pi>
             <pi xsi:type="xsd:int">0</pi>
           </pl>
           <cl>
-            <ci uid="s1_c0_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+            <ci uid="s1_c0_c0" t="TIMER" op="AND" cop="JOIN" r="0">
               <pl>
-                <pi xsi:type="xsd:string">global</pi>
-                <pi xsi:type="xsd:string">String</pi>
-                <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+                <pi xsi:type="xsd:string">timer_id</pi>
                 <pi xsi:type="xsd:int">0</pi>
-                <pi xsi:type="xsd:string" />
+                <pi xsi:type="xsd:float">1</pi>
               </pl>
-              <cl />
+            </ci>
+            <ci uid="s1_c0_c0" t="LISTEN_QUEST" op="AND" cop="JOIN" r="0">
+              <pl>
+                <pi xsi:type="xsd:string">global.none</pi>
+                <pi xsi:type="xsd:string" />
+                <pi xsi:type="xsd:boolean">true</pi>
+              </pl>
             </ci>
             <ci uid="s1_c0_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
               <pl>
-                <pi xsi:type="xsd:string">global</pi>
-                <pi xsi:type="xsd:string">String</pi>
-                <pi xsi:type="xsd:string">&lt;undefined&gt;</pi>
+                <pi xsi:type="xsd:string">String.global.none</pi>
                 <pi xsi:type="xsd:int">0</pi>
-                <pi xsi:type="xsd:string" />
+                <pi xsi:type="xsd:string">value</pi>
               </pl>
               <cl />
             </ci>
@@ -47,11 +56,9 @@
         </ci>
         <ci uid="s1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
           <pl>
-            <pi xsi:type="xsd:string">global</pi>
-            <pi xsi:type="xsd:string">String</pi>
-            <pi xsi:type="xsd:string">teste</pi>
+            <pi xsi:type="xsd:string">String.global.&lt;none&gt;</pi>
             <pi xsi:type="xsd:int">0</pi>
-            <pi xsi:type="xsd:string">value</pi>
+            <pi xsi:type="xsd:string" />
           </pl>
           <cl />
         </ci>
@@ -68,7 +75,63 @@
     <un>quest_(1)</un>
     <il />
     <sc uid="s1" t="CONDITION" op="AND" cop="JOIN" r="0">
-      <cl />
+      <cl>
+        <ci uid="s1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string">String.global.none</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+          <cl />
+        </ci>
+        <ci uid="s1_c0" t="ON_CHANGE_VAR" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string">String.global.none</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string" />
+          </pl>
+        </ci>
+        <ci uid="s1_c1" t="CONDITION" op="AND" cop="JOIN" r="0">
+          <cl>
+            <ci uid="s1_c1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+              <pl>
+                <pi xsi:type="xsd:string">String.global.none</pi>
+                <pi xsi:type="xsd:int">0</pi>
+                <pi xsi:type="xsd:string" />
+              </pl>
+              <cl />
+            </ci>
+            <ci uid="s1_c1_c0" t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+              <pl>
+                <pi xsi:type="xsd:string">String.global.none</pi>
+                <pi xsi:type="xsd:int">0</pi>
+                <pi xsi:type="xsd:string" />
+              </pl>
+              <cl />
+            </ci>
+          </cl>
+        </ci>
+        <ci uid="s1_c2" t="ON_EVENT_DISPATCH" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string" />
+            <pi xsi:type="xsd:string" />
+          </pl>
+        </ci>
+        <ci uid="s1_c3" t="LISTEN_QUEST" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string">global.none</pi>
+            <pi xsi:type="xsd:string" />
+            <pi xsi:type="xsd:boolean">true</pi>
+          </pl>
+        </ci>
+        <ci uid="s1_c4" t="TIMER" op="AND" cop="JOIN" r="0">
+          <pl>
+            <pi xsi:type="xsd:string">timer_id</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:float">1</pi>
+          </pl>
+        </ci>
+      </cl>
     </sc>
     <tc uid="g1" t="CONDITION" op="AND" cop="JOIN" r="0">
       <cl />

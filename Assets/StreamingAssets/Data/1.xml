@@ -53,5 +53,13 @@
       <n>teste</n>
       <v xsi:type="xsd:int">0</v>
     </o>
+    <o a="641" f="NONE">
+      <n>new_bool</n>
+      <v xsi:type="xsd:boolean">false</v>
+    </o>
+    <o a="642" f="NONE">
+      <n>new_bool (0)</n>
+      <v xsi:type="xsd:boolean">false</v>
+    </o>
   </os>
 </cvar_data>
