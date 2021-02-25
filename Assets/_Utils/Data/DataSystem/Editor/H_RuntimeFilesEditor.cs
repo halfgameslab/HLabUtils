@@ -176,7 +176,7 @@ namespace HLab.H_DataSystem.H_Editor
                     if (GUILayout.Button("v"))
                     {
                         // check name consistence
-                        if (CVarSystem.ValidateName(_editableAuxName))
+                        if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(_editableAuxName))
                         {
                             if (!System.IO.File.Exists(CVarGroup.GetPersistentFilePath(currentGroup.Name, CVarGroup.ParsePrefixName(_editableAuxName))))
                             {

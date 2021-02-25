@@ -80,4 +80,39 @@ public static class ObjectNamesManager
 
         return count != len;// if count == len there is only spaces on string
     }
+
+    public static string RemoveCharacters(string s, params char[] notAllowedChars)
+    {
+        if (notAllowedChars != null)
+        {
+            string n = string.Empty;
+            bool contains;
+
+            for (int i = 0; i < s.Length; ++i)
+            {
+                contains = false;
+                foreach (char c in notAllowedChars)
+                {
+                    if (s[i] == c)
+                        contains = true;
+                }
+                if(!contains)
+                    n += s[i];
+            }
+
+            return n;
+        }
+
+        return s;
+    }
+
+    public static bool ValidateIfNameHasntForbiddenCharacters(string s)
+    {
+        return ValidateName(s, '[', ']', '.');
+    }
+
+    public static string RemoveForbiddenCharacters(string s)
+    {
+        return RemoveCharacters(s, '[', ']', '.');
+    }
 }

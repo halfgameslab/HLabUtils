@@ -358,7 +358,7 @@ namespace HLab.H_DataSystem
         {
             if (Name != newName)
             {
-                if (CVarSystem.ValidateName(newName))
+                if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(newName))
                 {
                     Unload();
 

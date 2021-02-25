@@ -118,7 +118,7 @@ namespace HLab.H_DataSystem
 
         public H_DataGroup<T, K> CreateGroup(string name, H_DataGroup<T, K> baseGroup = null, bool overrideIfExist = false)
         {
-            if (CVarSystem.ValidateName(name))
+            if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(name))
             {
                 H_DataGroup<T, K> oldGroup = GetGroupByName(name);
 

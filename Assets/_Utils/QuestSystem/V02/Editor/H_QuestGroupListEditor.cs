@@ -109,7 +109,7 @@ namespace HLab.H_QuestSystem.H_Editor
 
             if (GUILayout.Button("V", GUILayout.Width(19)))
             {
-                if (CVarSystem.ValidateName(_auxString) && groups.FirstOrDefault(g => g.Name == _auxString) == null)
+                if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(_auxString) && groups.FirstOrDefault(g => g.Name == _auxString) == null)
                 {
                     CurrentState = 0;
 
@@ -144,7 +144,7 @@ namespace HLab.H_QuestSystem.H_Editor
             {
                 if (_auxString != currentGroup.Name)
                 {
-                    if (CVarSystem.ValidateName(_auxString) && groups.FirstOrDefault(g => g.Name == _auxString) == null)
+                    if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(_auxString) && groups.FirstOrDefault(g => g.Name == _auxString) == null)
                     {
                         CurrentState = 0;
 

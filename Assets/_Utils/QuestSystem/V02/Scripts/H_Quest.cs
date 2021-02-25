@@ -179,6 +179,8 @@ namespace HLab.H_QuestSystem
         public void Process()
         {
             Open();
+
+            //StartCondition.SetInstanceName();
         }
 
         /*private void OnStartConditionsHandler(ES_Event ev)

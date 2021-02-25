@@ -95,7 +95,8 @@ namespace HLab.H_Common.H_Editor
             H_Condition condition = new H_Condition() { Type = H_EConditionType.CHECK_VAR };
             if (list.index < 0 || list.count == 0)
             {
-                condition.UID = string.Concat(_condition.UID, "_c", 0);
+                //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", 0);
+                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), ".c(0)", "");//string.Concat(_condition.UID, ".c", 0);
                 c._condition = condition;
                 _conditions.Add(c);
                 _condition.AddCondition(condition);
@@ -103,7 +104,9 @@ namespace HLab.H_Common.H_Editor
             }
             else
             {
-                condition.UID = string.Concat(_condition.UID, "_c", list.index);
+
+                //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", list.index);
+                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), ".c(0)", "");//string.Concat(_condition.UID, ".c", list.index);
                 c._condition = condition;
                 _conditions.Insert(list.index + 1, c);
                 _condition.InsertCondition(list.index + 1, condition);
@@ -122,7 +125,9 @@ namespace HLab.H_Common.H_Editor
         {
             if (_conditions[index]._condition.Type == H_EConditionType.CONDITION)
                 return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 1.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
-            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH || _conditions[index]._condition.Type == H_EConditionType.LISTEN_QUEST)
+            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH 
+                || _conditions[index]._condition.Type == H_EConditionType.LISTEN_QUEST
+                || _conditions[index]._condition.Type == H_EConditionType.TIMER)
                 return EditorGUIUtility.singleLineHeight * 3 + 10;
 
             return EditorGUIUtility.singleLineHeight * 2 + 10;
@@ -353,9 +358,7 @@ namespace HLab.H_Common.H_Editor
 
         private string RemoveForbiddenCharacters(string name)
         {
-            name = name.Replace(".", string.Empty).Replace("[", string.Empty).Replace("]", string.Empty);
-
-            return name;
+            return ObjectNamesManager.RemoveForbiddenCharacters(name);
         }
 
         private void DrawCondition(Rect rect, Rect origin, int index)
@@ -537,9 +540,7 @@ namespace HLab.H_Common.H_Editor
                     option = 0;
                 }
 
-                EditorGUI.BeginChangeCheck();
-                option = EditorGUI.Popup(rect, option, groups.ToArray());
-                if (EditorGUI.EndChangeCheck())
+                if (CheckablePopup(rect, option, groups.ToArray(), out option))
                 {
                     _conditions[index]._condition.UpdateParam(0, string.Concat(groups[option], ".", param0[1]));
                 }
@@ -569,9 +570,9 @@ namespace HLab.H_Common.H_Editor
                     option2 = 0;
                 }
 
-                EditorGUI.BeginChangeCheck();
-                option2 = EditorGUI.Popup(rect, option2, quests);
-                if (EditorGUI.EndChangeCheck())
+                //lastOption = option2;
+                //option2 = EditorGUI.Popup(rect, option2, quests);
+                if (CheckablePopup(rect, option2, quests, out option2))
                 {
                     _conditions[index]._condition.UpdateParam(0, string.Concat(groups[option], ".", quests[option2]));
                 }
@@ -608,17 +609,24 @@ namespace HLab.H_Common.H_Editor
 
         private void DrawTimerOption(Rect rect, Rect origin, int index)
         {
-            rect.width = 18;
-            EditorGUI.Toggle(rect, false);
+            bool OnUnloadScene = (bool)_conditions[index]._condition.Params[3];
+            OnUnloadScene = EditorGUI.ToggleLeft(rect, "Reset On Unload Scene", OnUnloadScene);
+            if(OnUnloadScene != (bool)_conditions[index]._condition.Params[3])
+                _conditions[index]._condition.UpdateParam(3, OnUnloadScene);
+
+            rect.y += EditorGUIUtility.singleLineHeight;
+
+            //rect.width = 18;
+            //EditorGUI.Toggle(rect, false);
             //
-            rect.x += 18;
-            rect.width = (origin.width - 18) / 3;
+            //rect.x += 18;
+            rect.width = (origin.width) / 3;
             string aux = (string)_conditions[index]._condition.Params[0];
             EditorGUI.BeginChangeCheck();
             aux = EditorGUI.TextField(rect, aux);
             if (EditorGUI.EndChangeCheck())
-            {
-                _conditions[index]._condition.UpdateParam(0, aux);
+            {   
+                _conditions[index]._condition.UpdateParam(0, RemoveForbiddenCharacters(aux));
             }
             //
             rect.x += rect.width;

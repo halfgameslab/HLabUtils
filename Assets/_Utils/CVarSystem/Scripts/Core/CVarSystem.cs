@@ -1572,17 +1572,6 @@ public static class CVarSystem
 
     public static bool ValidateName(string s)
     {
-        int len = s.Length;
-        int count = 0;
-
-        for (int i = 0; i < len; ++i)
-        {
-            if (s[i] == '.' || s[i] == '[' || s[i] == ']')
-                return false;
-            else if (s[i] == ' ' || s[i] == '\0')// check spaces and voids
-                count++;
-        }
-
-        return count != len;// if count == len there is only spaces on string
+        return ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(s);
     }
 }

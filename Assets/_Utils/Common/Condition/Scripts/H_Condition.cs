@@ -136,7 +136,6 @@ namespace H_Misc
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
                 AddParams("String.global.<none>", CVarCommands.EQUAL, "");
-
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {
@@ -148,7 +147,7 @@ namespace H_Misc
             }
             else if (type == H_EConditionType.TIMER)
             {
-                AddParams("timer_id", H_ETimeMode.ASC, 1.0f);
+                AddParams("timer_id", H_ETimeMode.ASC, 1.0f, false);
             }
         }
 
