@@ -162,21 +162,21 @@ namespace HLab.H_QuestSystem.H_Editor
 
         private void OnAddElementHandler(ReorderableList list)
         {
+            H_Quest newQuest = new H_Quest()
+            {
+                UID = H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString(),
+                Group = CurrentQuestGroup,
+                UName = H_QuestEditor.DEFAULT_QUEST_NAME
+            };
+
             if (list.index > 0)
             {
-                CurrentQuestGroup.Insert(list.index + 1, CurrentQuestGroup.Data[list.index].Clone(H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString()));
+                CurrentQuestGroup.Insert(list.index + 1, newQuest);
                 list.index++;
             }
             else
             {
-                CurrentQuestGroup.Add(
-                    new H_Quest()
-                    {
-                        UID = H_DataManager.Instance.Address.GetNextAvaliableAddress().ToString(),
-                        Group = CurrentQuestGroup,
-                        UName = "quest_(0)"
-                    });
-
+                CurrentQuestGroup.Add(newQuest);
                 list.index = list.count - 1;
             }
 

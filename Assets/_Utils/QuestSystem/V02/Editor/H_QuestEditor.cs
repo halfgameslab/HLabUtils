@@ -7,6 +7,8 @@ namespace HLab.H_QuestSystem.H_Editor
 {
     public class H_QuestEditor
     {
+        public const string DEFAULT_QUEST_NAME = "quest_(0)";
+
         public H_Quest CurrentQuest { get; set; }
 
         private ReorderableList _infoList;
@@ -69,19 +71,25 @@ namespace HLab.H_QuestSystem.H_Editor
                 EditorGUILayout.Space();
 
                 EditorGUILayout.BeginHorizontal();
-                string uname = EditorGUILayout.TextField(new GUIContent(string.Format("Unique Name ({0})", CurrentQuest.UID), "Used for internal control"), CurrentQuest.UName);
+                string uname = EditorGUILayout.TextField(new GUIContent("Unique Name", "Used for internal control"), CurrentQuest.UName);
                 if (uname != CurrentQuest.UName)
                 {
-                    if (ObjectNamesManager.ValidateName(uname, '.', '[', ']', ' ', '\0'))
+                    uname = ObjectNamesManager.RemoveForbiddenCharacters(uname);
+
+                    if (uname.Length == 0)
+                        uname = DEFAULT_QUEST_NAME;
+
+                    CurrentQuest.UName = uname;
+                    /*if (ObjectNamesManager.ValidateName(uname, '.', '[', ']', ' ', '\0'))
                         CurrentQuest.UName = uname;
                     else
-                        Debug.LogWarning("Avoid use . [ ] to name your strings. Names with only spaces are not alloweds to.");
+                        Debug.LogWarning("Avoid use . [ ] to name your strings. Names with only spaces are not alloweds to.");*/
                 }
 
-                if (GUILayout.Button("E", GUILayout.MinWidth(19), GUILayout.MaxWidth(19)))
+                /*if (GUILayout.Button("E", GUILayout.MinWidth(19), GUILayout.MaxWidth(19)))
                 {
 
-                }
+                }*/
 
                 EditorGUILayout.EndHorizontal();
 

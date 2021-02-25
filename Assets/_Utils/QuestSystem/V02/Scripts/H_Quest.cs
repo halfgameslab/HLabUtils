@@ -37,6 +37,9 @@ namespace HLab.H_QuestSystem
                     //{
                     //    this.SetInstanceName(_uname);
                     //}
+                    StartCondition.ParentGlobalUID = _uname;
+                    TaskCondition.ParentGlobalUID = _uname;
+                    FailCondition.ParentGlobalUID = _uname;
 
                     this.DispatchEvent(ES_Event.ON_UPDATE);
                 }
@@ -49,11 +52,11 @@ namespace HLab.H_QuestSystem
         public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
 
         [XmlElement("sc")]
-        public H_Condition StartCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "s1" };
+        public H_Condition StartCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "start" };
         [XmlElement("tc")]
-        public H_Condition TaskCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "g1" };
+        public H_Condition TaskCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "task" };
         [XmlElement("fc")]
-        public H_Condition FailCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "f1" };
+        public H_Condition FailCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UID = "fail" };
 
         [XmlIgnore]
         public H_DataGroup<H_Quest, H_PersistentQuestData> Group { get; set; }
@@ -180,6 +183,9 @@ namespace HLab.H_QuestSystem
         {
             Open();
 
+            StartCondition.ParentGlobalUID  = UName;
+            TaskCondition.ParentGlobalUID = UName;
+            FailCondition.ParentGlobalUID = UName;
             //StartCondition.SetInstanceName();
         }
 

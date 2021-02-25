@@ -7,13 +7,23 @@ using System.Text.RegularExpressions;
 ///   -- string.Concat changed to string.Format
 ///   -- Array.Find changed to Array.Exist
 ///   -- Regex field changed to readonly
+/// Alterado em 2021/02/25
+///   -- ADD
+///     - _forbiddenCharacters
+///     - ValidateIfNameHasntForbiddenCharacters
+///     - RemoveForbiddenCharacters
 /// </summary>
 public static class ObjectNamesManager
 {
-    //use to create regular expresions.
+    //reference used to create the follow regular expresion.
     //http://rubular.com/r/ImZaRigMv5              
-    //ivate static Regex Pattern = new Regex(@"\.*?\([^\d]*(\d+)[^\d]*\)$");
+    //pivate static Regex Pattern = new Regex(@"\.*?\([^\d]*(\d+)[^\d]*\)$");
     private static readonly Regex Pattern = new Regex(@"\((\d+)\)$");
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private static readonly char[] _forbiddenCharacters = new char[] { '[', ']', '.', '<', '>', '\0', ' ' };
 
     /// <summary>
     /// Make a unique name using the provided name as a base.
@@ -22,7 +32,7 @@ public static class ObjectNamesManager
     /// <param name="ExistingNames">A list of pre-existing names.</param>
     /// <param name="name">Desired name to be used as is, or as a base.</param>
     /// <returns></returns>
-    public static string GetUniqueName(string[] existingNames, string name, string space=" ")
+    public static string GetUniqueName(string[] existingNames, string name, string separetor="_")
     {
         if (Array.Exists(existingNames, (e => e == name)))
         {
@@ -30,7 +40,7 @@ public static class ObjectNamesManager
             if (int.TryParse(Pattern.Match(name).Groups[1].Value, out int index))
                 return GetUniqueName(existingNames, Pattern.Replace(name, string.Format("({0})", ++index)));
             else
-                return GetUniqueName(existingNames, string.Concat(name, space, "(0)"));
+                return GetUniqueName(existingNames, string.Concat(name, separetor, "(0)"));
         }
 
         return name;
@@ -43,14 +53,14 @@ public static class ObjectNamesManager
     /// <param name="ExistingNames">A dictionary of pre-existing names.</param>
     /// <param name="name">Desired name to be used as is, or as a base.</param>
     /// <returns></returns>
-    public static string GetUniqueNameFromDictionary(Dictionary<string, System.Object> existingNames, string name, string space = " ")
+    public static string GetUniqueNameFromDictionary(Dictionary<string, System.Object> existingNames, string name, string separetor = "_")
     {   
         if (existingNames.ContainsKey(name))
         {
             if (int.TryParse(Pattern.Match(name).Groups[1].Value, out int index))
                 return GetUniqueNameFromDictionary(existingNames, Pattern.Replace(name, string.Format("({0})", ++index)));
             else
-                return GetUniqueNameFromDictionary(existingNames, string.Concat(name, space, "(0)"));
+                return GetUniqueNameFromDictionary(existingNames, string.Concat(name, separetor, "(0)"));
         }
 
         return name;
@@ -105,14 +115,14 @@ public static class ObjectNamesManager
 
         return s;
     }
-
+    
     public static bool ValidateIfNameHasntForbiddenCharacters(string s)
     {
-        return ValidateName(s, '[', ']', '.');
+        return ValidateName(s, _forbiddenCharacters);
     }
 
     public static string RemoveForbiddenCharacters(string s)
     {
-        return RemoveCharacters(s, '[', ']', '.');
+        return RemoveCharacters(s, _forbiddenCharacters);
     }
 }

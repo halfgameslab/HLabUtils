@@ -96,7 +96,8 @@ namespace HLab.H_Common.H_Editor
             if (list.index < 0 || list.count == 0)
             {
                 //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", 0);
-                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), ".c(0)", "");//string.Concat(_condition.UID, ".c", 0);
+                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", 0);
+                //condition.ParentGlobalUID = _condition.GlobalUID;//.GlobalUID = string.Format("{0}.{1}", _condition.GlobalUID, condition.UID);
                 c._condition = condition;
                 _conditions.Add(c);
                 _condition.AddCondition(condition);
@@ -104,10 +105,10 @@ namespace HLab.H_Common.H_Editor
             }
             else
             {
-
                 //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", list.index);
-                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), ".c(0)", "");//string.Concat(_condition.UID, ".c", list.index);
+                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", list.index);
                 c._condition = condition;
+                //condition.ParentGlobalUID = _condition.GlobalUID;
                 _conditions.Insert(list.index + 1, c);
                 _condition.InsertCondition(list.index + 1, condition);
                 list.index++;
@@ -124,13 +125,13 @@ namespace HLab.H_Common.H_Editor
         private float OnElementHeightHandler(int index)
         {
             if (_conditions[index]._condition.Type == H_EConditionType.CONDITION)
-                return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 1.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
+                return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 2.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
             else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH 
                 || _conditions[index]._condition.Type == H_EConditionType.LISTEN_QUEST
                 || _conditions[index]._condition.Type == H_EConditionType.TIMER)
-                return EditorGUIUtility.singleLineHeight * 3 + 10;
+                return EditorGUIUtility.singleLineHeight * 4 + 10;
 
-            return EditorGUIUtility.singleLineHeight * 2 + 10;
+            return EditorGUIUtility.singleLineHeight * 3 + 10;
         }
 
         void OnDrawHeaderHandler(Rect rect)
@@ -160,7 +161,7 @@ namespace HLab.H_Common.H_Editor
                 _conditions[index]._condition.CreateParamsByType(_conditions[index]._condition.Type);
 
             // create a top padding distance
-            rect.y += 4;
+            //rect.y += 4;
 
             Rect origin = rect;
             float halfWidth = (origin.width / 2f);
@@ -175,17 +176,35 @@ namespace HLab.H_Common.H_Editor
                 rect = origin;
             }
 
-            rect.width = halfWidth - 18f;
+            rect.width = halfWidth;
             rect.height = EditorGUIUtility.singleLineHeight;
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.TextField(rect, _conditions[index]._condition.UID);
-            EditorGUI.EndDisabledGroup();
+            GUIStyle style = new GUIStyle();
+            style.alignment = TextAnchor.MiddleLeft;
+            style.richText = true;
+            EditorGUI.LabelField(rect, string.Format("<color=#dddddd>Global UID:</color> <b><color=#81B4FF>{0}</color></b>", _conditions[index]._condition.GlobalUID), style);//EditorStyles.linkLabel);
+
+            rect.y += EditorGUIUtility.singleLineHeight;
+
+            //EditorGUI.BeginDisabledGroup(true);
+            string newUID = EditorGUI.TextField(rect, _conditions[index]._condition.UID);
+
+            if(newUID != _conditions[index]._condition.UID)
+            {
+                if (newUID.Replace(" ", string.Empty).Length != 0)
+                    newUID = ObjectNamesManager.RemoveForbiddenCharacters(newUID);
+                else
+                    newUID = "c(0)";
+                _conditions[index]._condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), newUID, "");
+            }
+            //EditorGUI.EndDisabledGroup();
+            
+
             rect.x += rect.width;
-            rect.width = 18f;
-            GUI.Button(rect, "E");
+            /*rect.width = 18f;
+            GUI.Button(rect, "E");*/
 
             rect.width = halfWidth / 2;
-            rect.x += 18f;
+            //rect.x += 18f;
             EditorGUI.BeginDisabledGroup(index == 0);
             _conditions[index]._condition.CombineOperation = (H_ECombineOperation)EditorGUI.EnumPopup(rect, _conditions[index]._condition.CombineOperation);
             if (index == 0 && _conditions[index]._condition.CombineOperation != H_ECombineOperation.JOIN)

@@ -79,7 +79,7 @@ namespace HLab.H_QuestSystem.H_Editor
             string[] names = groups.Select(e => e.Name).ToArray();
             int index = Array.IndexOf(groups, currentGroup);
             EditorGUILayout.BeginHorizontal();
-            int newIndex = EditorGUILayout.Popup(string.Format("Group ({0})", currentGroup.UID), index, names);
+            int newIndex = EditorGUILayout.Popup(string.Format("Group [#{0}]", currentGroup.UID), index, names);
 
             if (newIndex != index)
             {

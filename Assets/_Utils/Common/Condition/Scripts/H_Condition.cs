@@ -39,8 +39,69 @@ namespace H_Misc
     {
         private H_EConditionType _type = H_EConditionType.CHECK_VAR;
 
+        private string _uid = string.Empty;
         [XmlAttribute("uid")]
-        public string UID { get; set; }
+        public string UID 
+        {
+            get
+            {
+                return _uid;
+            }
+            set
+            {
+                if(_uid != value)
+                {
+                    _uid = value;
+                    ParentGlobalUID = ParentGlobalUID;// update the globalUID
+                    this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+                }
+            }
+        }
+
+
+        private string _globalUID = string.Empty;
+        [XmlIgnore]
+        public string GlobalUID
+        {
+            get
+            {
+                return _globalUID;
+            }
+            set
+            {
+                if (_globalUID != value)
+                {
+                    _globalUID = value;
+
+                    if (Conditions != null)
+                    {
+                        foreach (H_Condition c in Conditions)
+                        {
+                            c.ParentGlobalUID = GlobalUID;
+                        }
+                    }
+                }
+            }
+        }
+
+        [XmlIgnore]
+        public string ParentGlobalUID
+        {
+            get
+            {
+                string[] s = GlobalUID.Split('.');
+
+                if(s?.Length > 0)
+                    return string.Join(".", s, 0, s.Length-1);
+
+                return GlobalUID;
+            }
+            set
+            {
+                GlobalUID = string.Format("{0}.{1}", value, UID);
+            }
+        }
+
 
         [XmlAttribute("t")]
         public H_EConditionType Type
@@ -135,7 +196,7 @@ namespace H_Misc
         {
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-                AddParams("String.global.<none>", CVarCommands.EQUAL, "");
+                AddParams("String.global.undefined", CVarCommands.EQUAL, "");
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {
@@ -143,7 +204,7 @@ namespace H_Misc
             }
             else if (type == H_EConditionType.LISTEN_QUEST)
             {
-                AddParams("global.<none>", "", true);
+                AddParams("global.undefined", "", true);
             }
             else if (type == H_EConditionType.TIMER)
             {
@@ -159,6 +220,7 @@ namespace H_Misc
             if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Add(condition);
+                condition.ParentGlobalUID = GlobalUID;
                 condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
                 condition.ListenConditions();
 
@@ -174,6 +236,7 @@ namespace H_Misc
             if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Insert(index, condition);
+                condition.ParentGlobalUID = GlobalUID;
                 condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
                 condition.ListenConditions();
 
@@ -296,4 +359,6 @@ namespace H_Misc
             return clone;
         }
     }
+
+
 }
