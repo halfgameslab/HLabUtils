@@ -39,45 +39,44 @@ namespace H_Misc
     {
         private H_EConditionType _type = H_EConditionType.CHECK_VAR;
 
-        private string _uid = string.Empty;
-        [XmlAttribute("uid")]
-        public string UID 
+        private string _uname = string.Empty;
+        [XmlElement("un")]
+        public string UName 
         {
             get
             {
-                return _uid;
+                return _uname;
             }
             set
             {
-                if(_uid != value)
+                if(_uname != value)
                 {
-                    _uid = value;
-                    ParentGlobalUID = ParentGlobalUID;// update the globalUID
+                    _uname = value;
+                    ParentGlobalUName = ParentGlobalUName;// update the globalUID
                     this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
                 }
             }
         }
 
-
-        private string _globalUID = string.Empty;
+        private string _globalUName = string.Empty;
         [XmlIgnore]
-        public string GlobalUID
+        public string GlobalUName
         {
             get
             {
-                return _globalUID;
+                return _globalUName;
             }
             set
             {
-                if (_globalUID != value)
+                if (_globalUName != value)
                 {
-                    _globalUID = value;
+                    _globalUName = value;
 
                     if (Conditions != null)
                     {
                         foreach (H_Condition c in Conditions)
                         {
-                            c.ParentGlobalUID = GlobalUID;
+                            c.ParentGlobalUName = GlobalUName;
                         }
                     }
                 }
@@ -85,20 +84,20 @@ namespace H_Misc
         }
 
         [XmlIgnore]
-        public string ParentGlobalUID
+        public string ParentGlobalUName
         {
             get
             {
-                string[] s = GlobalUID.Split('.');
+                string[] s = GlobalUName.Split('.');
 
                 if(s?.Length > 0)
                     return string.Join(".", s, 0, s.Length-1);
 
-                return GlobalUID;
+                return GlobalUName;
             }
             set
             {
-                GlobalUID = string.Format("{0}.{1}", value, UID);
+                GlobalUName = string.Format("{0}.{1}", value, UName);
             }
         }
 
@@ -196,7 +195,7 @@ namespace H_Misc
         {
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-                AddParams("String.global.undefined", CVarCommands.EQUAL, "");
+                AddParams("Int32.global.undefined", CVarCommands.EQUAL, "0");
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {
@@ -220,7 +219,7 @@ namespace H_Misc
             if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Add(condition);
-                condition.ParentGlobalUID = GlobalUID;
+                condition.ParentGlobalUName = GlobalUName;
                 condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
                 condition.ListenConditions();
 
@@ -236,7 +235,7 @@ namespace H_Misc
             if (condition != null && !Conditions.Contains(condition))
             {
                 Conditions.Insert(index, condition);
-                condition.ParentGlobalUID = GlobalUID;
+                condition.ParentGlobalUName = GlobalUName;
                 condition.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnConditionChangeValueHandler);
                 condition.ListenConditions();
 
@@ -346,7 +345,7 @@ namespace H_Misc
                 }
             }
             clone.Operation = Operation;
-            clone.UID = string.Concat(UID, sufix);
+            clone.UName = string.Concat(UName, sufix);
 
             if (Conditions != null)
             {

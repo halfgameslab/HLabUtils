@@ -64,6 +64,11 @@ namespace HLab.H_Common.H_Editor
 
         public void Draw()
         {
+            GUIStyle style = new GUIStyle();
+            style.alignment = TextAnchor.MiddleLeft;
+            style.richText = true;
+            EditorGUILayout.SelectableLabel(string.Format("<color=#dddddd>Global UName:</color> <b><color=#81B4FF>{0}</color></b>", _condition.GlobalUName), style, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight+3f));//EditorStyles.linkLabel);
+
             _reorderableList?.DoLayoutList();
 
             EditorGUILayout.Space();
@@ -96,7 +101,7 @@ namespace HLab.H_Common.H_Editor
             if (list.index < 0 || list.count == 0)
             {
                 //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", 0);
-                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UID).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", 0);
+                condition.UName = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e=>e.UName).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", 0);
                 //condition.ParentGlobalUID = _condition.GlobalUID;//.GlobalUID = string.Format("{0}.{1}", _condition.GlobalUID, condition.UID);
                 c._condition = condition;
                 _conditions.Add(c);
@@ -106,7 +111,7 @@ namespace HLab.H_Common.H_Editor
             else
             {
                 //condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), string.Concat(_condition.UID, ".c(0)"), "");//string.Concat(_condition.UID, ".c", list.index);
-                condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", list.index);
+                condition.UName = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UName).ToArray(), "c(0)", "");//string.Concat(_condition.UID, ".c", list.index);
                 c._condition = condition;
                 //condition.ParentGlobalUID = _condition.GlobalUID;
                 _conditions.Insert(list.index + 1, c);
@@ -176,25 +181,27 @@ namespace HLab.H_Common.H_Editor
                 rect = origin;
             }
 
-            rect.width = halfWidth;
             rect.height = EditorGUIUtility.singleLineHeight;
+
             GUIStyle style = new GUIStyle();
             style.alignment = TextAnchor.MiddleLeft;
             style.richText = true;
-            EditorGUI.LabelField(rect, string.Format("<color=#dddddd>Global UID:</color> <b><color=#81B4FF>{0}</color></b>", _conditions[index]._condition.GlobalUID), style);//EditorStyles.linkLabel);
+            EditorGUI.SelectableLabel(rect, string.Format("<color=#dddddd>Global UName:</color> <b><color=#81B4FF>{0}</color></b>", _conditions[index]._condition.GlobalUName), style);//EditorStyles.linkLabel);
+            
+            rect.width = halfWidth;
 
             rect.y += EditorGUIUtility.singleLineHeight;
 
             //EditorGUI.BeginDisabledGroup(true);
-            string newUID = EditorGUI.TextField(rect, _conditions[index]._condition.UID);
+            string newUID = EditorGUI.TextField(rect, _conditions[index]._condition.UName);
 
-            if(newUID != _conditions[index]._condition.UID)
+            if(newUID != _conditions[index]._condition.UName)
             {
                 if (newUID.Replace(" ", string.Empty).Length != 0)
                     newUID = ObjectNamesManager.RemoveForbiddenCharacters(newUID);
                 else
                     newUID = "c(0)";
-                _conditions[index]._condition.UID = ObjectNamesManager.GetUniqueName(_condition.Conditions.Select(e => e.UID).ToArray(), newUID, "");
+                _conditions[index]._condition.UName = ObjectNamesManager.GetUniqueName(_condition.Conditions.Where(e=>e!= _conditions[index]._condition).Select(e => e.UName).ToArray(), newUID, "");
             }
             //EditorGUI.EndDisabledGroup();
             

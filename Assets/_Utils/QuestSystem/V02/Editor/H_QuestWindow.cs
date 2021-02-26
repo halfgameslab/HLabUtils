@@ -108,11 +108,12 @@ namespace HLab.H_QuestSystem.H_Editor
 
             _questGroupEditor.Start(group);
             _questEditor.Clear();
+            SelectQuest(0);
         }
 
         public void SelectQuest(int index)
         {
-            if(_questGroupEditor.CurrentQuestGroup.Data.Count > index)
+            if(index >= 0 && index < _questGroupEditor.CurrentQuestGroup.Data.Count)
                 SelectQuest(_questGroupEditor.CurrentQuestGroup.Data[index]);
         }
 

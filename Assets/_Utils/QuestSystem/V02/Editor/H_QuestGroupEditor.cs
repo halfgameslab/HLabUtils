@@ -1,5 +1,6 @@
 ﻿using HLab.H_DataSystem;
 using Mup.EventSystem.Events;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -41,10 +42,15 @@ namespace HLab.H_QuestSystem.H_Editor
                     _questList = null;
 
                 _scrollPosition = Vector2.zero;
-                SelectedQuest = selected;
-
                 if (selected != null)
+                {
+                    SelectedQuest = selected;
                     _questList.index = currentGroup.Data.IndexOf(selected);
+                }
+                else
+                {
+                    SelectQuest(0);
+                }
             }
         }
 
@@ -52,6 +58,8 @@ namespace HLab.H_QuestSystem.H_Editor
         {
             if (CurrentQuestGroup == null)
                 return;
+
+            CheckIfGroupWasReloaded();
 
             float firstCollumWidth = EditorGUIUtility.currentViewWidth / 3f;
 
@@ -68,9 +76,32 @@ namespace HLab.H_QuestSystem.H_Editor
 
         private void SelectQuest(int index)
         {
-            _questList.index = index;
-            SelectedQuest = CurrentQuestGroup.Data[index];
-            this.DispatchEvent(ES_Event.ON_CLICK, CurrentQuestGroup.Data[index]);
+            if (index >= 0 && index < _questList?.count)
+            {
+                if(_questList != null)
+                    _questList.index = index;
+                SelectedQuest = CurrentQuestGroup.Data[index];
+            }
+            else
+            {
+                if (_questList != null)
+                    _questList.index = -1;
+                SelectedQuest = null;
+            }
+            
+            this.DispatchEvent(ES_Event.ON_CLICK, SelectedQuest);
+        }
+
+        private void CheckIfGroupWasReloaded()
+        {
+            if (SelectedQuest != null && !CurrentQuestGroup.Data.Contains(SelectedQuest))
+            {
+                int index = CurrentQuestGroup.Data.FindIndex(e => e.UID == SelectedQuest.UID);
+                if (index >= 0)
+                    SelectQuest(index);
+                else
+                    SelectQuest(0);
+            }
         }
 
         void OnDrawHeaderHandler(Rect rect)

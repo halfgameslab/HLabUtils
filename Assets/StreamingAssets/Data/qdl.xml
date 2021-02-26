@@ -9,4 +9,7 @@
   <H_DataGroupOfH_QuestH_PersistentQuestData uid="663" as="true" pt="SHARED" las="true">
     <n>global_copy</n>
   </H_DataGroupOfH_QuestH_PersistentQuestData>
+  <H_DataGroupOfH_QuestH_PersistentQuestData uid="696" as="true" pt="SHARED" las="true">
+    <n>empty</n>
+  </H_DataGroupOfH_QuestH_PersistentQuestData>
 </ArrayOfH_DataGroupOfH_QuestH_PersistentQuestData>

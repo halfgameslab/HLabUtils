@@ -68,8 +68,13 @@ namespace HLab.H_QuestSystem.H_Editor
 
                 _scroolPosition = EditorGUILayout.BeginScrollView(_scroolPosition, GUILayout.MinWidth(((EditorGUIUtility.currentViewWidth / 3f) * 2f)), GUILayout.MaxWidth(((EditorGUIUtility.currentViewWidth / 3f) * 2f)));
                 EditorGUILayout.BeginVertical(GUILayout.MinWidth(size), GUILayout.MaxWidth(size));
-                EditorGUILayout.Space();
+                //EditorGUILayout.Space();
 
+                GUIStyle style = new GUIStyle();
+                //style.alignment = TextAnchor.MiddleLeft;
+                style.richText = true;
+                EditorGUILayout.SelectableLabel(string.Format("<color=#dddddd>Global UName:</color> <b><color=#81B4FF>{0}</color></b>", CurrentQuest.GlobalUName), style, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight));//EditorStyles.linkLabel);
+                
                 EditorGUILayout.BeginHorizontal();
                 string uname = EditorGUILayout.TextField(new GUIContent("Unique Name", "Used for internal control"), CurrentQuest.UName);
                 if (uname != CurrentQuest.UName)

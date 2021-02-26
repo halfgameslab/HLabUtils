@@ -358,23 +358,16 @@ namespace HLab.H_DataSystem
         {
             if (Name != newName)
             {
-                if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(newName))
-                {
-                    Unload();
+                Unload();
 
-                    // rename
-                    Name = newName;
+                // rename
+                Name = ObjectNamesManager.RemoveForbiddenCharacters(newName);
 
-                    Load();
+                Load();
 
-                    this.DispatchEvent(ES_Event.ON_UPDATE, "Rename");
-                    //CVarSystem.SaveGroupListToFile();// update group list table
-                    return true;
-                }
-                else
-                {
-                    Debug.LogWarning("Invalid name");
-                }
+                this.DispatchEvent(ES_Event.ON_UPDATE, "Rename");
+                //CVarSystem.SaveGroupListToFile();// update group list table
+                return true;
             }
 
             return false;

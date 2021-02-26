@@ -144,19 +144,12 @@ namespace HLab.H_QuestSystem.H_Editor
             {
                 if (_auxString != currentGroup.Name)
                 {
-                    if (ObjectNamesManager.ValidateIfNameHasntForbiddenCharacters(_auxString) && groups.FirstOrDefault(g => g.Name == _auxString) == null)
-                    {
-                        CurrentState = 0;
+                    CurrentState = 0;
 
-                        currentGroup.Rename(_auxString);
-                        //this.DispatchEvent(ES_Event.ON_RESTART, _auxString);
+                    currentGroup.Rename(ObjectNamesManager.GetUniqueName(groups.Select(e=>e.Name).ToArray(), _auxString));
+                    //this.DispatchEvent(ES_Event.ON_RESTART, _auxString);
 
-                        _auxString = string.Empty;
-                    }
-                    else
-                    {
-                        Debug.LogWarning("There is some incorrect character or another group with same name");
-                    }
+                    _auxString = string.Empty;
                 }
                 else
                 {
