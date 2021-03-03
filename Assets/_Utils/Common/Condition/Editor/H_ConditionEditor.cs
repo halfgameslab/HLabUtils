@@ -11,13 +11,174 @@ using Util.InstanceSystem.Editor;
 
 namespace HLab.H_Common.H_Editor
 {
+    public class H_Val
+    {
+        public string Value { get; set; }
+    }
+    public class H_ValueListEditor
+    {
+        private ReorderableList _valuesReorderableList;
+
+        public float Height { get { return _valuesReorderableList != null ? _valuesReorderableList.GetHeight() : 0; } }
+
+        public void Start(List<H_Val> values)
+        {
+            _valuesReorderableList = new ReorderableList(values, typeof(H_Val))
+            {
+                drawHeaderCallback = OnDrawElementHeaderHandler,
+                drawElementCallback = OnDrawElementHandler
+                
+            };
+        }
+
+        private void OnDrawElementHeaderHandler(Rect rect)
+        {
+            EditorGUI.LabelField(rect, "Values");
+        }
+
+        private void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            float width = rect.width;
+            rect.width = width/4;
+
+            EditorGUI.Slider(rect, 20, 1, 100);
+            rect.x += rect.width;
+            EditorGUI.Popup(rect, 0, new string[] { "String" });
+            rect.x += rect.width;
+            EditorGUI.Popup(rect, 0, new string[] { "global" });
+            rect.x += rect.width;
+            EditorGUI.Popup(rect, 0, new string[] { "var" });
+        }
+
+        public void Draw(Rect rect)
+        {
+            _valuesReorderableList.DoList(rect);
+        }
+
+        private bool DrawVarCondition(Rect rect, Rect origin, int index, ref string varFullname, ref string varUID)
+        {
+            string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
+            string[] varTypes = CVarSystem.AllowedTypes;
+
+            string[] param0 = varFullname.Split('.');
+            
+            //rect.width = 18;
+            //_conditions[index]._showStringFullname = EditorGUI.Toggle(rect, _conditions[index]._showStringFullname);
+            //rect.x += 18;
+
+            rect.width = (origin.width) / 5;
+
+            if (true)
+            {
+                int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == param0[0]);
+                
+                if (CheckablePopup(rect, index, varTypes, out index))
+                {
+
+                    return true;
+                    //_conditions[index]._condition.UpdateParam(2, GetNewDefaultValue(varTypes[newValue]));
+                }
+
+                rect.x += rect.width;
+
+                if(CheckablePopup(rect, index, groupsNames, out index))
+                {
+                    return true;
+                }
+
+                rect.x += rect.width;
+
+                if(CheckablePopup(rect, index, CVarSystem.GetVarNamesByType(param0[0], param0[1]), out index))
+                {
+                    return true;
+                }
+
+
+            }
+            else
+            {
+                rect.width = rect.width * 3f;
+
+                //string varFullname = (string)_conditions[index]._condition.Params[0];//CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
+                EditorGUI.BeginChangeCheck();
+                varFullname = EditorGUI.TextField(rect, varFullname);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    param0 = varFullname.Split('.');
+
+                    // complete the name with the type using the first character as reference
+                    if (!CVarSystem.ValidateType(param0[0]))
+                    {
+                        if (param0[0].Length >= 1)
+                        {
+                            char firstC = param0[0].ToLower()[0];
+
+                            if (firstC == 'i')
+                            {
+                                param0[0] = CVarSystem.GetTypeName<int>();
+                            }
+                            else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
+                                param0[0] = CVarSystem.GetTypeName<float>();
+                            else if (firstC == 'b')
+                                param0[0] = CVarSystem.GetTypeName<bool>();
+                            else if (firstC == 'v')
+                                param0[0] = CVarSystem.GetTypeName<Vector3>();
+                            else
+                                param0[0] = CVarSystem.GetTypeName<string>();
+                        }
+                        else
+                            param0[0] = CVarSystem.GetTypeName<string>();
+
+                        Debug.LogWarning(string.Format("Condition Editor: Invalid type. Type changed for {0}", param0[0]));
+
+                        varFullname = string.Join(".", param0);
+                    }
+
+                    if (param0.Length < 3)
+                    {
+                        for (int i = param0.Length; i < 3; i++)
+                            varFullname = string.Concat(varFullname, ".");
+
+                        param0 = varFullname.Split('.');
+                    }
+
+                    param0[1] = ObjectNamesManager.RemoveForbiddenCharacters(param0[1]);
+                    param0[2] = ObjectNamesManager.RemoveForbiddenCharacters(param0[2]);
+
+                    varFullname = CVarSystem.GetFullName(param0[2], param0[0], param0[1]);
+
+                    return true;
+                    //_conditions[index]._condition.UpdateParam(0, fullname);
+
+                }
+
+            }
+            return false;
+        }
+
+        public bool CheckablePopup(Rect rect, int selectedIndex, string[] displayableOptions, out int index)
+        {
+            index = EditorGUI.Popup(rect, selectedIndex, displayableOptions);
+
+            if (selectedIndex != index)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+
     public class H_ConditionEditor
     {
         private string _title = string.Empty;
 
         private H_Condition _condition;
 
-        private ReorderableList _reorderableList;
+        private ReorderableList _conditionReorderableList;
+
+        private H_ValueListEditor _valueListEditor;
 
         private List<H_ConditionEditor> _conditions = new List<H_ConditionEditor>();
 
@@ -46,7 +207,7 @@ namespace HLab.H_Common.H_Editor
                 }
 
                 //create the reorderableList
-                _reorderableList = new ReorderableList(_conditions, typeof(H_ConditionEditor))
+                _conditionReorderableList = new ReorderableList(_conditions, typeof(H_ConditionEditor))
                 {
                     drawHeaderCallback = OnDrawHeaderHandler,
                     drawElementCallback = OnDrawElementHandler,
@@ -58,7 +219,13 @@ namespace HLab.H_Common.H_Editor
             }
             else
             {
-                _reorderableList = null;
+                _conditionReorderableList = null;
+                if(_condition.Type == H_EConditionType.CHECK_VAR
+                || _condition.Type == H_EConditionType.ON_CHANGE_VAR)
+                {
+                    _valueListEditor = new H_ValueListEditor();
+                    _valueListEditor.Start(new List<H_Val>());
+                }
             }
         }
 
@@ -69,7 +236,7 @@ namespace HLab.H_Common.H_Editor
             style.richText = true;
             EditorGUILayout.SelectableLabel(string.Format("<color=#dddddd>Global UName:</color> <b><color=#81B4FF>{0}</color></b>", _condition.GlobalUName), style, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight+3f));//EditorStyles.linkLabel);
 
-            _reorderableList?.DoLayoutList();
+            _conditionReorderableList?.DoLayoutList();
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
@@ -80,7 +247,7 @@ namespace HLab.H_Common.H_Editor
         {
             _title = string.Empty;
             _condition = null;
-            _reorderableList = null;
+            _conditionReorderableList = null;
             _conditions.Clear();
         }
 
@@ -130,11 +297,14 @@ namespace HLab.H_Common.H_Editor
         private float OnElementHeightHandler(int index)
         {
             if (_conditions[index]._condition.Type == H_EConditionType.CONDITION)
-                return _conditions[index]._reorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 2.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
-            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH 
+                return _conditions[index]._conditionReorderableList.GetHeight() + EditorGUIUtility.singleLineHeight * 2.5f;//(_conditions[index]._conditions.Count+6) * EditorGUIUtility.singleLineHeight;
+            else if (_conditions[index]._condition.Type == H_EConditionType.ON_EVENT_DISPATCH
                 || _conditions[index]._condition.Type == H_EConditionType.LISTEN_QUEST
                 || _conditions[index]._condition.Type == H_EConditionType.TIMER)
                 return EditorGUIUtility.singleLineHeight * 4 + 10;
+            else if (_conditions[index]._condition.Type == H_EConditionType.CHECK_VAR
+                || _conditions[index]._condition.Type == H_EConditionType.ON_CHANGE_VAR)
+                return EditorGUIUtility.singleLineHeight * 3 + 10 + _conditions[index]._valueListEditor.Height;
 
             return EditorGUIUtility.singleLineHeight * 3 + 10;
         }
@@ -376,10 +546,17 @@ namespace HLab.H_Common.H_Editor
 
             rect.x += rect.width;
 
-            EditorGUI.BeginChangeCheck();
-            object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[2]);
-            if (EditorGUI.EndChangeCheck())
-                _conditions[index]._condition.UpdateParam(2, param4);
+            EditorGUI.Popup(rect, 0, new string[] { "fix value","cvar value"  });
+
+            rect.x = origin.x;
+            rect.width = origin.width;
+            rect.y += EditorGUIUtility.singleLineHeight;
+
+            _conditions[index]._valueListEditor?.Draw(rect);
+            //EditorGUI.BeginChangeCheck();
+            //object param4 = DrawFieldByType(rect, _conditions[index]._condition.Params[2]);
+            //if (EditorGUI.EndChangeCheck())
+            //    _conditions[index]._condition.UpdateParam(2, param4);
         }
 
         private string RemoveForbiddenCharacters(string name)
@@ -391,7 +568,7 @@ namespace HLab.H_Common.H_Editor
         {
             rect.width = origin.width;
 
-            _conditions[index]._reorderableList.DoList(rect);
+            _conditions[index]._conditionReorderableList.DoList(rect);
         }
 
         private void DrawEventDispatch(Rect rect, Rect origin, int index)
@@ -517,8 +694,14 @@ namespace HLab.H_Common.H_Editor
             rect.x = origin.x;
             rect.width = origin.width;
             rect.y += EditorGUIUtility.singleLineHeight;
-            EditorGUI.TextField(rect, "Event Name:", "ON_COMPLETE");
-            //EditorGUI.Popup(rect, 0, new string[] { "ON_TUTORIAL_COMPLETE", "ON_GAME_OVER" });
+            EditorGUI.BeginChangeCheck();
+            string param1 = (string)_conditions[index]._condition.Params[1];
+            param1 = EditorGUI.TextField(rect, "Event Name:", param1);
+            if (EditorGUI.EndChangeCheck())
+            {
+                _conditions[index]._condition.UpdateParam(1, param1);
+            }
+                //EditorGUI.Popup(rect, 0, new string[] { "ON_TUTORIAL_COMPLETE", "ON_GAME_OVER" });
         }
 
         private UnityEngine.Object GetObjectByString(string objID)

@@ -61,5 +61,9 @@
       <n>new_bool (0)</n>
       <v xsi:type="xsd:boolean">false</v>
     </o>
+    <o a="797" f="PERSISTENT">
+      <n>coins</n>
+      <v xsi:type="xsd:int">0</v>
+    </o>
   </os>
 </cvar_data>

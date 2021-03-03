@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
+using Mup.Multilanguage.Plugins;
 
 namespace HLab.H_QuestSystem
 {
@@ -53,13 +54,17 @@ namespace HLab.H_QuestSystem
         {
             get
             {
-                return string.Format("{0}.{1}", Group != null ? Group.Name : string.Empty, UName); 
+                return string.Format("quest.{0}.{1}", Group != null ? Group.Name : string.Empty, UName); 
             }
         }
 
+        //[XmlArray("il")]
+        //[XmlArrayItem("i")]
+        //public List<H_QuestInfo> Info { get; set; } = new List<H_QuestInfo>();
+
         [XmlArray("il")]
         [XmlArrayItem("i")]
-        public List<QuestInfo> Info { get; set; } = new List<QuestInfo>();
+        public List<string> Info { get; set; } = new List<string>();
 
         [XmlElement("sc")]
         public H_Condition StartCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UName = "start" };
@@ -68,6 +73,8 @@ namespace HLab.H_QuestSystem
         [XmlElement("fc")]
         public H_Condition FailCondition { get; set; } = new H_Condition() { Type = H_EConditionType.CONDITION, UName = "fail" };
 
+        [XmlAttribute("v")]
+        public bool IsVisible { get; set; }
 
         private H_DataGroup<H_Quest, H_PersistentQuestData> _group;
         [XmlIgnore]
@@ -122,6 +129,54 @@ namespace HLab.H_QuestSystem
             StartCondition.StopListenConditions();
             TaskCondition.StopListenConditions();
             FailCondition.StopListenConditions();
+        }
+
+        public void AddInfo(string info)
+        {
+            Info.Add(info);
+            this.DispatchEvent(ES_Event.ON_UPDATE);
+        }
+
+        public void InsertInfo(int index, string info)
+        {
+            Info.Insert(index, info);
+            this.DispatchEvent(ES_Event.ON_UPDATE);
+        }
+
+        public void UpdateInfo(int index, string info)
+        {
+            if(index >= 0 && index < Info?.Count)
+            {
+                Info[index] = info;
+
+                this.DispatchEvent(ES_Event.ON_UPDATE);
+            }
+        }
+
+        public void RemoveInfoAt(int index)
+        {
+            if (index >= 0 && index < Info?.Count)
+            {
+                Info.RemoveAt(index);
+
+                this.DispatchEvent(ES_Event.ON_UPDATE);
+            }
+        }
+
+        public string GetQuestInfoAt(int index)
+        {
+            if (index >= 0 && index < Info?.Count)
+                return ML_Reader.GetText(Info[index]);
+
+            return string.Empty;
+        }
+
+        public string FormatQuestInfoAt(int index, params object[] args)
+        {
+            if (index >= 0 && index < Info?.Count)
+                return string.Format(ML_Reader.GetText(Info[index]), args);
+
+            return string.Empty;
         }
 
         private void OnConditionChangeValueHandler(ES_Event ev)
@@ -202,8 +257,8 @@ namespace HLab.H_QuestSystem
             q.TaskCondition = this.TaskCondition.Clone(string.Empty);
             q.FailCondition = this.FailCondition.Clone(string.Empty);
 
-            foreach (QuestInfo info in Info)
-                q.Info.Add(info.Clone());
+            foreach (string info in Info)
+                q.Info.Add(info);
 
             return q;
         }

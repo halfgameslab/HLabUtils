@@ -1,4 +1,6 @@
 ﻿using HLab.H_Common.H_Editor;
+using Mup.Multilanguage.Plugins;
+using System;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -29,11 +31,13 @@ namespace HLab.H_QuestSystem.H_Editor
             {
                 CurrentQuest = quest;
 
-                _infoList = new ReorderableList(quest.Info, typeof(QuestInfo))
+                _infoList = new ReorderableList(quest.Info, typeof(string))
                 {
                     drawHeaderCallback = OnDrawHeaderHandler,
                     drawElementCallback = OnDrawElementHandler,
-                    elementHeightCallback = OnElementHeightHandler
+                    elementHeightCallback = OnElementHeightHandler,
+                    onAddCallback = OnAddInfoElementCallback,
+                    onRemoveCallback = OnRemoveInfoElementCallback
                 };
 
                 _start.Start(quest.StartCondition, "Start Conditions");
@@ -45,6 +49,30 @@ namespace HLab.H_QuestSystem.H_Editor
             {
                 Clear();
             }
+        }
+
+        private void OnAddInfoElementCallback(ReorderableList list)
+        {
+            string info = ObjectNamesManager.GetUniqueName(CurrentQuest.Info.ToArray(), string.Format("@quest_{0}_info(0)", CurrentQuest.GlobalUName));
+
+            ML_Reader.SetText(info, "insert quest info here");
+
+            if (list.index > 0)
+            {
+                CurrentQuest.InsertInfo(list.index + 1, info);
+                list.index++;
+            }
+            else
+            {
+                CurrentQuest.AddInfo(info);
+                list.index = list.count - 1;
+            }
+        }
+
+        private void OnRemoveInfoElementCallback(ReorderableList list)
+        {
+            ML_Reader.RemoveText(CurrentQuest.Info[list.index]);
+            CurrentQuest.RemoveInfoAt(list.index);
         }
 
         public void Clear()
@@ -147,23 +175,85 @@ namespace HLab.H_QuestSystem.H_Editor
 
         private float OnElementHeightHandler(int index)
         {
-            return EditorGUIUtility.singleLineHeight * 2 + 5f;
+            return EditorGUIUtility.singleLineHeight + 5f;
         }
 
+        private bool _showStringID = false;
         void OnDrawHeaderHandler(Rect rect)
         {
             rect.width -= 19;
             EditorGUI.LabelField(rect, "Quest Info");
             rect.x += rect.width;
             rect.width = 19;
-            EditorGUI.Toggle(rect, true);
+            _showStringID = EditorGUI.Toggle(rect, _showStringID);
         }
+        //void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
+        //{
+        //    rect.height = EditorGUIUtility.singleLineHeight;
+
+        //    string name = CurrentQuest.Info[index].Name??string.Empty;
+        //    string desc = CurrentQuest.Info[index].Description??string.Empty;
+
+        //    if (!_showStringID)
+        //    {
+        //        name = ML_Reader.GetText(name);
+        //        desc = ML_Reader.GetText(desc);
+        //    }
+
+        //    EditorGUI.BeginChangeCheck();
+        //    name = EditorGUI.TextField(rect, "Name:", name);
+        //    if(EditorGUI.EndChangeCheck())
+        //    {
+        //        if(_showStringID)
+        //        {
+        //            CurrentQuest.UpdateInfo(index, name, CurrentQuest.Info[index].Description);
+        //        }
+        //        else
+        //        {
+        //            ML_Reader.SetText(CurrentQuest.Info[index].Name, name);
+        //        }
+        //    }
+        //    rect.y += rect.height;
+        //    EditorGUI.BeginChangeCheck();
+        //    desc = EditorGUI.TextField(rect, "Description:", desc);
+        //    if (EditorGUI.EndChangeCheck())
+        //    {
+        //        if (_showStringID)
+        //        {
+        //            CurrentQuest.UpdateInfo(index, CurrentQuest.Info[index].Name, desc);
+        //        }
+        //        else
+        //        {
+        //            ML_Reader.SetText(CurrentQuest.Info[index].Description, desc);
+        //        }
+        //    }
+
+        //}
+
         void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
             rect.height = EditorGUIUtility.singleLineHeight;
-            CurrentQuest.Info[index].Name = EditorGUI.TextField(rect, "Name:", CurrentQuest.Info[index].Name);
-            rect.y += rect.height;
-            CurrentQuest.Info[index].Description = EditorGUI.TextField(rect, "Description:", CurrentQuest.Info[index].Description);
+
+            string info = CurrentQuest.Info[index] ?? string.Empty;
+
+            if (!_showStringID)
+            {
+                info = ML_Reader.GetText(info);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            info = EditorGUI.TextField(rect, "Info:", info);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (_showStringID)
+                {
+                    CurrentQuest.UpdateInfo(index, info);
+                }
+                else
+                {
+                    ML_Reader.SetText(CurrentQuest.Info[index], info);
+                }
+            }
         }
 
     }

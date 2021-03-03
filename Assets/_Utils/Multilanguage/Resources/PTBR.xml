@@ -1,4 +1,4 @@
-﻿<strings>
+<strings>
   <string id="@generic_label_empty"><![CDATA[Vazio]]></string>
   <string id="@generic_label_start"><![CDATA[Iniciar]]></string>
   <string id="@generic_label_options"><![CDATA[Opções]]></string>
@@ -7,17 +7,14 @@
   <string id="@generic_label_close"><![CDATA[Fechar]]></string>
   <string id="@generic_label_gotit"><![CDATA[Entendi]]></string>
   <string id="@generic_label_switchUser"><![CDATA[Trocar usuário]]></string>
-
   <string id="@generic_label_confirm"><![CDATA[Confirmar]]></string>
   <string id="@generic_label_cancel"><![CDATA[Cancelar]]></string>
   <string id="@generic_label_ok"><![CDATA[OK]]></string>
   <string id="@generic_label_try_again"><![CDATA[Tentar novamente]]></string>
-  
   <string id="@generic_label_menu"><![CDATA[Menu]]></string>
   <string id="@generic_label_continue"><![CDATA[Continuar]]></string>
   <string id="@generic_label_restart"><![CDATA[Reiniciar]]></string>
   <string id="@generic_label_paused"><![CDATA[Parado]]></string>
-  
   <string id="@generic_label_quality"><![CDATA[Qualidade Visual]]></string>
   <string id="@generic_label_music"><![CDATA[Música]]></string>
   <string id="@generic_label_sound"><![CDATA[Sons]]></string>
@@ -28,302 +25,14 @@
   <string id="@generic_label_mid_level"><![CDATA[Média]]></string>
   <string id="@generic_label_high_level"><![CDATA[Alta]]></string>
   <string id="@generic_label_quit_game"><![CDATA[Sair do Jogo]]></string>
-  
   <string id="@generic_quest_collect"><![CDATA[Coletar]]></string>
   <string id="@generic_quest_finished"><![CDATA[Completa]]></string>
   <string id="@generic_quest_collected"><![CDATA[Coletada]]></string>
   <string id="@generic_quest_incompleted"><![CDATA[Incompleta]]></string>
-
   <string id="@game_over_score"><![CDATA[<size=90><color=#AAAA00>{0}</color></size><br>Pontuação]]></string>
-
-  <string id="@nfc_message_label"><![CDATA[Posicione o seu cartão de acesso USIMINAS na parte de trás de seu dispositivo!]]></string>
-  <string id="@nfc_not_found_label"><![CDATA[Usuário não encontrado!]]></string>
-  <string id="@nfc_welcome_label"><![CDATA[Bem Vindo {0}]]></string>
-  <string id="@nfc_vefify_label"><![CDATA[Verificando dados do cartão!]]></string>
-  <string id="@nfc_net_error_label"><![CDATA[Não foi possível conectar ao servidor! Verifique a sua conexão de internet.]]></string>
-
-  <string id="@load_as_guest_alert"><![CDATA[Entrar como convidado?]]></string>
-
   <string id="@quest_name_d_01"><![CDATA[Tutorial Completo]]></string>
   <string id="@quest_desc_d_01"><![CDATA[Completar todos os 3 Tutorias]]></string>
-
-  <string id="@quest_desc_d_02"><![CDATA[Pontuação maxima :D]]></string>
-  <string id="@quest_name_d_02"><![CDATA[Complete uma fase com 3 estrelas]]></string>
-
-  <string id="@quest_desc_d_03"><![CDATA[Começamos bem]]></string>
-  <string id="@quest_name_d_03"><![CDATA[Colete sua primeira estrela]]></string>
-
-  <string id="@quest_desc_d_04"><![CDATA[Tempo é dinheiro]]></string>
-  <string id="@quest_name_d_04"><![CDATA[Atenda simultaneamente 3 clientes]]></string>
-
-  <string id="@quest_desc_d_05"><![CDATA[Um companheiro]]></string>
-  <string id="@quest_name_d_05"><![CDATA[Complete o primeiro tutorial e desbloqueie o Engenheiro para te auxiliar]]></string>
-
-  <string id="@quest_desc_d_06"><![CDATA[Minha equipe]]></string>
-  <string id="@quest_name_d_06"><![CDATA[Complete o segundo tutorial e desbloqueie o Assistente para te auxiliar]]></string>
-
-  <string id="@quest_desc_d_07"><![CDATA[Cafééééé!!]]></string>
-  <string id="@quest_name_d_07"><![CDATA[Agilize o tempo do jogo. - O que acontece se clicar na cafeteira?!]]></string>
-
-  <string id="@quest_desc_d_08"><![CDATA[Todos felizes.]]></string>
-  <string id="@quest_name_d_08"><![CDATA[Deixe 5 clientes felizes em um unico mapa]]></string>
-  
-  <string id="@quest_name_e_01"><![CDATA[Atenda {0}/{1} clientes.]]></string>
-  <string id="@quest_desc_e_01"><![CDATA[Atenda {0}/{1} clientes.]]></string>
-
-  <string id="@quest_name_e_02"><![CDATA[Emita {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_02"><![CDATA[Emita {0}/{1} pedidos.]]></string>
-
-  <string id="@quest_name_e_03"><![CDATA[Complete {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_03"><![CDATA[Complete {0}/{1} pedidos antes que o tempo expire.]]></string>
-
-  <string id="@quest_name_e_04"><![CDATA[Analise {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_04"><![CDATA[Analise {0}/{1} pedidos antes que o tempo expire.]]></string>
-
-  <string id="@quest_name_e_05"><![CDATA[Termine {0}/{1} analises técnicas.]]></string>
-  <string id="@quest_desc_e_05"><![CDATA[Termine {0}/{1} analises com o controle integrado antes que o tempo do pedido expire.]]></string>
-
-  <string id="@quest_name_e_06"><![CDATA[Complete {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_06"><![CDATA[Complete informações com o cliente {0}/{1} vezes.]]></string>
-
-  <string id="@quest_name_e_07"><![CDATA[Envie {0}/{1} pedidos para analise técnica.]]></string>
-  <string id="@quest_desc_e_07"><![CDATA[Envie {0}/{1} pedidos para analise com o controle integrado.]]></string>
-
-  <string id="@quest_name_e_08"><![CDATA[Devolva {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_08"><![CDATA[Devolva {0}/{1} pedidos para o cliente.]]></string>
-
-  <string id="@quest_name_e_09"><![CDATA[Aprove {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_09"><![CDATA[Consiga aprovação de {0}/{1} pedidos com o cliente.]]></string>
-
-  <string id="@quest_name_e_10"><![CDATA[Inicie {0}/{1} analises técnicas.]]></string>
-  <string id="@quest_desc_e_10"><![CDATA[Inicie o processo de analise técnica em {0}/{1} pedidos.]]></string>
-
-  <string id="@quest_name_e_11"><![CDATA[Colete {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_11"><![CDATA[Colete {0}/{1} pedidos emitidos pelo assistente.]]></string>
-
-  <string id="@quest_name_e_12"><![CDATA[Arquive {0}/{1} pedidos.]]></string>
-  <string id="@quest_desc_e_12"><![CDATA[Arquive {0}/{1} pedidos que falharam.]]></string>
-
-  <string id="@level_01_desc"><![CDATA[Está fase tem como objetivo apresentar 2 membros importantes da área de Vendas. Estes são o Gerente de Vendas e o Analista de Vendas. Será dado ênfase à atribuição do analista quando do recebimento de uma consulta de viabilidade técnica do cliente e o primeiro passo para sua análise.]]></string>
-  <string id="@level_02_desc"><![CDATA[Você conhecerá um novo membro da equipe Usiminas que apoia Vendas em suas análises de viabilidade técnica. Este é o Engenheiro de produto.]]></string>
-  <string id="@level_03_desc"><![CDATA[Você está ficando cheio de clientes. O analista precisará de apoio para executar atendimento a todos os clientes e atendê-los com eficiência. Para isso será apresentado mais um membro da equipe de vendas, este é o Assistente Comercial.]]></string>
-  <string id="@level_05_desc"><![CDATA[Atenção, os pedidos a partir de agora virão com mais características técnica como Largura, Comprimento e Qualidade Superficial. Cada uma das especificacoes apresentadas no pedido sao de extrema importancia para a avaliação técnica de viabilidade técnica.]]></string>
-  <string id="@level_07_desc"><![CDATA[Atenção, os pedidos a partir de agora virão com mais características técnica como Qualidade Superficial e Tolerqncia de Forma. Cada uma das especificacoes apresentadas no pedido sao de extrema importancia para a avaliação técnica de viabilidade técnica.]]></string>
-  <string id="@level_09_desc"><![CDATA[Atenção, os pedidos a partir de agora virão com mais uma característica técnica que é o Revestimento. Cada uma das especificações apresentadas no pedido eh de extrema importância para avaliação técnica.]]></string>
-  
-  
-  <string id="@tutorial_f01_p01"><![CDATA[Chefe: Bem vindo ANALISTA, somos a empresa Usiminas.]]></string>
-  <string id="@tutorial_f01_p02"><![CDATA[Chefe: Sou gestor do departamento de vendas e vim recebê-lo.]]></string>
-  <string id="@tutorial_f01_p03"><![CDATA[Chefe: Imagino que queira saber o que esperamos de você, correto?]]></string>
-  <string id="@tutorial_f01_p04"><![CDATA[Analista: Muito obrigado! Claro, gostaria de saber."]]></string>
-  <string id="@tutorial_f01_p05"><![CDATA[Chefe: Você foi escolhido para compor a equipe de vendas, portanto, terá várias atribuições!]]></string>
-  <string id="@tutorial_f01_p06"><![CDATA[Chefe: Que tal começarmos com você atendendo aquele primeiro cliente?]]></string>
-  <string id="@tutorial_f01_p07"><![CDATA[Você desbloqueou o Analista Comercial: Ele será responsável por realizar o atendimento dos clientes que chegarem ao escritório e iniciar a análise de viabilidade técnica do pedido.]]></string>
-  <string id="@tutorial_f01_p08"><![CDATA[Lembre-se de consultar a matriz de responsabilidades disponível pelo RH para conhecer a fundo todas as atribuições de um Analista Comercial.]]></string>
-  <string id="@tutorial_f01_p09"><![CDATA[Chefe: Clique no botão Atender para recebê-lo. (se o botão nao estiver disponivel clique no cliente que ele aparecerá)]]></string>
-  <string id="@tutorial_f01_p10"><![CDATA[Analista: Bom dia, em que posso ajudar?]]></string>
-  <string id="@tutorial_f01_p11"><![CDATA[Cliente: Tenho interesse em comprar uma bobina de ferro para o meu negócio que vai muito bem.]]></string>
-  <string id="@tutorial_f01_p12"><![CDATA[Analista: Excelente! Porém, a Usiminas trabalha com soluções em Aço, e tenho certeza que vamos atender sua necessidade.]]></string>
-  <string id="@tutorial_f01_p13"><![CDATA[Analista: Hoje a Usiminas trabalha com uma grande variedade de produtos que podem ser customizados em mais de 100 características técnicas.]]></string>
-  <string id="@tutorial_f01_p14"><![CDATA[Analista: Me fale mais sobre o que você está buscando.]]></string>
-  <string id="@tutorial_f01_p15"><![CDATA[Cliente: Perfeitamente, te entrego este pedido com as informações técnicas que preciso saber se vocês da Usiminas conseguem produzir.]]></string>
-  <string id="@tutorial_f01_p16"><![CDATA[Analista: Vou checar internamente e te retorno com um parecer em breve.]]></string>
-  <string id="@tutorial_f01_p17"><![CDATA[Pensamento Analista: (E agora, o que eu faço com todas essas informações?!?)]]></string>
-  <string id="@tutorial_f01_p18"><![CDATA[Chefe: Caro Analista, percebi que está com cara de dúvida, posso orientá-lo de alguma forma?]]></string>
-  <string id="@tutorial_f01_p19"><![CDATA[Analista: Estou com as especificações técnicas de um pedido que acabo de receber, e não sei como avaliar se somos capazes de produzir.]]></string>
-  <string id="@tutorial_f01_p20"><![CDATA[Chefe: Entendo! A primeira coisa que você deve fazer quando recebe um pedido é verificar se todas as informações técnicas estão apresentadas e se não há dúvida quanto a elas. Depois que o pedido estiver completo você verificará se as condições técnicas consultadas pelo cliente são Condição Padrão ou não.]]></string>
-  <string id="@tutorial_f01_p21"><![CDATA[Chefe: Para descobrir isso, verifique as especificações usando o Manual Corporativo de Produtos em seu computador.]]></string>
-  <string id="@tutorial_f01_p22"><![CDATA[Clique no botão Examinar para prosseguir.]]></string>
-  <string id="@tutorial_f01_p23"><![CDATA[Clique no botão Pedido para prosseguir.]]></string>
-  <string id="@tutorial_f01_p24"><![CDATA[Chefe: Essa parte do pedido informa o Status do Pedido.]]></string>
-  <string id="@tutorial_f01_p25"><![CDATA[Chefe: Como Pendente Análise ou Condição Padrao.]]></string>
-  <string id="@tutorial_f01_p26"><![CDATA[Chefe: Essa parte do pedido informa o Tipo de Produto.]]></string>
-  <string id="@tutorial_f01_p27"><![CDATA[Chefe: Essa parte do pedido informa as Especificações do Pedido.]]></string>
-  <string id="@tutorial_f01_p28"><![CDATA[Chefe: Esse é o botão de Ação, clique nele para prosseguirmos.]]></string>
-  <string id="@tutorial_f01_p29"><![CDATA[Analista: Estou com a resposta que você precisava! O pedido que você solicitou é CONDIÇÃO PADRÃO.]]></string>
-  <string id="@tutorial_f01_p30"><![CDATA[Analista: Sabendo disso, o que acha de discutirmos as condições comerciais para viabilizarmos este negócio?]]></string>
-  <string id="@tutorial_f01_p31"><![CDATA[Cliente: Sim, vamos em frente!]]></string>
-    
-  <string id="@tutorial_f02_p01"><![CDATA[Pensamento Analista: Meu gestor comentou que quando as especificações são Não Padrão preciso consultar a viabilidade técnica.]]></string>
-  <string id="@tutorial_f02_p02"><![CDATA[Pensamento Analista: Mas quem fará isso para mim?]]></string>
-  <string id="@tutorial_f02_p03"><![CDATA[Chefe: A sim, esqueci-me de apresentar a pessoa que o ajudará nas analises de materiais Não Padrão.]]></string>
-  <string id="@tutorial_f02_p04"><![CDATA[Chefe: Este é o “Engenheiro de Produto” que será responsável por receber sua consulta de material não padrão.]]></string>
-  <string id="@tutorial_f02_p05"><![CDATA[Chefe: Ele também irá avaliar todas as especificações e capacidades das linhas de produção Usiminas.]]></string>
-  <string id="@tutorial_f02_p06"><![CDATA[Você desbloqueou o Engenheiro de Produto: Ele é um membro da equipe Usiminas localizado nas usinas.]]></string>
-  <string id="@tutorial_f02_p07"><![CDATA[Tem como uma de suas responsabilidades realizar a análise técnica das especificações informadas por Vendas através de Consulta Metalúrgica.]]></string>
-  <string id="@tutorial_f02_p08"><![CDATA[Respondendo de forma consolidada em um Parecer Técnico que varia de Viável Sem Restrições, Viável Com Restrições, Viável Sem/Com Restrições Experimental e Inviável.]]></string>
-  <string id="@tutorial_f02_p09"><![CDATA[Engenheiro de Produto: Olá, vi que está com um pedido não padrão.]]></string>
-  <string id="@tutorial_f02_p10"><![CDATA[Engenheiro de Produto: Deixe comigo este pedido que em breve lhe darei a resposta de viabilidade que chamamos de Parecer Técnico.]]></string>
-  <string id="@tutorial_f02_p11"><![CDATA[Engenheiro: Já estou com sua Consulta pronta, pode vir recebê-la.]]></string>
-  <string id="@tutorial_f02_p12"><![CDATA[Engenheiro: Agora voce tem em mãos o parecer técnico da usina sobre o material solicitado.]]></string>
-  <string id="@tutorial_f02_p13"><![CDATA[Engenheiro: Lembre-se de sempre informar ao cliente o parecer técnico pois esse pode apresentar restrições assim como caráter experimental.]]></string>
-  <string id="@tutorial_f02_p14"><![CDATA[Negociar com o Cliente]]></string>
-  <string id="@tutorial_f02_p15"><![CDATA[Viável Sem Restrição]]></string>
-  <string id="@tutorial_f02_p16"><![CDATA[Negociar com o Cliente]]></string>
-  
-  <string id="@tutorial_f03_p01"><![CDATA[Analista: Infelizmente as especificações do pedido solicitado por você não é viável. Contudo, temos uma variedade enorme de outras opções que poderiam suprir sua necessidade.]]></string>
-  <string id="@tutorial_f03_p02"><![CDATA[Cliente: Agradeço a atenção e o rápido retorno.Mas infelizmente não posso tomar uma decisão agora preciso replanejar. Obrigado!]]></string>
-  <string id="@tutorial_f03_p03"><![CDATA[Analista: Com certeza, fique à vontade. Estarei à disposição para encontrarmos uma alternativa ou discutir sobre novas oportunidades. Conte comigo!]]></string>
-  <string id="@tutorial_f03_p04"><![CDATA[Chefe: Olá, estou percebendo que você está diferente. Algum problema em especial?]]></string>
-  <string id="@tutorial_f03_p05"><![CDATA[Analista: Sim, estamos com muitos clientes, consultas e análises.]]></string>
-  <string id="@tutorial_f03_p06"><![CDATA[Analista: Neste ritmo não vou conseguir manter o atendimento ao cliente com a qualidade desejada.]]></string>
-  <string id="@tutorial_f03_p07"><![CDATA[Chefe: Já sei como vamos resolver esse problema!]]></string>
-  <string id="@tutorial_f03_p08"><![CDATA[Chefe: Aqui está o novo membro da equipe de vendas, ele assumirá o cargo de ASSISTENTE COMERCIAL]]></string>
-  <string id="@tutorial_f03_p09"><![CDATA[Chefe: Ele irá te auxiliar na interface com a usina e nos processos internos para alocação do pedido na produção, para as vendas bem sucedidas.]]></string>
-  <string id="@tutorial_f03_p10"><![CDATA[Chefe: Mas devo reforçar que ele tem função de suporte, para que voce consiga atender o maior número de clientes possível.]]></string>
-  <string id="@tutorial_f03_p11"><![CDATA[Você desbloqueou o Assistente Comercial: Ele será responsável em dar o suporte ao analista na abertura das consultas metalúrgicas.]]></string>
-  <string id="@tutorial_f03_p12"><![CDATA[Após a identificação de que o pedido não é Condição Padrão realizará a consulta técnica na usina e realizar a emissão do pedido após a negociação bem sucedida que resultou em uma venda pelo Analista."]]></string>
-  <string id="@tutorial_f03_p13"><![CDATA[Analista: Tenho certeza que com esse reforço nossa equipe se torna imbatível. Seja muito bem vindo.]]></string>
-  
-  <string id="@quiz_01_question_01_desc"><![CDATA[Quem é a pessoa em Vendas responsável por realizar a negociação com o cliente e examinar previamente o pedido?]]></string>
-  <string id="@quiz_01_question_01_answer_01"><![CDATA[Nao existe um integrante de Vendas responsável por essa atividade.]]></string>
-  <string id="@quiz_01_question_01_answer_02"><![CDATA[O integrante responsável por esta atividade é o Analista Comercial que realizará o atendimento é análise prévia do pedido.]]></string>
-  <string id="@quiz_01_question_01_answer_03"><![CDATA[O integrante de Vendas o Gerente de Vendas (Chefe) que além de atender o cliente realizará a análise previa do pedido.]]></string>
-  <string id="@quiz_01_question_01_answer_04"><![CDATA[A pessoa em Vendas responsável por essas atividades é o Assistente Comercial.]]></string>
-
-  <string id="@quiz_01_question_02_desc"><![CDATA[Ao receber o pedido qual é a primeira coisa a ser feita?]]></string>
-  <string id="@quiz_01_question_02_answer_01"><![CDATA[Avaliar se o pedido está completo e se não há dúvidas quanto às informações apresentadas.]]></string>
-  <string id="@quiz_01_question_02_answer_02"><![CDATA[Abrir uma Consulta Metalúrgica mesmo sem saber o que foi solicitado no pedido.]]></string>
-  <string id="@quiz_01_question_02_answer_03"><![CDATA[Já negociar o pedido mesmo sem ter certeza se a Usiminas tem capacidade ou não de produzir.]]></string>
-  <string id="@quiz_01_question_02_answer_04"><![CDATA[Solicitar ao Chefe que abra uma Consulta Metalúrgica para avaliar viabilidade técnica.]]></string>
-  
-  <string id="@quiz_01_question_03_desc"><![CDATA[Ao verificar que as condições solicitadas no pedido são CONDICÃO PADRÃO, o Analista já poderá afirmar ao cliente que Usiminas produz o material?]]></string>
-  <string id="@quiz_01_question_03_answer_01"><![CDATA[Sim, uma vez que material CONDIÇÃO PADRÃO é um item que não apresenta nenhum desafio para as linhas de produção da Usiminas e poderá ser produzido sem problemas.]]></string>
-  <string id="@quiz_01_question_03_answer_02"><![CDATA[Não, ele tem que perguntar o Assistente.]]></string>
-  <string id="@quiz_01_question_03_answer_03"><![CDATA[Não, ele tem que informar o Engenheiro.]]></string>
-  <string id="@quiz_01_question_03_answer_04"><![CDATA[Não, ele tem que fazer uma consulta metalurgica.]]></string>
-  
-  <string id="@quiz_01_question_04_desc"><![CDATA[Qual a função do Analista Comercial?]]></string>
-  <string id="@quiz_01_question_04_answer_01"><![CDATA[Responsável por realizar o atendimento do cliente e negociação comercial.Também responsavel por realizar a análise previa do pedido do cliente além de outras atribuicoes disponíveis na descrição de cargo disponível pelo RH da Usiminas.]]></string>
-  <string id="@quiz_01_question_04_answer_02"><![CDATA[Realizar abertura de consulta metalúrgica e pegar café para o chefe.]]></string>
-  <string id="@quiz_01_question_04_answer_03"><![CDATA[Avaliar se o pedido é viável ou inviável.]]></string>
-  <string id="@quiz_01_question_04_answer_04"><![CDATA[Nenhuma das opções acima.]]></string>
-  
-  
-  <string id="@quiz_02_question_01_desc"><![CDATA[Quando deverá ser feita uma consulta metalúrgica para o Controle Integrado?]]></string>
-  <string id="@quiz_02_question_01_answer_01"><![CDATA[Antes de analisar as condições técnicas do material.]]></string>
-  <string id="@quiz_02_question_01_answer_02"><![CDATA[Apenas para os casos em que as condições técnicas do material não forem CONDIÇÃO PADRÃO, ou seja NAO PADRÃO.]]></string>
-  <string id="@quiz_02_question_01_answer_03"><![CDATA[Em nenhum momento será necessário.]]></string>
-  <string id="@quiz_02_question_01_answer_04"><![CDATA[Quando o chefe solicitar.]]></string>
-  
-  <string id="@quiz_02_question_02_desc"><![CDATA[O que o engenheiro de produto faz com a consulta metalúrgica feita por vendas?]]></string>
-  <string id="@quiz_02_question_02_answer_01"><![CDATA[Avalia a capacidade de produção das linhas de laminação baseando - se nas especificações apresentadas na Consulta Metalúrgica.]]></string>
-  <string id="@quiz_02_question_02_answer_02"><![CDATA[Não faz nada.]]></string>
-  <string id="@quiz_02_question_02_answer_03"><![CDATA[Responde qualquer coisa.]]></string>
-  <string id="@quiz_02_question_02_answer_04"><![CDATA[Realiza a análise previa de identificação se o material é CONDIÇÃO PADRÃO ou NÃO PADRÃO.]]></string>
-  
-  <string id="@quiz_02_question_03_desc"><![CDATA[O que o Analista de Vendas deve fazer ao receber o parecer técnico da consulta metalúrgica?]]></string>
-  <string id="@quiz_02_question_03_answer_01"><![CDATA[Ignorar.]]></string>
-  <string id="@quiz_02_question_03_answer_02"><![CDATA[Apresentar ao cliente de forma clara o parecer técnico, este podendo apresentar restrições ou caráter experimental.]]></string>
-  <string id="@quiz_02_question_03_answer_03"><![CDATA[Imprimir e guardar na gaveta.]]></string>
-  <string id="@quiz_02_question_03_answer_04"><![CDATA[Informar o parecer técnico sem apresentar as restrições ou caráter experimental.]]></string>
-  
-  
-  <string id="@quiz_03_question_01_desc"><![CDATA[Qual é o papel do Assistente Comercial?]]></string>
-  <string id="@quiz_03_question_01_answer_01"><![CDATA[Pegar café para a equipe enquanto o analista faz a análise.]]></string>
-  <string id="@quiz_03_question_01_answer_02"><![CDATA[Fazer análise previa das condições técnicas do material enquanto o analista pega o café para a equipe.]]></string>
-  <string id="@quiz_03_question_01_answer_03"><![CDATA[Ficar jogar conversa fora com o engenheiro de produto.]]></string>
-  <string id="@quiz_03_question_01_answer_04"><![CDATA[Dar assistência à equipe de Vendas, em especial ao Analista, suportando - o nas atividades operacionais de Vendas após orientações pré-analisadas, além de outras atribuicoes disponíveis na descrição de cargo apresentada pelo RH da Usiminas.]]></string>
-  
-  <string id="@quiz_03_question_02_desc"><![CDATA[Após uma venda bem sucedida, como o Analista Comercial poderia proceder para viabilizar a colocacao do pedido vendido e ao mesmo tempo focar em novos negócios?"]]></string>
-  <string id="@quiz_03_question_02_answer_01"><![CDATA[Encaminhar o pedido para o Chefe para realizar emissão.]]></string>
-  <string id="@quiz_03_question_02_answer_02"><![CDATA[Encaminhar o pedido ao Engenheiro de Produto para realizar a emissão]]></string>
-  <string id="@quiz_03_question_02_answer_03"><![CDATA[Encaminhar o pedido para o Assistente Comercial realizar emissão.]]></string>
-  <string id="@quiz_03_question_02_answer_04"><![CDATA[Encaminhar pedido ao cliente para realizar emissão.]]></string>
-  
-  
-  <string id="@question_01_desc"><![CDATA[Você entendeu o problema e as necessidades do cliente. Ele lhe entregou uma lista de itens com várias especificações técnicas. Qual a ação seria mais indicada?]]></string>
-  <string id="@question_01_answer_01"><![CDATA[Fazer a análise técnica e comercial o mais rápido possível para dar retorno.]]></string>
-  <string id="@question_01_answer_02"><![CDATA[Solicitar que o assistente comercial comece o processo para cotar a viabilidade técnica de produção do material.]]></string>
-  <string id="@question_01_answer_03"><![CDATA[Verificar se as informações apresentadas pelo cliente são suficientes para se fazer uma análise técnica e comercial.]]></string>
-  <string id="@question_01_answer_04"><![CDATA[Não existe uma ação indicada.]]></string>
-
-  <string id="@question_02_desc"><![CDATA[Ao ter confirmado que não há as especificações técnicas suficientes na lista, o que fazer?]]></string>
-  <string id="@question_02_answer_01"><![CDATA[Abordar novamente o cliente a fim de receber o restante das informações.]]></string>
-  <string id="@question_02_answer_02"><![CDATA[Checar no Manual Corporativo de Produtos se os materiais configuram condição padrão.]]></string>
-  <string id="@question_02_answer_03"><![CDATA[Inventar da cabeça os dados faltantes.]]></string>
-  <string id="@question_02_answer_04"><![CDATA[Questionar o cliente porque não foi encaminhado de maneira correta o pedido.]]></string>
-
-  <string id="@question_03_desc"><![CDATA[Ao identificar que as informações mínimas necessárias para fazer uma cotação estão disponíveis no documento enviado pelo cliente, como prosseguir?]]></string>
-  <string id="@question_03_answer_01"><![CDATA[Solicitar que o engenheiro técnico abra o processo para analise técnica de produção.]]></string>
-  <string id="@question_03_answer_02"><![CDATA[Buscar no manual corporativo de produtos ou abrir uma cotação no sistema para identificar as condições técnicas de fornecimento.]]></string>
-  <string id="@question_03_answer_03"><![CDATA[Abrir uma consulta metalúrgica para identificar se as condições técnicas de fornecimento são viáveis.]]></string>
-  <string id="@question_03_answer_04"><![CDATA[Ligar para o Controle Integrado para descobrir se a Usiminas tem condições técnicas para fornecer o material.]]></string>
-
-  <string id="@question_04_desc"><![CDATA[Caso sua análise não indique que o material é padrão, como proceder para checar se conseguimos produzi-lo?]]></string>
-  <string id="@question_04_answer_01"><![CDATA[Devemos consultar ao Controle Integrado a viabilidade técnica de produção, uma vez que o material não é CONDIÇÃO PADRÃO.]]></string>
-  <string id="@question_04_answer_02"><![CDATA[Conferir se já existe parecer de condição de fornecimento no banco de dados, via conferência relacional ou ZCOT001.]]></string>
-  <string id="@question_04_answer_03"><![CDATA[Solicitar que o Assistente comercial busque nos meios internos da empresa alternativas de produção.]]></string>
-  <string id="@question_04_answer_04"><![CDATA[Encaminhar para a concorrência a proposta do cliente.]]></string>
-
-  <string id="@question_05_desc"><![CDATA[Uma vez que sua conferência ao sistema apontou que não existe ainda material analisado nas condições procuradas pelo cliente, como deve ser realizada esta consulta metalúrgica de material não padrão ao Controle Integrado?]]></string>
-  <string id="@question_05_answer_01"><![CDATA[Encaminhando de forma estruturada e por e-mail todas as informações necessárias para que o Controle Integrado possa analisar o caso.]]></string>
-  <string id="@question_05_answer_02"><![CDATA[Consultando o Controle Integrado por telefone acerca das condições de viabilidade de produção.]]></string>
-  <string id="@question_05_answer_03"><![CDATA[Abrindo Consulta Metalúrgica no sistema ou encaminhando para que seja feito pela equipe de atendimento ao cliente.]]></string>
-  <string id="@question_05_answer_04"><![CDATA[Convidar o cliente para visitar a sede par negociar condições de fornecimento.]]></string>
-
-  <string id="@question_06_desc"><![CDATA[Ao receber o Parecer Técnico (resposta da Consulta Metalúrgica) e este NÃO for INVIAVEL, qual seria a melhor abordagem?]]></string>
-  <string id="@question_06_answer_01"><![CDATA[Responder ao cliente conforme o parecer.]]></string>
-  <string id="@question_06_answer_02"><![CDATA[Responder ao cliente que os materiais são viáveis.]]></string>
-  <string id="@question_06_answer_03"><![CDATA[Preparar a proposta comercial para encaminhar ao cliente.]]></string>
-  <string id="@question_06_answer_04"><![CDATA[Convidar o cliente para visitar a sede par negociar condições de fornecimento.]]></string>
-
-  <string id="@question_07_desc"><![CDATA[Ao receber o Parecer Técnico (resposta da Consulta Metalúrgica) e este for INVIAVEL, qual seria a melhor abordagem?]]></string>
-  <string id="@question_07_answer_01"><![CDATA[Buscar entender melhor o caso do cliente para que futuramente seja possível uma análise de propostas alternativas a fim de atender à necessidade.]]></string>
-  <string id="@question_07_answer_02"><![CDATA[Responder o parecer conforme estiver descrito no sistema.]]></string>
-  <string id="@question_07_answer_03"><![CDATA[Buscar alternativas para oferecer ao cliente.]]></string>
-  <string id="@question_07_answer_04"><![CDATA[Indicar para o cliente que o pedido foi encaminhado errado e que ele deveria checar melhor as solicitações.]]></string>
-
-  <string id="@question_08_desc"><![CDATA[Agora que você detém todas as informações acerca do que foi solicitado pelo cliente e preparou a proposta comercial de forma adequada, o que deve ser feito?]]></string>
-  <string id="@question_08_answer_01"><![CDATA[Apenas encaminhar em anexo o formulário preenchido para o cliente.]]></string>
-  <string id="@question_08_answer_02"><![CDATA[Entrar em contato com o cliente para tratar por telefone as condições de fornecimento e tratar de questões comerciais.]]></string>
-  <string id="@question_08_answer_03"><![CDATA[Encontrar com o cliente para fechar negocio.]]></string>
-  <string id="@question_08_answer_04"><![CDATA[Encaminhar a proposta de maneira elegante e profissional ao cliente para começar as tratativas a fim de captar esta nova oportunidade para a Usiminas.]]></string>
-
-  <string id="@action_desc_01"><![CDATA[Atendimento iniciado.]]></string>
-  <string id="@action_desc_02"><![CDATA[--]]></string>
-  <string id="@action_desc_03"><![CDATA[Coletando informações iniciais do pedido.]]></string>
-  <string id="@action_desc_04"><![CDATA[Pedido recebido.]]></string>
-  <string id="@action_desc_04__"><![CDATA[Iniciando análise do pedido.]]></string>
-  <string id="@action_desc_05"><![CDATA[Solicitando informações faltantes ao cliente.]]></string>
-  <string id="@action_desc_06"><![CDATA[--]]></string>
-  <string id="@action_desc_07"><![CDATA[--]]></string>
-  <string id="@action_desc_08"><![CDATA[Informações foram coletadas.]]></string>
-  <string id="@action_desc_09"><![CDATA[Gerando consulta metalúrgica.]]></string>
-  <string id="@action_desc_10"><![CDATA[Analisando a consulta metalúrgica.]]></string>
-  <string id="@action_desc_10__"><![CDATA[Consulta metalúrgica finalizada.]]></string>
-  <string id="@action_desc_11"><![CDATA[Buscando parecer.]]></string>
-  <string id="@action_desc_11__"><![CDATA[Parecer encaminhado para o analista.]]></string>
-  
-  <string id="@action_desc_12"><![CDATA[Compondo análise comercial.]]></string>
-  <string id="@action_desc_12__"><![CDATA[Negociar com o cliente.]]></string>
-  <string id="@action_desc_13"><![CDATA[--]]></string>
-  <string id="@action_desc_14"><![CDATA[--]]></string>
-  <string id="@action_desc_15"><![CDATA[Pedido ganho.]]></string>
-  <string id="@action_desc_15__"><![CDATA[Pedido perdido.]]></string>
-  <string id="@action_desc_16"><![CDATA[Solicitando emissão de pedido ao assistente.]]></string>
-  <string id="@action_desc_17"><![CDATA[Atndimento finalizado.]]></string>
-  <string id="@action_desc_18"><![CDATA[Emitindo pedido.]]></string>
-
-  <string id="@action_button_desc_00"><![CDATA[Atender]]></string>
-  <string id="@action_button_desc_01"><![CDATA[--]]></string>
-  <string id="@action_button_desc_02"><![CDATA[--]]></string>
-  <string id="@action_button_desc_03"><![CDATA[--]]></string>
-  <string id="@action_button_desc_04"><![CDATA[--]]></string>
-  <string id="@action_button_desc_04__"><![CDATA[Analisar pedido.]]></string>
-  <string id="@action_button_desc_05"><![CDATA[Completar dados do pedido.]]></string>
-  <string id="@action_button_desc_06"><![CDATA[--]]></string>
-  <string id="@action_button_desc_07"><![CDATA[--]]></string>
-  <string id="@action_button_desc_08"><![CDATA[--]]></string>
-  <string id="@action_button_desc_09"><![CDATA[Abrir consulta metalúrgica.]]></string>
-  <string id="@action_button_desc_10"><![CDATA[Avaliar pedido técnico.]]></string>
-  <string id="@action_button_desc_11"><![CDATA[Tratar parecer técnico.]]></string>
-  
-  <string id="@action_button_desc_12"><![CDATA[Elaborar e apresentar proposta.]]></string>
-  <string id="@action_button_desc_13"><![CDATA[--]]></string>
-  <string id="@action_button_desc_14"><![CDATA[--]]></string>
-  <string id="@action_button_desc_15"><![CDATA[--]]></string>
-  <string id="@action_button_desc_16"><![CDATA[--]]></string>
-  <string id="@action_button_desc_17"><![CDATA[--]]></string>
-  <string id="@action_button_desc_18"><![CDATA[Emitir pedido.]]></string>
+  <string id="@quest_global.teste1_info(0)"><![CDATA[teste]]></string>
+  <string id="@quest_global.teste1_info(1)"><![CDATA[insert quest info here]]></string>
+  <string id="@quest_global.teste1_info(2)"><![CDATA[insert quest info here]]></string>
 </strings>

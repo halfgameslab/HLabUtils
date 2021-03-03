@@ -23,7 +23,7 @@ public static class ObjectNamesManager
     /// <summary>
     /// 
     /// </summary>
-    private static readonly char[] _forbiddenCharacters = new char[] { '[', ']', '.', '<', '>', '\0', ' ' };
+    private static readonly char[] _forbiddenCharacters = new char[] { '[', ']', '.', '<', '>', ',', '=', '!', '\\', '/', '\0', ' ' };
 
     /// <summary>
     /// Make a unique name using the provided name as a base.

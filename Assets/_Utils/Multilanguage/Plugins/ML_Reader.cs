@@ -72,6 +72,32 @@ namespace Mup.Multilanguage.Plugins
             return UNDEFINE;
         }
 
+        static public void SetText(string id, string t)
+        {
+            if (text.ContainsKey(id))
+            {
+                if (text[id] != t)
+                {
+                    text[id] = t;
+                    Save(text, Language);
+                }
+            }
+            else
+            {
+                text.Add(id, t);
+                Save(text, Language);
+            }
+        }
+
+        static public void RemoveText(string id)
+        {
+            if (text.ContainsKey(id))
+            {
+                text.Remove(id);
+                Save(text, Language);
+            }
+        }
+
         static public string Save(Dictionary<string, string> newList, Lang l = Lang.EN)
         {
             XmlDocument xml = new XmlDocument();
@@ -88,7 +114,7 @@ namespace Mup.Multilanguage.Plugins
                 xml.FirstChild.AppendChild(element);
             }
             
-            xml.Save(Application.dataPath+"/MUP/Multilanguage/Resources/"+LANG[(int)l]+".xml");
+            xml.Save(Application.dataPath+"/_Utils/Multilanguage/Resources/"+LANG[(int)l]+".xml");
             Debug.Log("Arquivo salvo com sucesso em: "+ Application.dataPath + "/MUP/Multilanguage/Resources/" + LANG[(int)l] + ".xml");
 
             CreateTextListFromXML(xml);
