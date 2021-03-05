@@ -17,6 +17,8 @@ namespace HLab.H_Common.H_Editor
     }
     public class H_ValueListEditor
     {
+        private Color _missingColor = new Color(0.9f, 0.35f, 0.35f);
+
         private ReorderableList _valuesReorderableList;
 
         public float Height { get { return _valuesReorderableList != null ? _valuesReorderableList.GetHeight() : 0; } }
@@ -25,29 +27,50 @@ namespace HLab.H_Common.H_Editor
         {
             _valuesReorderableList = new ReorderableList(values, typeof(H_Val))
             {
+                elementHeightCallback = OnElementHeightHandler,
                 drawHeaderCallback = OnDrawElementHeaderHandler,
                 drawElementCallback = OnDrawElementHandler
                 
             };
         }
 
+        private float OnElementHeightHandler(int index)
+        {
+            return EditorGUIUtility.singleLineHeight * 2 +4f;
+        }
+
         private void OnDrawElementHeaderHandler(Rect rect)
         {
             EditorGUI.LabelField(rect, "Values");
+            rect.x += rect.width - (rect.width / 4f);
+            rect.width = rect.width / 4f;
+            EditorGUI.Popup(rect, 0, new string[] { "Fixed", "Random Value", "Random Interval" });
         }
 
         private void OnDrawElementHandler(Rect rect, int index, bool isActive, bool isFocused)
         {
-            float width = rect.width;
-            rect.width = width/4;
+            string fullname = ((H_Val)_valuesReorderableList.list[index]).Value??"Int32.global.undefined";
+            string varUID = "1";
+            Rect origin = rect;
 
-            EditorGUI.Slider(rect, 20, 1, 100);
-            rect.x += rect.width;
-            EditorGUI.Popup(rect, 0, new string[] { "String" });
-            rect.x += rect.width;
-            EditorGUI.Popup(rect, 0, new string[] { "global" });
-            rect.x += rect.width;
-            EditorGUI.Popup(rect, 0, new string[] { "var" });
+            //float width = rect.width;
+            //rect.width = width/4;
+
+            //EditorGUI.Slider(rect, 20, 1, 100);
+            //rect.x += rect.width;
+            rect.height = EditorGUIUtility.singleLineHeight;
+
+            if (DrawVarCondition(rect, origin, "Probability", ref fullname, ref varUID))
+            {
+                ((H_Val)_valuesReorderableList.list[index]).Value = fullname;
+            }
+
+            rect.y += rect.height;
+
+            if (DrawVarCondition(rect, origin, "Value", ref fullname, ref varUID))
+            {
+                ((H_Val)_valuesReorderableList.list[index]).Value = fullname;
+            }
         }
 
         public void Draw(Rect rect)
@@ -55,45 +78,102 @@ namespace HLab.H_Common.H_Editor
             _valuesReorderableList.DoList(rect);
         }
 
-        private bool DrawVarCondition(Rect rect, Rect origin, int index, ref string varFullname, ref string varUID)
+        private bool DrawVarCondition(Rect rect, Rect origin, string label, ref string varFullname, ref string varUID)
         {
             string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
             string[] varTypes = CVarSystem.AllowedTypes;
 
             string[] param0 = varFullname.Split('.');
-            
+            if(param0.Length == 2)
+            {
+                param0 = new string[] { param0[0], param0[1], "undefined" };
+            }
+            else if (param0.Length == 1)
+            {
+                param0 = new string[] { param0[0], "global", "undefined" };
+            }
+            else if (param0.Length == 0)
+            {
+                param0 = new string[] { "Int32", "global", "undefined" };
+            }
+
             //rect.width = 18;
             //_conditions[index]._showStringFullname = EditorGUI.Toggle(rect, _conditions[index]._showStringFullname);
             //rect.x += 18;
 
             rect.width = (origin.width) / 5;
 
+            EditorGUI.LabelField(rect, label);
+            rect.x += rect.width;
+            EditorGUI.Popup(rect, 0, new string[] { "CVar", "Value", "Method" });
+            rect.x += rect.width+4;
+            rect.width = 18;
+            EditorGUI.Toggle(rect, true);
+            rect.x += rect.width;
+            rect.width = (origin.width) / 5 - 6;
+
             if (true)
             {
                 int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == param0[0]);
-                
-                if (CheckablePopup(rect, index, varTypes, out index))
+                if (i < 0)
                 {
-
-                    return true;
-                    //_conditions[index]._condition.UpdateParam(2, GetNewDefaultValue(varTypes[newValue]));
+                    param0[0] = varTypes[0];
+                    i = 0;
+                }
+                if (CheckablePopup(rect, i, varTypes, out i))
+                {
+                    param0[0] = varTypes[i];
                 }
 
                 rect.x += rect.width;
 
-                if(CheckablePopup(rect, index, groupsNames, out index))
+                i = Array.FindIndex(groupsNames, 0, groupsNames.Length, e => e == param0[1]);
+                if (i < 0)
                 {
-                    return true;
+                    List<string> l = new List<string>();
+                    l.Add("<missing>" + param0[1]);
+                    l.AddRange(groupsNames);
+                    groupsNames = l.ToArray();
+                    i = 0;
+                    GUI.contentColor = _missingColor;
+                }
+
+                if (CheckablePopup(rect, i, groupsNames, out i))
+                {
+                    param0[1] = groupsNames[i];
                 }
 
                 rect.x += rect.width;
+                GUI.contentColor = Color.white;
 
-                if(CheckablePopup(rect, index, CVarSystem.GetVarNamesByType(param0[0], param0[1]), out index))
+                string[] vars = CVarSystem.GetVarNamesByType(param0[0], param0[1]);
+                i = Array.FindIndex(vars, 0, vars.Length, e => e == param0[2]);
+                if (i < 0)
                 {
+                    List<string> l = new List<string>();
+                    l.Add("<missing>" + param0[2]);
+                    l.AddRange(vars);
+                    vars = l.ToArray();
+                    i = 0;
+                    GUI.contentColor = _missingColor;
+                }
+
+                if (CheckablePopup(rect, i, vars, out i))
+                {
+                    param0[2] = vars[i];
+                }
+
+                GUI.contentColor = Color.white;
+
+                string fullname = CVarSystem.GetFullName(param0[2], param0[0], param0[1]);
+
+                if (varFullname != fullname)
+                {
+                    varFullname = fullname;
                     return true;
                 }
 
-
+                return false;
             }
             else
             {
@@ -440,11 +520,17 @@ namespace HLab.H_Common.H_Editor
             string[] param0 = ((string)_conditions[index]._condition.Params[0]).Split('.');
             CVarCommands param3 = (CVarCommands)_conditions[index]._condition.Params[1];
 
+            rect.width = (origin.width-18) / 5;
+
+            EditorGUI.Popup(rect, 0, new string[] { "CVar", "Value", "Method" });
+
+            rect.x += rect.width;
+
             rect.width = 18;
             _conditions[index]._showStringFullname = EditorGUI.Toggle(rect, _conditions[index]._showStringFullname);
             rect.x += 18;
 
-            rect.width = (origin.width - 18) / 5;
+            rect.width = (origin.width-18) / 5;
 
             if (!_conditions[index]._showStringFullname)
             {
@@ -544,9 +630,9 @@ namespace HLab.H_Common.H_Editor
             if (EditorGUI.EndChangeCheck())
                 _conditions[index]._condition.UpdateParam(1, param3);
 
-            rect.x += rect.width;
+            //rect.x += rect.width;
 
-            EditorGUI.Popup(rect, 0, new string[] { "fix value","cvar value"  });
+            //EditorGUI.Popup(rect, 0, new string[] { "fix value","random value"  });
 
             rect.x = origin.x;
             rect.width = origin.width;

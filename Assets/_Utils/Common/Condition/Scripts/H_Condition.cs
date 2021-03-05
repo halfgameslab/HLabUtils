@@ -26,7 +26,8 @@ namespace H_Misc
         CONDITION,
         ON_EVENT_DISPATCH,
         LISTEN_QUEST,
-        TIMER
+        TIMER,
+        METHOD
     }
 
     public enum H_ETimeMode
