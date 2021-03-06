@@ -19,6 +19,20 @@ namespace H_Misc
         APPEND
     }
 
+    public enum H_EValueType
+    { 
+        CVAR,
+        VALUE,
+        METHOD
+    }
+
+    public enum H_EValueMode
+    {
+        SINGLE_VALUE,
+        RANDOM_VALUE,
+        RANDOM_INTERVAL
+    }
+
     public enum H_EConditionType
     {
         CHECK_VAR,
@@ -27,7 +41,8 @@ namespace H_Misc
         ON_EVENT_DISPATCH,
         LISTEN_QUEST,
         TIMER,
-        METHOD
+        METHOD,
+        NONE
     }
 
     public enum H_ETimeMode
@@ -36,9 +51,15 @@ namespace H_Misc
         DESC
     }
 
+    public class H_Val
+    {
+        public H_EValueType ValueType { get; set; } = H_EValueType.VALUE;
+        public object Value { get; set; }
+    }
+
     public class H_Condition
     {
-        private H_EConditionType _type = H_EConditionType.CHECK_VAR;
+        private H_EConditionType _type = H_EConditionType.NONE;
 
         private string _uname = string.Empty;
         [XmlElement("un")]
@@ -122,7 +143,7 @@ namespace H_Misc
                         Conditions = null;
                         CreateParamsByType(value);
                     }
-                    
+
                     this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
                 }
             }
@@ -196,7 +217,7 @@ namespace H_Misc
         {
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-                AddParams("Int32.global.undefined", CVarCommands.EQUAL, "0");
+                AddParams("Int32.global.undefined", CVarCommands.EQUAL, H_EValueMode.SINGLE_VALUE, H_EValueType.VALUE, 0);
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {
@@ -209,6 +230,10 @@ namespace H_Misc
             else if (type == H_EConditionType.TIMER)
             {
                 AddParams("timer_id", H_ETimeMode.ASC, 1.0f, false);
+            }
+            else if (type == H_EConditionType.METHOD)
+            {
+                AddParams("", "undefined", (object[])null);
             }
         }
 
@@ -296,6 +321,12 @@ namespace H_Misc
             if (Params.Length > index)
                 Params[index] = value;
 
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
+        }
+
+        public void UpdateParams(params object[] values)
+        {
+            Params = values;
             this.DispatchEvent(ES_Event.ON_VALUE_CHANGE);
         }
 
