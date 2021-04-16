@@ -32,8 +32,10 @@ namespace HLab.H_Common.H_Editor
             {
                 elementHeightCallback = OnElementHeightHandler,
                 drawHeaderCallback = OnDrawElementHeaderHandler,
-                drawElementCallback = OnDrawElementHandler
-                
+                drawElementCallback = OnDrawElementHandler,
+                onAddCallback = OnAddElementHandler,
+                onRemoveCallback = OnRemoveElementHandler,
+                onReorderCallbackWithDetails = OnReorderListHandler
             };
         }
 
@@ -51,12 +53,82 @@ namespace HLab.H_Common.H_Editor
             rect.x += rect.width - (rect.width / 4f);
             rect.width = rect.width / 4f;
             EditorGUI.BeginDisabledGroup(_valuesReorderableList.list.Count <= 1 || _valuesReorderableList.list.Count > 2);
-            
+
+            H_EValueMode _oldMode = _mode;
+
             _mode = (H_EValueMode)EditorGUI.EnumPopup(rect, _mode);
 
             _mode = ValidateMode(_mode);
 
+            if(_oldMode != _mode)
+            {
+                ValidateWeight(_valuesReorderableList);
+                this.DispatchEvent(ES_Event.ON_CHANGE, _mode);
+            }
+
+
             EditorGUI.EndDisabledGroup();
+        }
+
+        private void OnAddElementHandler(ReorderableList list)
+        {
+            H_Val val = new H_Val()
+            {
+                ValueType = H_EValueType.VALUE,
+                Value = 0.0f
+            };
+
+            if (list.index > 0)
+            {
+                _valuesReorderableList.list.Insert(list.index + 1, val);
+                list.index++;
+            }
+            else
+            {
+                _valuesReorderableList.list.Add(val);
+                list.index = list.count - 1;
+            }
+
+            ValidateModeAndDispatchEvent();
+
+            ValidateWeight(list);
+
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+        }
+
+        private void OnRemoveElementHandler(ReorderableList list)
+        {
+            list.list.RemoveAt(list.index);
+            list.index--;
+
+            ValidateModeAndDispatchEvent();
+
+            ValidateWeight(list);
+
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+        }
+
+        private void OnReorderListHandler(ReorderableList list, int oldIndex, int newIndex)
+        {
+            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+        }
+
+        private void ValidateModeAndDispatchEvent()
+        {
+            _mode = ValidateMode(_mode);
+            this.DispatchEvent(ES_Event.ON_CHANGE, _mode);
+        }
+
+        private void ValidateWeight(ReorderableList list)
+        {
+            foreach (H_Val v in list.list)
+            {
+                v.Weight = v.Weight == null && _mode == H_EValueMode.RANDOM_VALUE ? new H_Val()
+                {
+                    ValueType = H_EValueType.VALUE,
+                    Value = 0.0f
+                } : _mode == H_EValueMode.RANDOM_VALUE ? v.Weight : null;
+            }
         }
 
         private H_EValueMode ValidateMode(H_EValueMode mode)
@@ -98,23 +170,42 @@ namespace HLab.H_Common.H_Editor
             rect.height = EditorGUIUtility.singleLineHeight;
 
             object value = null;
-            H_EValueType type = H_EValueType.VALUE;
+            H_Val currentHValue = (H_Val)_valuesReorderableList.list[index];
+            H_EValueType type;
             if (_mode == H_EValueMode.RANDOM_VALUE)
             {
-                if (DrawVarCondition(rect, origin, "Probability", index, ref type, ref value, ref varUID))
+                if (currentHValue.Weight != null)
                 {
-                    ((H_Val)_valuesReorderableList.list[index]).Value = value;
-                    ((H_Val)_valuesReorderableList.list[index]).ValueType = type;
-                    //this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+                    type = currentHValue.Weight.ValueType;
+                    value = currentHValue.Weight.Value;
+                }
+                else
+                {
+                    type = H_EValueType.VALUE;
+                    value = 0.0f;
+                }
+
+                if (DrawVarCondition(rect, origin, "Weight", index, ref type, ref value, ref varUID))
+                {
+                    if (currentHValue.Weight == null)
+                        currentHValue.Weight = new H_Val();
+
+                    currentHValue.Weight.Value = value;
+                    currentHValue.Weight.ValueType = type;
+                    this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
                 }
                 rect.y += rect.height;
             }
 
+
+            value = currentHValue.Value;
+            type = currentHValue.ValueType;
             if (DrawVarCondition(rect, origin, "Value", index, ref type, ref value, ref varUID))
             {
-                ((H_Val)_valuesReorderableList.list[index]).Value = value;
-                ((H_Val)_valuesReorderableList.list[index]).ValueType = type;
-                //this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+                currentHValue.Value = value;
+                currentHValue.ValueType = type;
+                Debug.Log("value " + value);
+                this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
             }
         }
 
@@ -125,10 +216,11 @@ namespace HLab.H_Common.H_Editor
 
         private bool DrawCVar(Rect rect, Rect origin, int index, ref object varFullname, ref string varUID)
         {
-            if (varFullname == null)
-                varFullname = string.Concat((_varType??typeof(int)).Name, ".global.undefined");
-
             string fullname = string.Concat((_varType ?? typeof(int)).Name, ".global.undefined");//(string)((H_Val)_valuesReorderableList.list[index])?.Value ?? "Int32.global.undefined";
+
+            if (varFullname == null)
+                varFullname = fullname;//string.Concat((_varType??typeof(int)).Name, ".global.undefined");
+
 
             string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
             string[] varTypes = CVarSystem.AllowedTypes;
@@ -334,7 +426,7 @@ namespace HLab.H_Common.H_Editor
 
         private bool DrawVarCondition(Rect rect, Rect origin, string label,int index, ref H_EValueType type, ref object value, ref string varUID)
         {
-            type = ((H_Val)_valuesReorderableList.list[index]).ValueType;
+            //type = ((H_Val)_valuesReorderableList.list[index]).ValueType;
 
             rect.width = (origin.width) / 5;
 
@@ -343,9 +435,20 @@ namespace HLab.H_Common.H_Editor
 
             H_EValueType auxType = type;
             type = (H_EValueType)EditorGUI.EnumPopup(rect, type);
-            
+
             if (auxType != type)
+            {
+                if(type == H_EValueType.CVAR)
+                {
+                    value = string.Empty;
+                }
+                else
+                {
+                    value = 0.0f;
+                }
+
                 return true;
+            }
 
             rect.x += rect.width+4;
 

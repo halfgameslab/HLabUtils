@@ -71,15 +71,22 @@ namespace HLab.H_Common.H_Editor
 
                     if (_condition.Params != null)
                     {
+                        // get H_Val data from generic objects inside Params array
                         for (int i = 3; i < _condition.Params.Length; i += 2)
                         {
                             H_Val v = new H_Val { ValueType = (H_EValueType)_condition.Params[i], Value = _condition.Params[i + 1] };
 
+                            if ((H_EValueMode)_condition.Params[2] != H_EValueMode.SINGLE_VALUE)
+                            {
+                                v.Weight = new H_Val { ValueType = (H_EValueType)_condition.Params[i + 2], Value = _condition.Params[i + 3] };
+                                i += 2;
+                            }
+                            
                             values.Add(v);
                         }
 
                         // verify type and pass to value list to match with the list
-                        _valueListEditor.Start(values.ToArray(), H_EValueMode.SINGLE_VALUE, Type.GetType(((string)_condition.Params[0]).Split('.')[0]));
+                        _valueListEditor.Start(values.ToArray(), (H_EValueMode)_condition.Params[2], Type.GetType(((string)_condition.Params[0]).Split('.')[0]));
                     }
                     else
                     {
@@ -87,8 +94,15 @@ namespace HLab.H_Common.H_Editor
                     }
                     
                     _valueListEditor.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnValueListEditorChangeHandler);
+                    _valueListEditor.AddEventListener(ES_Event.ON_CHANGE, OnValueListModeChangeHandler);
                 }
             }
+        }
+
+        private void OnValueListModeChangeHandler(ES_Event ev)
+        {
+            //H_EValueMode mode = (H_EValueMode)ev.Data;
+            _condition.UpdateParam(2, ev.Data);
         }
 
         private void OnValueListEditorChangeHandler(ES_Event e)
@@ -102,7 +116,15 @@ namespace HLab.H_Common.H_Editor
             foreach(H_Val v in (H_Val[])e.Data)
             {
                 param.Add(v.ValueType);
+                
                 param.Add(v.Value);
+
+                if ((H_EValueMode)_condition.Params[2] == H_EValueMode.RANDOM_VALUE)
+                {
+                    param.Add(v.Weight.ValueType);
+                    param.Add(v.Weight.Value);
+                }
+
             }
             
             _condition.UpdateParams(param.ToArray());

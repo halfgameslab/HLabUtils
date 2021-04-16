@@ -55,6 +55,7 @@ namespace H_Misc
     {
         public H_EValueType ValueType { get; set; } = H_EValueType.VALUE;
         public object Value { get; set; }
+        public H_Val Weight { get; set; }
     }
 
     public class H_Condition
@@ -217,7 +218,7 @@ namespace H_Misc
         {
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-                AddParams("Int32.global.undefined", CVarCommands.EQUAL, H_EValueMode.SINGLE_VALUE, H_EValueType.VALUE, 0);
+                AddParams("Int32.global.undefined", CVarCommands.EQUAL, H_EValueMode.SINGLE_VALUE, H_EValueType.VALUE, 0.0f);
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {
