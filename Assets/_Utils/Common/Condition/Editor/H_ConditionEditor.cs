@@ -85,18 +85,59 @@ namespace HLab.H_Common.H_Editor
                             values.Add(v);
                         }
 
+                        Type type = GetTypeByValue(_condition.Params[0]);
+                        Debug.Log(type);
                         // verify type and pass to value list to match with the list
-                        _valueListEditor.Start(values.ToArray(), (H_EValueMode)_condition.Params[2], Type.GetType(((string)_condition.Params[0]).Split('.')[0]));
+                        _valueListEditor.Start(values.ToArray(), (H_EValueMode)_condition.Params[2], type);
                     }
                     else
                     {
                         _valueListEditor.Start(values.ToArray(), H_EValueMode.SINGLE_VALUE, typeof(int));
                     }
                     
-                    _valueListEditor.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnValueListEditorChangeHandler);
-                    _valueListEditor.AddEventListener(ES_Event.ON_CHANGE, OnValueListModeChangeHandler);
+                    if(!_valueListEditor.HasEventListener(ES_Event.ON_VALUE_CHANGE, OnValueListEditorChangeHandler))
+                        _valueListEditor.AddEventListener(ES_Event.ON_VALUE_CHANGE, OnValueListEditorChangeHandler);
+                    if(!_valueListEditor.HasEventListener(ES_Event.ON_CHANGE, OnValueListModeChangeHandler))
+                        _valueListEditor.AddEventListener(ES_Event.ON_CHANGE, OnValueListModeChangeHandler);
                 }
             }
+        }
+
+        private Type GetTypeByValue(object value)
+        {
+            Type type = null;
+
+            if(value is string stringValue)
+            {
+                string[] values = stringValue.Split('.');
+
+                if(values[0].Equals("Int32"))
+                {
+                    type = typeof(int);
+                }
+                else if (values[0].Equals("Single"))
+                {
+                    type = typeof(float);
+                }
+                else if (values[0].Equals("Boolean"))
+                {
+                    type = typeof(bool);
+                }
+                else if (values[0].Equals("Vector3"))
+                {
+                    type = typeof(Vector3);
+                }
+                else
+                {
+                    type = typeof(string);
+                }
+            }
+            else
+            {
+                type = value.GetType();
+            }
+
+            return type;
         }
 
         private void OnValueListModeChangeHandler(ES_Event ev)
