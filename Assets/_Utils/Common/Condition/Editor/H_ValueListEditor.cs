@@ -11,8 +11,8 @@ namespace HLab.H_Common.H_Editor
 {
     public class H_ValEditor
     {
-        private H_ValueEditor weightEditor;
-        private H_ValueEditor valueEditor;
+        private H_ValueEditor _weightEditor;
+        private H_ValueEditor _valueEditor;
 
         public bool Draw(Rect rect, H_Val value, Type refType)
         {
@@ -25,20 +25,20 @@ namespace HLab.H_Common.H_Editor
                 // cant pass properties as ref so we copy the data and swap the data after the edition
                 object w = value.Weight.Value;
                 t = value.Weight.ValueType;
-                if (weightEditor == null)
-                    weightEditor = new H_ValueEditor();
+                if (_weightEditor == null)
+                    _weightEditor = new H_ValueEditor();
 
-                result = weightEditor.Draw(rect, "Weight", refType, ref t, ref w);
+                result = _weightEditor.Draw(rect, "Weight", refType, ref t, ref w);
                 value.Weight.Value = w;
                 value.Weight.ValueType = t;
                 t = value.ValueType;
                 rect.y += rect.height;
             }
 
-            if (valueEditor == null)
-                valueEditor = new H_ValueEditor();
+            if (_valueEditor == null)
+                _valueEditor = new H_ValueEditor();
 
-            result = valueEditor.Draw(rect, "Value", refType, ref t, ref v) || result;
+            result = _valueEditor.Draw(rect, "Value", refType, ref t, ref v) || result;
             value.Value = v;
             value.ValueType = t;
 
@@ -48,15 +48,17 @@ namespace HLab.H_Common.H_Editor
 
     public class H_ValueEditor
     {
-        H_ValueCVarEditor editor = new H_ValueCVarEditor();
+        H_ValueCVarEditor _editor = new H_ValueCVarEditor();
 
         public bool Draw(Rect rect, string label, Type refType, ref H_EValueType type, ref object value)
         {
             rect.width = (rect.width) / 5;
 
-            EditorGUI.LabelField(rect, label);
-            rect.x += rect.width;
-
+            if (label != string.Empty)
+            {
+                EditorGUI.LabelField(rect, label);
+                rect.x += rect.width;
+            }
             H_EValueType auxType = type;
             type = (H_EValueType)EditorGUI.EnumPopup(rect, type);
 
@@ -64,7 +66,7 @@ namespace HLab.H_Common.H_Editor
             {
                 if (type == H_EValueType.CVAR)
                 {
-                    value = string.Empty;
+                    value = string.Concat(refType!=null?refType.Name:"String",".global.","undefined");
                 }
                 else
                 {
@@ -79,7 +81,7 @@ namespace HLab.H_Common.H_Editor
             if (type == H_EValueType.CVAR)
             {
                 rect.width = rect.width * 5;
-                return editor.Draw(rect, rect, refType, ref value);
+                return _editor.Draw(rect, rect, refType, ref value);
             }
             else
             {
@@ -230,7 +232,7 @@ namespace HLab.H_Common.H_Editor
 
         private bool DrawCVarAsText(Rect rect, string[] param0, ref object varFullname)
         {
-            rect.width = rect.width * 3f;
+            //rect.width = rect.width * 3f;
 
             //string varFullname = (string)_conditions[index]._condition.Params[0];//CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
             EditorGUI.BeginChangeCheck();
