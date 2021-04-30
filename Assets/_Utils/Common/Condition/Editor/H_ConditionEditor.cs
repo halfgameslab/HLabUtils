@@ -73,11 +73,11 @@ namespace HLab.H_Common.H_Editor
                     if (_condition.Params != null)
                     {
                         // get H_Val data from generic objects inside Params array
-                        for (int i = 3; i < _condition.Params.Length; i += 2)
+                        for (int i = 4; i < _condition.Params.Length; i += 2)
                         {
                             H_Val v = new H_Val { ValueType = (H_EValueType)_condition.Params[i], Value = _condition.Params[i + 1] };
 
-                            if ((H_EValueMode)_condition.Params[2] != H_EValueMode.SINGLE_VALUE)
+                            if ((H_EValueMode)_condition.Params[3] == H_EValueMode.RANDOM_VALUE)
                             {
                                 v.Weight = new H_Val { ValueType = (H_EValueType)_condition.Params[i + 2], Value = _condition.Params[i + 3] };
                                 i += 2;
@@ -88,10 +88,11 @@ namespace HLab.H_Common.H_Editor
 
                         Type type = GetTypeByValue(_condition.Params[0]);
                         // verify type and pass to value list to match with the list
-                        _valueListEditor.Start(values.ToArray(), (H_EValueMode)_condition.Params[2], type);
+                        _valueListEditor.Start(values.ToArray(), (H_EValueMode)_condition.Params[3], type);
                     }
                     else
                     {
+
                         _valueListEditor.Start(values.ToArray(), H_EValueMode.SINGLE_VALUE, typeof(int));
                     }
                     
@@ -143,31 +144,38 @@ namespace HLab.H_Common.H_Editor
         private void OnValueListModeChangeHandler(ES_Event ev)
         {
             //H_EValueMode mode = (H_EValueMode)ev.Data;
-            _condition.UpdateParam(2, ev.Data);
+            _condition.UpdateParam(3, ((object[])ev.Data)[0]);// H_EValueMode mode
+            UpdateCheckVarParams((H_Val[])((object[])ev.Data)[1]);// H_Val[] list params
         }
 
-        private void OnValueListEditorChangeHandler(ES_Event e)
+        private void OnValueListEditorChangeHandler(ES_Event ev)
+        {
+            UpdateCheckVarParams((H_Val[])ev.Data);
+        }
+
+        private void UpdateCheckVarParams(H_Val[] values)
         {
             List<object> param = new List<object>();
 
-            param.Add(_condition.Params[0]);
-            param.Add(_condition.Params[1]);
-            param.Add(_condition.Params[2]);
+            param.Add(_condition.Params[0]);// var value
+            param.Add(_condition.Params[1]);// compare operation [Equal, Not Equal, Less Than, More Than, Less Equal, More Equal]
+            param.Add(_condition.Params[2]);// value mode [CVar, Value, Method]
+            param.Add(_condition.Params[3]);// [Single Value, Random Value, Random Interval]
 
-            foreach(H_Val v in (H_Val[])e.Data)
+            foreach (H_Val v in values)
             {
                 param.Add(v.ValueType);
-                
+
                 param.Add(v.Value);
 
-                if ((H_EValueMode)_condition.Params[2] == H_EValueMode.RANDOM_VALUE)
+                if ((H_EValueMode)_condition.Params[3] == H_EValueMode.RANDOM_VALUE)
                 {
                     param.Add(v.Weight.ValueType);
                     param.Add(v.Weight.Value);
                 }
 
             }
-            
+
             _condition.UpdateParams(param.ToArray());
         }
 
@@ -376,17 +384,17 @@ namespace HLab.H_Common.H_Editor
 
         private void DrawVarCondition(Rect rect, Rect origin, int index)
         {
-            if (_conditions[index]._valueEditor == null)
-                _conditions[index]._valueEditor = new H_ValueEditor();
-
             object param0 = _conditions[index]._condition.Params[0];
             CVarCommands conditionOperation = (CVarCommands)_conditions[index]._condition.Params[1];
             H_EValueType type = (H_EValueType)_conditions[index]._condition.Params[2];
 
+            if (_conditions[index]._valueEditor == null)
+                _conditions[index]._valueEditor = new H_ValueEditor();
+
             rect.width = origin.width;
             rect.height = EditorGUIUtility.singleLineHeight;
 
-            if(_conditions[index]._valueEditor.Draw(rect, string.Empty, null, ref type, ref param0))
+            if (_conditions[index]._valueEditor.Draw(rect, string.Empty, null, ref type, ref param0))
             {
                 _conditions[index]._condition.UpdateParam(0, param0);
                 _conditions[index]._condition.UpdateParam(2, type);
@@ -523,6 +531,7 @@ namespace HLab.H_Common.H_Editor
             rect.x = origin.x;
             rect.width = origin.width;
             rect.y += EditorGUIUtility.singleLineHeight;
+
 
             _conditions[index]._valueListEditor?.Draw(rect);
             //EditorGUI.BeginChangeCheck();

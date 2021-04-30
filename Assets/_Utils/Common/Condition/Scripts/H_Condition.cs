@@ -218,7 +218,8 @@ namespace H_Misc
         {
             if(type == H_EConditionType.CHECK_VAR || type == H_EConditionType.ON_CHANGE_VAR)
             {
-                AddParams("Int32.global.undefined", CVarCommands.EQUAL, H_EValueMode.SINGLE_VALUE, H_EValueType.VALUE, 0.0f);
+                // var index, compare type, main var type, value list mode, param type, param value
+                AddParams("Int32.global.undefined", CVarCommands.EQUAL, H_EValueType.CVAR, H_EValueMode.SINGLE_VALUE, H_EValueType.VALUE, 0.0f);
             }
             else if (type == H_EConditionType.ON_EVENT_DISPATCH)
             {

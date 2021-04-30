@@ -416,7 +416,7 @@ namespace HLab.H_Common.H_Editor
             if(_oldMode != _mode)
             {
                 ValidateWeight(_valuesReorderableList);
-                this.DispatchEvent(ES_Event.ON_CHANGE, _mode);
+                this.DispatchEvent(ES_Event.ON_CHANGE, new object[] { _mode, ((List<H_Val>)_valuesReorderableList.list).ToArray() });
             }
 
 
@@ -444,11 +444,11 @@ namespace HLab.H_Common.H_Editor
                 list.index = list.count - 1;
             }
 
-            ValidateModeAndDispatchEvent();
+            ValidateModeWeightAndDispatchEvent();
 
-            ValidateWeight(list);
+            //ValidateWeight(list);
 
-            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+            //this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
         }
 
         private void OnRemoveElementHandler(ReorderableList list)
@@ -457,11 +457,11 @@ namespace HLab.H_Common.H_Editor
             list.list.RemoveAt(list.index);
             list.index--;
 
-            ValidateModeAndDispatchEvent();
+            ValidateModeWeightAndDispatchEvent();
 
-            ValidateWeight(list);
+            //ValidateWeight(list);
 
-            this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+            //this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
         }
 
         private void OnReorderListHandler(ReorderableList list, int oldIndex, int newIndex)
@@ -473,10 +473,13 @@ namespace HLab.H_Common.H_Editor
             this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
         }
 
-        private void ValidateModeAndDispatchEvent()
+        private void ValidateModeWeightAndDispatchEvent()
         {
             _mode = ValidateMode(_mode);
-            this.DispatchEvent(ES_Event.ON_CHANGE, _mode);
+
+            ValidateWeight(_valuesReorderableList);
+
+            this.DispatchEvent(ES_Event.ON_CHANGE, new object[] { _mode, ((List<H_Val>)_valuesReorderableList.list).ToArray() });
         }
 
         private void ValidateWeight(ReorderableList list)
