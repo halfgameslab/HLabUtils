@@ -70,21 +70,37 @@ namespace HLab.H_Common.H_Editor
                 }
                 else
                 {
-                    value = 0.0f;
+                    value = H_ValueListEditor.GetNewDefaultValue(refType != null ? refType.Name : "Single", 0.0f);
                 }
 
                 return true;
             }
-
-            rect.x += rect.width + 4;
-            
+                        
             if (type == H_EValueType.CVAR)
             {
+                rect.x += rect.width + 4;
                 rect.width = rect.width * 5;
                 return _editor.Draw(rect, rect, refType, ref value);
             }
             else
             {
+                string[] varTypes = CVarSystem.AllowedTypes;
+                rect.x += rect.width;
+
+                int index = Array.IndexOf(varTypes, refType != null ? refType.Name : value.GetType().Name);
+
+                EditorGUI.BeginDisabledGroup(refType != null);
+                int newIndex = EditorGUI.Popup(rect, index, varTypes);
+                EditorGUI.EndDisabledGroup();
+
+                if (index != newIndex)
+                {
+                    value = H_ValueListEditor.GetNewDefaultValue(varTypes[newIndex], 0.0f);
+                    return true;
+                }
+
+                rect.x += rect.width + 4;
+
                 EditorGUI.BeginChangeCheck();
                 if (value == null)
                     value = 0;
@@ -272,7 +288,7 @@ namespace HLab.H_Common.H_Editor
                 if (param0.Length < 3)
                 {
                     for (int i = param0.Length; i < 3; i++)
-                        varFullname = string.Concat(varFullname, ".");
+                        varFullname = string.Concat(varFullname, ".undefined");
 
                     param0 = ((string)varFullname).Split('.');
                 }
@@ -367,6 +383,49 @@ namespace HLab.H_Common.H_Editor
         private List<H_ValEditor> _valueEditorList = new List<H_ValEditor>();
         public float Height { get { return _valuesReorderableList != null ? _valuesReorderableList.GetHeight() : 0; } }
 
+        public Type VarType 
+        {
+            get
+            {
+                return _varType;
+            }
+            set
+            {
+                if (value != _varType)
+                {
+                    _varType = value;
+                    foreach(H_Val val in _valuesReorderableList.list)
+                    {
+                        if(val.Value.GetType() != _varType && val.ValueType != H_EValueType.CVAR)
+                        {
+                            val.Value = GetNewDefaultValue(_varType.Name, 0.0f);
+                        }
+                        else if(val.ValueType == H_EValueType.CVAR)
+                        {
+                            val.Value = CVarSystem.ChangeFullnameType((string)val.Value, _varType.Name);
+                        }
+                    }
+                    this.DispatchEvent(ES_Event.ON_VALUE_CHANGE, ((List<H_Val>)_valuesReorderableList.list).ToArray());
+                }
+            } 
+        }
+
+        public static object GetNewDefaultValue(string type, object def = null)
+        {
+            if (type == typeof(string).Name)
+                return "value";
+            else if (type == typeof(int).Name)
+                return 0;
+            else if (type == typeof(float).Name)
+                return 0.0f;
+            else if (type == typeof(bool).Name)
+                return false;
+            else if (type == typeof(Vector3).Name)
+                return Vector3.zero;
+
+            return def;
+        }
+
         public void Start(H_Val[] values, H_EValueMode mode, Type varType)
         {
             List<H_Val> hl = new List<H_Val>();
@@ -428,7 +487,7 @@ namespace HLab.H_Common.H_Editor
             H_Val val = new H_Val()
             {
                 ValueType = H_EValueType.VALUE,
-                Value = 0.0f
+                Value = _varType != null ? GetNewDefaultValue(_varType.Name, 0.0f) : 0.0f
             };
 
             if (list.index > 0)

@@ -5,7 +5,42 @@
     <il />
     <sc t="CONDITION" op="AND" cop="JOIN" r="0">
       <un>start</un>
-      <cl />
+      <cl>
+        <ci t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+          <un>c(0)</un>
+          <pl>
+            <pi xsi:type="xsd:float">0</pi>
+            <pi xsi:type="xsd:int">5</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:int">2</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string">Single.global.new_float</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:float">0</pi>
+          </pl>
+        </ci>
+        <ci t="CHECK_VAR" op="AND" cop="JOIN" r="0">
+          <un>c(1)</un>
+          <pl>
+            <pi xsi:type="xsd:string">Single.global.new_float</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string">Single.global.new_float</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:float">0</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:float">0</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:float">0</pi>
+            <pi xsi:type="xsd:int">0</pi>
+            <pi xsi:type="xsd:string">Single.global.new_float</pi>
+            <pi xsi:type="xsd:int">1</pi>
+            <pi xsi:type="xsd:float">0</pi>
+          </pl>
+        </ci>
+      </cl>
     </sc>
     <tc t="CONDITION" op="AND" cop="JOIN" r="0">
       <un>task</un>

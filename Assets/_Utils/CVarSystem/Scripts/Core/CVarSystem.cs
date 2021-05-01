@@ -1528,6 +1528,12 @@ public static class CVarSystem
         return string.Concat(n[0], DOT, group, DOT, n[2]);
     }
 
+    public static string ChangeFullnameType(string fullName, string type)
+    {
+        string[] n = fullName.Split(DOT);
+        return string.Concat(type, DOT, n[1], DOT, n[2]);
+    }
+
     public static string GetFullName(string name, Type type, string group = "global")
     {
         return string.Concat(type.Name, DOT, group, DOT, name);

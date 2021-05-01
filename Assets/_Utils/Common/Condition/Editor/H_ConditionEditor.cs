@@ -398,6 +398,7 @@ namespace HLab.H_Common.H_Editor
             {
                 _conditions[index]._condition.UpdateParam(0, param0);
                 _conditions[index]._condition.UpdateParam(2, type);
+                _conditions[index]._valueListEditor.VarType = GetTypeByValue(param0);
             }
 
             //string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
