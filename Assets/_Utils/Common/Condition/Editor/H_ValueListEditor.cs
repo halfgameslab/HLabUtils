@@ -137,7 +137,7 @@ namespace HLab.H_Common.H_Editor
         private Type _varType;
 
         private bool _editCVarByText = false;
-
+        private string _auxString = null;
         public bool Draw(Rect rect, Rect origin, Type varType, ref object varFullname)
         {
             _varType = varType;
@@ -245,117 +245,104 @@ namespace HLab.H_Common.H_Editor
             
             return false;
         }
-
+        
         private bool DrawCVarAsText(Rect rect, string[] param0, ref object varFullname)
         {
-            //rect.width = rect.width * 3f;
-
-            //string varFullname = (string)_conditions[index]._condition.Params[0];//CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
-            EditorGUI.BeginChangeCheck();
-            varFullname = EditorGUI.TextField(rect, (string)varFullname);
-            if (EditorGUI.EndChangeCheck())
+            rect.width = rect.width * 3;
+         
+            if (_auxString == null)
             {
-                param0 = ((string)varFullname).Split('.');
+                rect.width -= 20;
+                EditorGUI.BeginDisabledGroup(true);
+                varFullname = EditorGUI.TextField(rect, (string)varFullname);
+                EditorGUI.EndDisabledGroup();
 
-                // complete the name with the type using the first character as reference
-                if (!CVarSystem.ValidateType(param0[0]))
+                rect.x += rect.width;
+                rect.width = 20;
+                //if (EditorGUI.EndChangeCheck())
+                if (GUI.Button(rect, "E"))
                 {
-                    if (param0[0].Length >= 1)
-                    {
-                        char firstC = param0[0].ToLower()[0];
-
-                        if (firstC == 'i')
-                        {
-                            param0[0] = CVarSystem.GetTypeName<int>();
-                        }
-                        else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
-                            param0[0] = CVarSystem.GetTypeName<float>();
-                        else if (firstC == 'b')
-                            param0[0] = CVarSystem.GetTypeName<bool>();
-                        else if (firstC == 'v')
-                            param0[0] = CVarSystem.GetTypeName<Vector3>();
-                        else
-                            param0[0] = CVarSystem.GetTypeName<string>();
-                    }
-                    else
-                        param0[0] = CVarSystem.GetTypeName<string>();
-
-                    Debug.LogWarning(string.Format("Condition Editor: Invalid type. Type changed for {0}", param0[0]));
-
-                    varFullname = string.Join(".", param0);
+                    _auxString = (string)varFullname;
                 }
 
-                if (param0.Length < 3)
-                {
-                    for (int i = param0.Length; i < 3; i++)
-                        varFullname = string.Concat(varFullname, ".undefined");
-
-                    param0 = ((string)varFullname).Split('.');
-                }
-
-                param0[1] = ObjectNamesManager.RemoveForbiddenCharacters(param0[1]);
-                param0[2] = ObjectNamesManager.RemoveForbiddenCharacters(param0[2]);
-
-                varFullname = CVarSystem.GetFullName(param0[2], param0[0], param0[1]);
-
-                return true;
+                return false;
             }
-
-            rect.width = rect.width * 3f;
-
-            //string varFullname = (string)_conditions[index]._condition.Params[0];//CVarSystem.GetFullName((string)_conditions[index]._condition.Params[2], (string)_conditions[index]._condition.Params[1], (string)_conditions[index]._condition.Params[0]);
-            EditorGUI.BeginChangeCheck();
-            varFullname = EditorGUI.TextField(rect, (string)varFullname);
-            if (EditorGUI.EndChangeCheck())
+            else
             {
-                param0 = ((string)varFullname).Split('.');
+                rect.width -= 40;
+                EditorGUI.BeginDisabledGroup(false);
+                _auxString = EditorGUI.TextField(rect, _auxString);
+                EditorGUI.EndDisabledGroup();
 
-                // complete the name with the type using the first character as reference
-                if (!CVarSystem.ValidateType(param0[0]))
+                rect.x += rect.width;
+                rect.width = 20;
+                if (GUI.Button(rect, "V"))
                 {
-                    if (param0[0].Length >= 1)
+                    if ((string)varFullname == _auxString)
                     {
-                        char firstC = param0[0].ToLower()[0];
-
-                        if (firstC == 'i')
-                        {
-                            param0[0] = CVarSystem.GetTypeName<int>();
-                        }
-                        else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
-                            param0[0] = CVarSystem.GetTypeName<float>();
-                        else if (firstC == 'b')
-                            param0[0] = CVarSystem.GetTypeName<bool>();
-                        else if (firstC == 'v')
-                            param0[0] = CVarSystem.GetTypeName<Vector3>();
-                        else
-                            param0[0] = CVarSystem.GetTypeName<string>();
+                        _auxString = null;
+                        GUI.FocusControl("");
+                        return false;
                     }
-                    else
-                        param0[0] = CVarSystem.GetTypeName<string>();
 
-                    Debug.LogWarning(string.Format("Condition Editor: Invalid type. Type changed for {0}", param0[0]));
-
-                    varFullname = string.Join(".", param0);
-                }
-
-                if (param0.Length < 3)
-                {
-                    for (int i = param0.Length; i < 3; i++)
-                        varFullname = string.Concat(varFullname, ".");
-
+                    varFullname = _auxString;
                     param0 = ((string)varFullname).Split('.');
+
+                    if (_varType != null)
+                        param0[0] = _varType.Name;
+
+                    // complete the name with the type using the first character as reference
+                    if (!CVarSystem.ValidateType(param0[0]))
+                    {
+                        if (param0[0].Length >= 1)
+                        {
+                            char firstC = param0[0].ToLower()[0];
+                            
+                            
+                            if (firstC == 'i')
+                            {
+                                param0[0] = CVarSystem.GetTypeName<int>();
+                            }
+                            else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
+                                param0[0] = CVarSystem.GetTypeName<float>();
+                            else if (firstC == 'b')
+                                param0[0] = CVarSystem.GetTypeName<bool>();
+                            else if (firstC == 'v')
+                                param0[0] = CVarSystem.GetTypeName<Vector3>();
+                            else
+                                param0[0] = CVarSystem.GetTypeName<string>();
+                        }
+                        else 
+                            param0[0] = CVarSystem.GetTypeName<string>();
+
+                        Debug.LogWarning(string.Format("Condition Editor: Invalid type. Type changed for {0}", param0[0]));
+
+                        varFullname = string.Join(".", param0);
+                    }
+
+                    if (param0.Length < 3)
+                    {
+                        for (int i = param0.Length; i < 3; i++)
+                            varFullname = string.Concat(varFullname, ".undefined");
+
+                        param0 = ((string)varFullname).Split('.');
+                    }
+
+                    param0[1] = ObjectNamesManager.RemoveForbiddenCharacters(param0[1]);
+                    param0[2] = ObjectNamesManager.RemoveForbiddenCharacters(param0[2]);
+
+                    varFullname = CVarSystem.GetFullName(param0[2], param0[0], param0[1]);
+                    _auxString = null;
+                    GUI.FocusControl("");
+                    return true;
                 }
-
-                param0[1] = ObjectNamesManager.RemoveForbiddenCharacters(param0[1]);
-                param0[2] = ObjectNamesManager.RemoveForbiddenCharacters(param0[2]);
-
-                varFullname = CVarSystem.GetFullName(param0[2], param0[0], param0[1]);
-
-                return true;
-                //_conditions[index]._condition.UpdateParam(0, fullname);
-
-            }
-            
+                rect.x += 20;
+                if (GUI.Button(rect, "X"))
+                {
+                    _auxString = null;
+                    GUI.FocusControl("");
+                }
+            } 
             return false;
         }
 
