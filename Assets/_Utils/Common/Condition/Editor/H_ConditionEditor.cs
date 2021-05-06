@@ -380,6 +380,10 @@ namespace HLab.H_Common.H_Editor
             {
                 DrawTimerOption(rect, origin, index);
             }
+            else if(type == H_EConditionType.METHOD)
+            {
+                DrawMethodOption(rect, origin, index);
+            }
         }
 
         private void DrawVarCondition(Rect rect, Rect origin, int index)
@@ -800,8 +804,11 @@ namespace HLab.H_Common.H_Editor
 
         private void DrawTimerOption(Rect rect, Rect origin, int index)
         {
+            Rect toogleRect = rect;
+            toogleRect.width = origin.width;
+
             bool OnUnloadScene = (bool)_conditions[index]._condition.Params[3];
-            OnUnloadScene = EditorGUI.ToggleLeft(rect, "Reset On Unload Scene", OnUnloadScene);
+            OnUnloadScene = EditorGUI.ToggleLeft(toogleRect, "Reset On Unload Scene", OnUnloadScene);
             if(OnUnloadScene != (bool)_conditions[index]._condition.Params[3])
                 _conditions[index]._condition.UpdateParam(3, OnUnloadScene);
 
@@ -838,21 +845,26 @@ namespace HLab.H_Common.H_Editor
             }
         }
 
-        private static object GetNewDefaultValue(string type)
+        private void DrawMethodOption(Rect rect, Rect origin, int index)
         {
-            if (type == typeof(string).Name)
-                return "value";
-            else if (type == typeof(int).Name)
-                return 0;
-            else if (type == typeof(float).Name)
-                return 0.0f;
-            else if (type == typeof(bool).Name)
-                return false;
-            else if (type == typeof(Vector3).Name)
-                return Vector3.zero;
-
-            return null;
+            EditorGUI.TextField(rect, "MethodName");
         }
+
+        //private static object GetNewDefaultValue(string type)
+        //{
+        //    if (type == typeof(string).Name)
+        //        return "value";
+        //    else if (type == typeof(int).Name)
+        //        return 0;
+        //    else if (type == typeof(float).Name)
+        //        return 0.0f;
+        //    else if (type == typeof(bool).Name)
+        //        return false;
+        //    else if (type == typeof(Vector3).Name)
+        //        return Vector3.zero;
+
+        //    return null;
+        //}
 
         private static object DrawFieldByType(Rect rect, object value)
         {

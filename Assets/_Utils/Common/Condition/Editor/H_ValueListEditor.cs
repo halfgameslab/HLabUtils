@@ -28,7 +28,7 @@ namespace HLab.H_Common.H_Editor
                 if (_weightEditor == null)
                     _weightEditor = new H_ValueEditor();
 
-                result = _weightEditor.Draw(rect, "Weight", refType, ref t, ref w);
+                result = _weightEditor.Draw(rect, "Weight", typeof(float), ref t, ref w);
                 value.Weight.Value = w;
                 value.Weight.ValueType = t;
                 t = value.ValueType;
@@ -68,10 +68,12 @@ namespace HLab.H_Common.H_Editor
                 {
                     value = string.Concat(refType!=null?refType.Name:"String",".global.","undefined");
                 }
-                else
+                else if (type == H_EValueType.VALUE)
                 {
                     value = H_ValueListEditor.GetNewDefaultValue(refType != null ? refType.Name : "Single", 0.0f);
                 }
+                else
+                    value = "MethodName";
 
                 return true;
             }
@@ -82,7 +84,7 @@ namespace HLab.H_Common.H_Editor
                 rect.width = rect.width * 5;
                 return _editor.Draw(rect, rect, refType, ref value);
             }
-            else
+            else if (type == H_EValueType.VALUE)
             {
                 string[] varTypes = CVarSystem.AllowedTypes;
                 rect.x += rect.width;
@@ -104,6 +106,19 @@ namespace HLab.H_Common.H_Editor
                 EditorGUI.BeginChangeCheck();
                 if (value == null)
                     value = 0;
+
+                value = DrawFieldByType(rect, value);
+
+                return EditorGUI.EndChangeCheck();
+            }
+            else
+            {
+                rect.x += rect.width;
+                rect.width *= 2;
+
+                EditorGUI.BeginChangeCheck();
+                if (value == null)
+                    value = "MethodName";
 
                 value = DrawFieldByType(rect, value);
 
@@ -147,6 +162,10 @@ namespace HLab.H_Common.H_Editor
                 varFullname = fullname;//string.Concat((_varType??typeof(int)).Name, ".global.undefined");
 
             string[] param0 = ((string)varFullname).Split('.');
+
+            if (varType != null && param0[0] != varType.Name)
+                param0[0] = varType.Name;
+
             if (param0.Length == 2)
             {
                 param0 = new string[] { param0[0], param0[1], "undefined" };
@@ -182,7 +201,7 @@ namespace HLab.H_Common.H_Editor
             string[] groupsNames = CVarSystem.GetGroups().Select(e => e.Name).ToArray();
             string[] varTypes = CVarSystem.AllowedTypes;
 
-            int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == (_varType == null ? param0[0] : _varType.Name));//param0[0]);
+            int i = Array.FindIndex(varTypes, 0, varTypes.Length, e => e == param0[0]);//param0[0]);
             if (i < 0)
             {
                 param0[0] = varTypes[0];
@@ -288,21 +307,17 @@ namespace HLab.H_Common.H_Editor
                     varFullname = _auxString;
                     param0 = ((string)varFullname).Split('.');
 
-                    if (_varType != null)
-                        param0[0] = _varType.Name;
-
                     // complete the name with the type using the first character as reference
-                    if (!CVarSystem.ValidateType(param0[0]))
+                    if (!CVarSystem.ValidateType(param0[0]) || _varType != null)
                     {
                         if (param0[0].Length >= 1)
                         {
                             char firstC = param0[0].ToLower()[0];
-                            
-                            
-                            if (firstC == 'i')
-                            {
+
+                            if (_varType != null)
+                                param0[0] = _varType.Name;
+                            else if (firstC == 'i')
                                 param0[0] = CVarSystem.GetTypeName<int>();
-                            }
                             else if ((firstC == 's' && param0[0].Length >= 2 && param0[0].ToLower()[1] == 'i') || firstC == 'f')
                                 param0[0] = CVarSystem.GetTypeName<float>();
                             else if (firstC == 'b')
@@ -383,7 +398,7 @@ namespace HLab.H_Common.H_Editor
                     _varType = value;
                     foreach(H_Val val in _valuesReorderableList.list)
                     {
-                        if(val.Value.GetType() != _varType && val.ValueType != H_EValueType.CVAR)
+                        if(val.ValueType == H_EValueType.VALUE && val.Value.GetType() != _varType)
                         {
                             val.Value = GetNewDefaultValue(_varType.Name, 0.0f);
                         }
